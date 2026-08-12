@@ -28,9 +28,9 @@ export default function ChatWidget() {
   });
 
   const sendSuggested = (q) => {
+    // useChat reads input from state; flush the update before submitting
     setInput(q);
-    // submit with the suggested text
-    handleSubmit(new Event("submit"));
+    requestAnimationFrame(() => handleSubmit(new Event("submit")));
   };
 
   return (
@@ -105,7 +105,7 @@ export default function ChatWidget() {
           >
             <input
               className="input"
-              value={input}
+              value={input ?? ""}
               onChange={handleInputChange}
               placeholder="Escribe tu pregunta…"
               aria-label="Mensaje"
@@ -114,7 +114,7 @@ export default function ChatWidget() {
               type="submit"
               className="btn btn-primary shrink-0"
               aria-label="Enviar"
-              disabled={status === "streaming" || !input.trim()}
+              disabled={status === "streaming" || !input?.trim()}
             >
               <Send size={18} />
             </button>
