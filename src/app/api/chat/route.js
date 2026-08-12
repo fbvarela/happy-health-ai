@@ -96,8 +96,23 @@ export async function POST(request) {
   // Record the user message for rate limiting (history persistence is backlog).
   const userLast = messages[messages.length - 1];
   if (userLast?.role === "user") {
-    await recordUserMessage(user.id, patientId, userLast.content);
+    const content = extractText(userLast);
+    if (content) {
+      await recordUserMessage(user.id, patientId, content);
+    }
   }
 
   return result.toUIMessageStreamResponse();
+}
+
+/** Extracts the text from a v7 UIMessage (uses `parts`, may lack `content`). */
+function extractText(message) {
+  if (typeof message.content === "string" && message.content) return message.content;
+  if (Array.isArray(message.parts)) {
+    return message.parts
+      .filter((p) => p?.type === "text" && typeof p.text === "string")
+      .map((p) => p.text)
+      .join("");
+  }
+  return "";
 }
