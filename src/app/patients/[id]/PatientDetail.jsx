@@ -116,6 +116,19 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
         <DayTimeline key={refresh} patientId={patient.id} canEdit={canEdit} />
       </div>
 
+      <Link
+        href="/appointments"
+        className="block card mt16 hover:border-sun transition-colors"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="card-title">Citas</div>
+            <p className="dog-meta">Consultas médicas y calendario.</p>
+          </div>
+          <span className="text-2xl">›</span>
+        </div>
+      </Link>
+
       {canEdit && (
         <div className="mt16">
           <SettingsForm patientId={patient.id} />
