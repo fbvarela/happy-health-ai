@@ -42,6 +42,23 @@ export const api = {
   getInvites: () => request("/invites", { cache: "no-store" }),
   respondInvite: (id, action) =>
     request(`/invites/${id}`, { method: "POST", body: JSON.stringify({ action }) }),
+  getVitals: (id, params = "") => request(`/patients/${id}/vitals${params}`, { cache: "no-store" }),
+  createVital: (id, data) =>
+    request(`/patients/${id}/vitals`, { method: "POST", body: JSON.stringify(data) }),
+  updateVital: (id, vitalId, data) =>
+    request(`/patients/${id}/vitals/${vitalId}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteVital: (id, vitalId) =>
+    request(`/patients/${id}/vitals/${vitalId}`, { method: "DELETE" }),
+  getNotes: (id) => request(`/patients/${id}/notes`, { cache: "no-store" }),
+  createNote: (id, data) =>
+    request(`/patients/${id}/notes`, { method: "POST", body: JSON.stringify(data) }),
+  updateNote: (id, noteId, data) =>
+    request(`/patients/${id}/notes/${noteId}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteNote: (id, noteId) =>
+    request(`/patients/${id}/notes/${noteId}`, { method: "DELETE" }),
+  getSettings: (id) => request(`/patients/${id}/settings`, { cache: "no-store" }),
+  updateSettings: (id, data) =>
+    request(`/patients/${id}/settings`, { method: "PUT", body: JSON.stringify(data) }),
 };
 
 export default api;
