@@ -42,3 +42,6 @@ next-env.d.ts
 
 # IDE
 .idea/
+
+# Google OAuth client secrets (never commit)
+client_secret_*.json

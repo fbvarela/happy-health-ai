@@ -18,7 +18,7 @@ npm run db:migrate   # node scripts/run-migration.mjs (runs src/db/migrations/*.
 - **DB:** Neon Postgres via `@neondatabase/serverless` — `src/lib/db.js` tagged-template helper.
 - **Auth:** **Google OAuth + admin approval** (DECIDED, SPEC §9.2) — no magic links, no password auth. Caregivers sign in with Google, admin approves new users, elders never log in. Build requires OAuth (iron-session already scaffolds this; magic-link code may be removed).
 - **AI:** Cohere or Groq (free tier) — SPEC §4.6/§9.10. Chat answers in **Spanish (es-ES) only**.
-- **Payments:** Stripe — `src/lib/stripe.js`, `/api/stripe/{checkout,webhook,portal}`, `isPremium(plan)` in `src/lib/tier.js` (covers both `premium` and `bundle`). No premium work in v1 (family use) — DECISION D13.
+- **No payments:** personal/family use — no plans, tiers, Stripe or premium code (DECISION D13).
 - **Design:** copy shelter-ai tokens (`globals.css`). Dark bark sidebar desktop, bottom nav + FAB mobile. DM Sans + Fraunces + Caveat.
 - **Usability (SPEC §4.11):** plain **text inputs** (no complex widgets), big touch targets (≥44–48px), one obvious action per screen, clear hierarchy — the dashboard must answer "how is she today?" in one glance.
 - **PWA:** `@ducanh2912/next-pwa`. NEVER run `next build` without `--webpack`.
@@ -29,10 +29,10 @@ npm run db:migrate   # node scripts/run-migration.mjs (runs src/db/migrations/*.
 - Server components for pages; `"use client"` only where needed.
 - API routes return `Response.json(...)`; auth via `getSession()` from `src/lib/session.js`.
 - Sensitive health data: never log patient data, never expose R2 objects with public URLs.
-- Free-tier limits in `src/lib/limits.js`, enforced server-side.
+- No rate-limit tiers: single limit for all users (SPEC §8, D13).
 
 ## Open Questions (from docs/SPEC.md §9)
 
-**ALL DECIDED** (see `docs/DECISIONS.md`): auth = Google OAuth + admin approval (D1), storage = Cloudflare R2 + Stream like garden (D2), encryption at-rest, no field-level (D3), calendar one-way on caregiver's account (D4), in-app notifications (D5), manual vitals entry (D6), multi-patient from day one (D7), AI = Cohere/Groq ES-only (D8/D9), no premium v1 (D13), photos + video (D14), usability text-inputs (D15), sharing = invites with roles (D16).
+**ALL DECIDED** (see `docs/DECISIONS.md`): auth = Google OAuth + admin approval (D1), storage = Cloudflare R2 + Stream like garden (D2), encryption at-rest, no field-level (D3), calendar one-way on caregiver's account (D4), in-app notifications (D5), manual vitals entry (D6), multi-patient from day one (D7), AI = Cohere/Groq ES-only (D8/D9), no monetization (D13), photos + video (D14), usability text-inputs (D15), sharing = invites with roles (D16).
 
 Read `docs/SPEC.md`, `docs/PLAN.md`, and `docs/DECISIONS.md` before starting any phase.

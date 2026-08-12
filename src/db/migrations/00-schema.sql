@@ -29,18 +29,6 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- ── Platform base: subscriptions (Stripe) ────────────────────────────
-CREATE TABLE IF NOT EXISTS subscriptions (
-  id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id                UUID REFERENCES users(id) ON DELETE CASCADE,
-  stripe_customer_id     TEXT UNIQUE,
-  stripe_subscription_id TEXT UNIQUE,
-  plan                   TEXT NOT NULL DEFAULT 'free',
-  status                 TEXT NOT NULL DEFAULT 'active',
-  current_period_end     TIMESTAMPTZ,
-  created_at             TIMESTAMPTZ DEFAULT now()
-);
-
 -- ── App: patients & shared access ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS patients (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -154,7 +142,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 CREATE INDEX IF NOT EXISTS notifications_user_read_idx
   ON notifications (user_id, read_at) WHERE read_at IS NULL;
 
--- ── App: chat history (premium persistence, future) ──────────────────
+-- ── App: chat history (future) ───────────────────────────────────────
 CREATE TABLE IF NOT EXISTS chat_messages (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id    UUID REFERENCES users(id) ON DELETE CASCADE,

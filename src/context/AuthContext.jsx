@@ -23,13 +23,11 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, []);
 
-  const login = async (email) => {
-    try {
-      const result = await api.login(email);
-      return { success: true, message: result.message };
-    } catch (err) {
-      return { success: false, error: err.message };
-    }
+  const googleSignIn = () => {
+    // Full-page navigation: the API route performs the server-side OAuth 307
+    // redirect to Google — client-side routing cannot follow that flow.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.assign("/api/auth/google");
   };
 
   const logout = async () => {
@@ -42,7 +40,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, loading, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, loading, googleSignIn, logout }}>
       {children}
     </AuthContext.Provider>
   );
