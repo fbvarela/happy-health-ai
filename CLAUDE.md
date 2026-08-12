@@ -22,7 +22,7 @@ npm run db:migrate   # node scripts/run-migration.mjs (runs src/db/migrations/*.
 - **Design:** copy shelter-ai tokens (`globals.css`). Dark bark sidebar desktop, bottom nav + FAB mobile. DM Sans + Fraunces + Caveat.
 - **Usability (SPEC §4.11):** plain **text inputs** (no complex widgets), big touch targets (≥44–48px), one obvious action per screen, clear hierarchy — the dashboard must answer "how is she today?" in one glance.
 - **PWA:** `@ducanh2912/next-pwa`. NEVER run `next build` without `--webpack`.
-- **Chat:** platform CHAT-SPEC pattern (embedded `/chat` page, streaming, ReactMarkdown) with a mandatory **no-medical-advice** guardrail in the system prompt. Context = active patient + latest vitals + AI health score (SPEC §4.10).
+- **Chat:** floating bubble → modal (`src/components/chat/ChatWidget.jsx`, wired in `ClientLayout`) — NOT a nav page. AI SDK v7 (`useChat` from `@ai-sdk/react`, streaming, ReactMarkdown), **no-medical-advice** guardrail in the system prompt (`src/lib/chat.js`). Context = active patient (`AppContext.activePatientId`) + latest vitals + AI health score (SPEC §4.10, `src/lib/health-score.js`). ES-only.
 
 ## Conventions
 

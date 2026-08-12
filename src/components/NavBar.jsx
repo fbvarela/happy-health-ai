@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarDays, HeartPulse, LayoutDashboard, Menu, MessageSquareText } from "lucide-react";
+import { Activity, CalendarDays, HeartPulse, LayoutDashboard, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
 
@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
   { href: "/patients", label: "Pacientes", icon: HeartPulse },
   { href: "/appointments", label: "Citas", icon: CalendarDays },
-  { href: "/chat", label: "Chat", icon: MessageSquareText },
 ];
 
 export default function NavBar() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import api from "@/utils/api";
@@ -10,6 +10,7 @@ import QuickRecord from "@/components/vitals/QuickRecord";
 import DayTimeline from "@/components/vitals/DayTimeline";
 import NotesSection from "@/components/vitals/NotesSection";
 import SettingsForm from "@/components/vitals/SettingsForm";
+import { useApp } from "@/context/AppContext";
 
 const ROLE_LABELS = { owner: "Propietario", caregiver: "Cuidador", viewer: "Lector" };
 const ROLE_OPTIONS = [
@@ -19,8 +20,13 @@ const ROLE_OPTIONS = [
 
 export default function PatientDetail({ patient, myRole, members, invites }) {
   const router = useRouter();
+  const { setActivePatientId } = useApp();
   const isOwner = myRole === "owner";
   const canEdit = ["owner", "caregiver"].includes(myRole);
+
+  useEffect(() => {
+    setActivePatientId(patient.id);
+  }, [patient.id, setActivePatientId]);
 
   const [editOpen, setEditOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);

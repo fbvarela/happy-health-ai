@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import api from "@/utils/api";
-import { METRICS } from "@/lib/vitals";
+import { METRICS } from "@/lib/metrics";
 import Modal from "@/components/ui/Modal";
 
 const TYPE_LABELS = {
