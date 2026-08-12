@@ -1,15 +1,10 @@
-import { getSession } from "@/lib/session";
+import { getCurrentUser } from "@/lib/auth/user";
 
 /** GET /api/auth/me — returns the current user (null if not logged in). */
 export async function GET() {
-  const session = await getSession();
-  if (!session.userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return Response.json(null);
   }
-  return Response.json({
-    id: session.userId,
-    email: session.email,
-    name: session.name,
-    locale: session.locale,
-  });
+  return Response.json(user);
 }

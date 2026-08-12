@@ -21,10 +21,14 @@ async function request(path, options = {}) {
 
 export const api = {
   getMe: () => request("/auth/me", { cache: "no-store" }),
-  login: (email) =>
-    request("/auth/send-link", { method: "POST", body: JSON.stringify({ email }) }),
   logout: () => request("/auth/logout", { method: "POST" }),
   getTier: () => request("/tier", { cache: "no-store" }),
+  getPendingApprovals: () => request("/admin/approvals", { cache: "no-store" }),
+  decideApproval: (userId, action) =>
+    request(`/admin/approvals/${userId}`, {
+      method: "POST",
+      body: JSON.stringify({ action }),
+    }),
 };
 
 export default api;

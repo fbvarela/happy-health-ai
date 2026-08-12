@@ -1,90 +1,79 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState(null); // null | "sent" | "error"
-  const [errorMsg, setErrorMsg] = useState("");
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus(null);
+  const handleGoogle = () => {
     setLoading(true);
-    const result = await login(email);
-    if (result.success) {
-      setStatus("sent");
-    } else {
-      setErrorMsg(result.error);
-      setStatus("error");
-    }
-    setLoading(false);
+    // Full-page navigation: the API route performs the server-side OAuth 307
+    // redirect to Google — client-side routing cannot follow that flow.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.assign("/api/auth/google");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg p-5">
       <div className="w-full max-w-sm bg-surface rounded-[14px] border-[1.5px] border-line shadow-card p-8">
-        <div className="text-center mb-6">
+        <div className="text-center mb-8">
           <div className="text-5xl mb-2">💚</div>
           <h1 className="font-serif text-[1.8rem] text-bark mb-1">Happy Health</h1>
           <p className="text-muted text-sm">
-            Sign in to keep track of the people you care for
+            Lleva el control de la salud de tus mayores
           </p>
         </div>
 
-        {status === "sent" ? (
-          <div className="text-center py-4">
-            <div className="text-4xl mb-3">📬</div>
-            <p className="text-bark font-semibold mb-2">Check your email</p>
-            <p className="text-muted text-sm">
-              We sent a magic link to {email}. Click it to sign in (expires in 1
-              hour).
-            </p>
-            <button
-              type="button"
-              className="btn btn-ghost mt-4"
-              onClick={() => { setStatus(null); setEmail(""); }}
-            >
-              Use a different email
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="input-label">Email</label>
-              <input
-                type="email"
-                className="input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-              />
-            </div>
-
-            {status === "error" && (
-              <p className="text-red-600 text-sm mb-4">{errorMsg}</p>
-            )}
-
-            <button
-              type="submit"
-              className="btn btn-primary w-full justify-center"
-              disabled={loading}
-            >
-              {loading ? "Sending…" : "Send magic link"}
-            </button>
-          </form>
+        {error === "signin_failed" && (
+          <p className="text-red-600 text-sm mb-4 text-center">
+            No se pudo iniciar sesión. Inténtalo de nuevo.
+          </p>
+        )}
+        {error === "denied" && (
+          <p className="text-red-600 text-sm mb-4 text-center">
+            Tu cuenta aún no está aprobada. Contacta con el administrador.
+          </p>
         )}
 
+        <button
+          type="button"
+          onClick={handleGoogle}
+          disabled={loading}
+          className="btn btn-primary w-full justify-center text-[1.05rem] py-4"
+        >
+          {loading ? (
+            "Conectando…"
+          ) : (
+            <>
+              <svg className="w-5 h-5 mr-3" viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
+                <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+                <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
+                <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C41.5 35.4 44 30.1 44 24c0-1.3-.1-2.6-.4-3.9z"/>
+              </svg>
+              Continuar con Google
+            </>
+          )}
+        </button>
+
         <p className="text-xs text-muted mt-6 text-center">
-          This app stores health information. We never share it and never show
-          it publicly. Not a medical device — always consult a doctor for
-          medical decisions.
+          Esta aplicación guarda información de salud. Nunca la compartimos y
+          nunca se muestra públicamente. No es un dispositivo médico: consulta
+          siempre con un médico para las decisiones de salud.
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

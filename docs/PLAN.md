@@ -9,15 +9,14 @@
 
 **Goal:** empty app on Vercel, branded, PWA-installable, builds green.
 
-- [ ] Copy `globals.css` from happy-shelter-ai (token system) — done in scaffold
-- [ ] Root config: `package.json`, `next.config.js` (PWA + security headers), `vercel.json`, `postcss.config.mjs`, `jsconfig.json`, `.gitignore`, `.env.example`
-- [ ] Base layout (fonts, viewport, PWA metadata), landing page → redirect to `/dashboard`
-- [ ] `public/manifest.json` + icons + `offline.html`
-- [ ] Deploy to Vercel, add `health.happyfactory.app` domain, verify PWA installs
-- [ ] `docs/SPEC.md`, `docs/PLAN.md`, `docs/DECISIONS.md`, root `CLAUDE.md` (Open Questions section)
-- [ ] Stripe products/prices created (Happy Health AI Premium $9.99/mo + $99/yr; bundle IDs shared)
+- [x] Copy `globals.css` from happy-shelter-ai (token system)
+- [x] Root config: `package.json`, `next.config.js` (PWA + security headers), `vercel.json`, `postcss.config.mjs`, `jsconfig.json`, `.gitignore`, `.env.example`
+- [x] Base layout (fonts, viewport, PWA metadata), landing page → redirect to `/dashboard`
+- [x] `public/manifest.json` + icons + `offline.html`
+- [ ] Deploy to Vercel, add `health.happyfactory.app` domain, verify PWA installs (blocked on scaffold PR merge + env vars)
+- [x] `docs/SPEC.md`, `docs/PLAN.md`, `docs/DECISIONS.md`, root `CLAUDE.md`
 
-**Exit criteria:** `npm run build` passes; app installable; landing + login reachable.
+**Exit criteria:** `npm run build` passes (✓); app installable; landing + login reachable (pending deploy).
 
 ---
 
@@ -25,12 +24,15 @@
 
 **Goal:** Google OAuth login + admin approval (DECIDED §9.2 / D1).
 
-- [ ] `users` + `approvals` tables (migration `00-schema.sql`); Google OAuth (caregiver's account) + admin approve/deny flow
-- [ ] iron-session (`src/lib/session.js`) — reuse the existing scaffold; remove magic-link code
-- [ ] Google Cloud OAuth consent screen setup (Sensitive scopes, ES app)
-- [ ] Login page UI + post-login redirect to `/dashboard` (pending-approval state for new users)
+- [x] `01-oauth.sql`: users + `google_id`/`avatar_url`/`status`/`role`, `approvals` log, drop `magic_links` (applied to dev DB ✓)
+- [x] Google OAuth flow: `GET /api/auth/google` (state cookie) → consent → `GET /api/auth/callback` (code exchange, upsert, session)
+- [x] iron-session reused (`src/lib/session.js`); magic-link code removed (`send-link`, `magic-link.js`)
+- [x] Admin approval: `GET /api/admin/approvals` + `POST /api/admin/approvals/[userId]` (admin only, `ADMIN_EMAILS` env); audit row per decision
+- [x] Login page (Google button, ES) + `/pending` approval screen + `/admin/approvals` page (ES)
+- [x] Client guard: unapproved users → `/pending`, logged-out → `/login` (`ClientLayout`)
+- [ ] **You:** create Google Cloud OAuth client (consent screen, redirect `{APP_URL}/api/auth/callback`) + set `GOOGLE_CLIENT_ID/SECRET`, `ADMIN_EMAILS` in `.env.local` / Vercel
 
-**Exit criteria:** full magic-link round trip works locally and on Vercel preview.
+**Exit criteria:** Google sign-in round trip works locally and on Vercel preview (creates pending user → admin approves → dashboard).
 
 ---
 
