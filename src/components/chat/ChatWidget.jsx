@@ -22,15 +22,13 @@ export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const { activePatientId } = useApp();
 
-  const { messages, input, handleInputChange, handleSubmit, status, error, setInput } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, status, error, sendMessage } = useChat({
     api: "/api/chat",
     body: { patientId: activePatientId ?? null },
   });
 
   const sendSuggested = (q) => {
-    // useChat reads input from state; flush the update before submitting
-    setInput(q);
-    requestAnimationFrame(() => handleSubmit(new Event("submit")));
+    sendMessage?.(q);
   };
 
   return (
