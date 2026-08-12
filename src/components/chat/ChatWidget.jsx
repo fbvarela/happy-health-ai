@@ -28,7 +28,7 @@ export default function ChatWidget() {
   });
 
   const sendSuggested = (q) => {
-    sendMessage?.(q);
+    sendMessage?.({ text: q });
   };
 
   return (
