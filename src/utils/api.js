@@ -59,6 +59,15 @@ export const api = {
   getSettings: (id) => request(`/patients/${id}/settings`, { cache: "no-store" }),
   updateSettings: (id, data) =>
     request(`/patients/${id}/settings`, { method: "PUT", body: JSON.stringify(data) }),
+  getAppointments: (id) => request(`/patients/${id}/appointments`, { cache: "no-store" }),
+  createAppointment: (id, data) =>
+    request(`/patients/${id}/appointments`, { method: "POST", body: JSON.stringify(data) }),
+  updateAppointment: (id, apptId, data) =>
+    request(`/patients/${id}/appointments/${apptId}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteAppointment: (id, apptId) =>
+    request(`/patients/${id}/appointments/${apptId}`, { method: "DELETE" }),
+  calendarStatus: () => request("/calendar/status", { cache: "no-store" }),
+  calendarDisconnect: () => request("/calendar/disconnect", { method: "POST" }),
 };
 
 export default api;

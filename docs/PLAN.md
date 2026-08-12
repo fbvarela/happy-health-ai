@@ -69,9 +69,12 @@
 
 **Goal:** appointments work without Google, then with it (DECIDED §9.6 / D4: one-way, caregiver's calendar).
 
-- [ ] `appointments` CRUD + reminders as notifications
-- [ ] Calendar list/agenda UI
-- [ ] Google Calendar sync (one-way app → calendar, v1): OAuth consent, refresh token storage (encrypted — §9.7), create/update/delete events
+- [x] `05-appointments.sql`: appointments journal cols (`updated_at`/`deleted_at`), `google_calendar_tokens` table
+- [x] Appointments CRUD (caregiver+) — `/api/patients/[id]/appointments`, soft delete
+- [x] Calendar list/agenda UI — `/appointments` page (grouped by day, create/edit/delete modals)
+- [x] Google Calendar sync (one-way app → calendar): OAuth (`/api/calendar/connect|callback|status|disconnect`, scope `calendar.events`, offline tokens), create/update/delete events, token refresh (`lib/calendar.js`)
+- [x] Connect UI on `/appointments` + link from patient page
+- [ ] **You:** add `http://localhost:3000/api/calendar/callback` (and prod URL) to the Google OAuth client's redirect URIs in GCP
 
 **Exit criteria:** appointment created in app appears in caregiver's Google Calendar.
 
