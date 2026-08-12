@@ -45,15 +45,17 @@ export async function GET(request) {
     return redirect("/login?error=signin_failed");
   }
 
-  // First sign-in → pending approval. Existing users keep their status.
+  // First sign-in → pending approval. Admins are auto-approved (ADMIN_EMAILS).
   const role = isAdminEmail(email) ? "admin" : "member";
+  const initialStatus = role === "admin" ? "approved" : "pending";
   const rows = await sql`
-    INSERT INTO users (email, name, google_id, avatar_url, role)
-    VALUES (${email}, ${profile.name ?? null}, ${profile.sub ?? null}, ${profile.picture ?? null}, ${role})
+    INSERT INTO users (email, name, google_id, avatar_url, role, status)
+    VALUES (${email}, ${profile.name ?? null}, ${profile.sub ?? null}, ${profile.picture ?? null}, ${role}, ${initialStatus})
     ON CONFLICT (email) DO UPDATE SET
       name       = COALESCE(EXCLUDED.name, users.name),
       avatar_url = COALESCE(EXCLUDED.avatar_url, users.avatar_url),
-      role       = CASE WHEN users.role = 'admin' THEN 'admin' ELSE EXCLUDED.role END
+      role       = CASE WHEN users.role = 'admin' THEN 'admin' ELSE EXCLUDED.role END,
+      status     = CASE WHEN EXCLUDED.role = 'admin' THEN 'approved' ELSE users.status END
     RETURNING id, email, name, locale, role, status
   `;
   const user = rows[0];

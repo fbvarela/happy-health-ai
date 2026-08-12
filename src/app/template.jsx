@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import ClientLayout from "@/components/ClientLayout";
 
-const PUBLIC_PATHS = ["/login", "/offline"];
+const PUBLIC_PATHS = ["/login", "/offline", "/pending"];
 
 export default function Template({ children }) {
   const auth = useAuth();

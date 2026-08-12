@@ -27,12 +27,16 @@ export default function ClientLayout({ children }) {
     }
   }, [loading, currentUser, router]);
 
-  if (loading || !currentUser || currentUser.status !== "approved") {
+  if (loading || !currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg">
         <p className="text-muted">Cargando…</p>
       </div>
     );
+  }
+
+  if (currentUser.status !== "approved") {
+    return null; // redirecting to /pending (see useEffect)
   }
 
   return (
