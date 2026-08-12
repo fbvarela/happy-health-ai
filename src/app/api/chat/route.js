@@ -84,7 +84,7 @@ export async function POST(request) {
       : createCohere({ apiKey: getEnv("COHERE_API_KEY") })(provider.model);
 
   // Keep only the last N turns for context
-  const recent = messages.slice(-10);
+  const recent = messages.slice(-10).map(toCoreMessage);
 
   const result = streamText({
     model,
@@ -103,6 +103,12 @@ export async function POST(request) {
   }
 
   return result.toUIMessageStreamResponse();
+}
+
+/** Converts a v7 UIMessage (uses `parts`) to a CoreMessage for streamText. */
+function toCoreMessage(message) {
+  const text = extractText(message);
+  return { role: message.role, content: text };
 }
 
 /** Extracts the text from a v7 UIMessage (uses `parts`, may lack `content`). */
