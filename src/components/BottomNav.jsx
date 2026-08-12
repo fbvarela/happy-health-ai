@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, HeartPulse, LayoutDashboard, MessageSquareText, MoreHorizontal } from "lucide-react";
+import { CalendarDays, HeartPulse, LayoutDashboard, MoreHorizontal } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 const ITEMS = [
   { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
   { href: "/patients", label: "Pacientes", icon: HeartPulse },
   { href: "/appointments", label: "Citas", icon: CalendarDays },
-  { href: "/chat", label: "Chat", icon: MessageSquareText },
 ];
 
 /** Bottom nav — mobile only (hidden on desktop via .bottom-nav). */

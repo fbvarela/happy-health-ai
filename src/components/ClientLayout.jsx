@@ -7,6 +7,7 @@ import BottomNav from "@/components/BottomNav";
 import NavDrawer from "@/components/NavDrawer";
 import FAB from "@/components/FAB";
 import Toast from "@/components/ui/Toast";
+import ChatWidget from "@/components/chat/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
 
 /**
@@ -46,6 +47,7 @@ export default function ClientLayout({ children }) {
       <BottomNav />
       <NavDrawer />
       <FAB />
+      <ChatWidget />
       <Toast />
     </>
   );

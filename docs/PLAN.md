@@ -82,14 +82,16 @@
 
 ## Phase 5 — AI Chat (3–5 days)
 
-**Goal:** embedded chat per platform CHAT-SPEC + health guardrails.
+**Goal:** embedded assistant per platform CHAT-SPEC + health guardrails, as a floating bubble (not a menu page).
 
-- [ ] `/chat` page + `ChatInterface` (streaming, ReactMarkdown, suggested questions in Spanish)
-- [ ] `POST /api/chat` with Cohere or Groq (Vercel AI SDK, free tier — DECIDED §9.10 / D8), domain restriction + **no medical advice** guardrail in system prompt, ES-only answers
-- [ ] Context injection: active patient + latest vitals + AI health score (SPEC §4.10)
-- [ ] Rate limit 20 msg/day (no tiers — single limit for everyone)
+- [x] Floating chat widget (`ChatWidget`) — bubble bottom-right → modal, wired globally in `ClientLayout`; `/chat` page removed; removed from nav
+- [x] `POST /api/chat` with Cohere or Groq (AI SDK v7, free tier — DECIDED §9.10 / D8), domain restriction + **no medical advice** guardrail in system prompt, ES-only answers
+- [x] Context injection: active patient (from `AppContext`) + latest vitals + AI health score (SPEC §4.10, `lib/health-score.js`)
+- [x] Rate limit 20 msg/day (single limit for all — no tiers) — `lib/chat.js` + `chat_messages` rows
+- [x] ReactMarkdown rendering + suggested questions in Spanish
+- [ ] **You:** set `GROQ_API_KEY` or `COHERE_API_KEY` in `.env.local` / Vercel
 
-**Exit criteria:** chat answers health-record questions, refuses off-topic + diagnosis requests.
+**Exit criteria:** chat answers health-record questions, refuses off-topic + diagnosis requests (pending live key + browser test).
 
 ---
 
