@@ -18,21 +18,21 @@ export default function NavDrawer() {
       <div className={`nav-drawer ${drawerOpen ? "open" : ""}`}>
         <div className="drawer-section-label">Happy Health</div>
         <button type="button" className="drawer-item" onClick={() => setDrawerOpen(false)}>
-          <HeartPulse size={18} /> Close
+          <HeartPulse size={18} /> Cerrar
         </button>
         <div className="drawer-divider" />
         <Link href="/patients" className="drawer-item" onClick={() => setDrawerOpen(false)}>
-          <FileText size={18} /> Care notes
+          <FileText size={18} /> Notas de cuidado
         </Link>
         <Link href="/notifications" className="drawer-item" onClick={() => setDrawerOpen(false)}>
-          <Bell size={18} /> Notifications
+          <Bell size={18} /> Notificaciones
         </Link>
         <Link href="/settings" className="drawer-item" onClick={() => setDrawerOpen(false)}>
-          <Settings size={18} /> Settings
+          <Settings size={18} /> Ajustes
         </Link>
         <div className="drawer-divider" />
         <button type="button" className="drawer-item" onClick={() => { setDrawerOpen(false); logout(); }}>
-          <LogOut size={18} /> Log out
+          <LogOut size={18} /> Cerrar sesión
         </button>
       </div>
     </>
