@@ -26,10 +26,30 @@ export async function POST(request) {
   } catch {
     return Response.json({ error: "Invalid request" }, { status: 400 });
   }
-  const patientId = body.patientId;
   const messages = Array.isArray(body.messages) ? body.messages : [];
-  if (!patientId || messages.length === 0) {
-    return Response.json({ error: "Falta el paciente o el mensaje" }, { status: 400 });
+  if (messages.length === 0) {
+    return Response.json({ error: "Falta el mensaje" }, { status: 400 });
+  }
+
+  // If no patient is selected, fall back to the user's first patient so the
+  // chat always has context (active patient is set when viewing a patient page).
+  let patientId = body.patientId;
+  if (!patientId) {
+    const [first] = await sql`
+      SELECT p.id
+      FROM patients p
+      JOIN patient_members pm ON pm.patient_id = p.id
+      WHERE pm.user_id = ${user.id}
+      ORDER BY p.created_at DESC
+      LIMIT 1
+    `;
+    patientId = first?.id ?? null;
+  }
+  if (!patientId) {
+    return Response.json(
+      { error: "Crea o selecciona un paciente para poder consultar al asistente." },
+      { status: 400 }
+    );
   }
 
   const access = await requirePatientAccess(user.id, patientId, "viewer");
