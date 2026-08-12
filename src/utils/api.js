@@ -29,6 +29,19 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ action }),
     }),
+  getPatients: () => request("/patients", { cache: "no-store" }),
+  getPatient: (id) => request(`/patients/${id}`, { cache: "no-store" }),
+  createPatient: (data) =>
+    request("/patients", { method: "POST", body: JSON.stringify(data) }),
+  updatePatient: (id, data) =>
+    request(`/patients/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deletePatient: (id) =>
+    request(`/patients/${id}`, { method: "DELETE" }),
+  invitePatient: (id, data) =>
+    request(`/patients/${id}/invites`, { method: "POST", body: JSON.stringify(data) }),
+  getInvites: () => request("/invites", { cache: "no-store" }),
+  respondInvite: (id, action) =>
+    request(`/invites/${id}`, { method: "POST", body: JSON.stringify({ action }) }),
 };
 
 export default api;

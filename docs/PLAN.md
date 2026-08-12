@@ -40,12 +40,12 @@
 
 **Goal:** first real screen — patient list + per-patient dashboard.
 
-- [ ] `patients`, `patient_members` tables + role enforcement (owner/caregiver/viewer)
-- [ ] Patient CRUD (name, DOB, allergies, medications — pinned on dashboard)
-- [ ] `/dashboard` — patient selector, pinned info, latest vitals summary
-- [ ] Invite-by-email share flow (DECIDED §9.3 / D16)
+- [x] `patients`, `patient_members` tables + role enforcement (owner/caregiver/viewer) — `lib/patients.js` access helpers
+- [x] Patient CRUD (name, DOB, allergies, medications — pinned on dashboard) — `03-invites.sql` + `/api/patients` + `/api/patients/[id]`
+- [x] `/dashboard` — patient list + invites inbox; `/patients` list + create; `/patients/[id]` pinned info + members
+- [x] Invite-by-email share flow (DECIDED §9.3 / D16) — `patient_invites` table, accept/decline (`/api/invites`)
 
-**Exit criteria:** user can create a patient, see the dashboard, share read access.
+**Exit criteria:** user can create a patient, see the dashboard, share read access (✓ pending live test with a second account).
 
 ---
 

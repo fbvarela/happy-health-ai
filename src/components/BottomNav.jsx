@@ -6,9 +6,9 @@ import { CalendarDays, HeartPulse, LayoutDashboard, MessageSquareText, MoreHoriz
 import { useApp } from "@/context/AppContext";
 
 const ITEMS = [
-  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/patients", label: "Patients", icon: HeartPulse },
-  { href: "/appointments", label: "Appointments", icon: CalendarDays },
+  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
+  { href: "/patients", label: "Pacientes", icon: HeartPulse },
+  { href: "/appointments", label: "Citas", icon: CalendarDays },
   { href: "/chat", label: "Chat", icon: MessageSquareText },
 ];
 
@@ -35,7 +35,7 @@ export default function BottomNav() {
         onClick={() => setDrawerOpen(true)}
       >
         <MoreHorizontal size={20} className="bottom-nav-item-icon" />
-        More
+        Más
       </button>
     </nav>
   );

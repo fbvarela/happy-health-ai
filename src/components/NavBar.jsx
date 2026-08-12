@@ -7,10 +7,10 @@ import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/patients", label: "Patients", icon: HeartPulse },
-  { href: "/appointments", label: "Appointments", icon: CalendarDays },
-  { href: "/chat", label: "AI Chat", icon: MessageSquareText },
+  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
+  { href: "/patients", label: "Pacientes", icon: HeartPulse },
+  { href: "/appointments", label: "Citas", icon: CalendarDays },
+  { href: "/chat", label: "Chat", icon: MessageSquareText },
 ];
 
 export default function NavBar() {
@@ -24,7 +24,7 @@ export default function NavBar() {
       <nav className="sidebar-nav">
         <div className="sidebar-logo">Happy Health</div>
         <div className="sidebar-items">
-          <div className="sidebar-section">Care</div>
+          <div className="sidebar-section">Cuidados</div>
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
@@ -35,10 +35,10 @@ export default function NavBar() {
               <span className="sideitem-label">{label}</span>
             </Link>
           ))}
-          <div className="sidebar-section">Activity</div>
+          <div className="sidebar-section">Actividad</div>
           <Link href="/dashboard" className={`sideitem ${pathname === "/" ? "active" : ""}`}>
             <span className="sideitem-icon"><Activity size={18} /></span>
-            <span className="sideitem-label">Vitals</span>
+            <span className="sideitem-label">Constantes</span>
           </Link>
         </div>
         <div className="sidebar-footer">
@@ -46,7 +46,7 @@ export default function NavBar() {
             <span className="sidebar-lang-btn">{currentUser?.email}</span>
           </div>
           <button type="button" className="sidebar-logout-btn" onClick={() => logout()}>
-            Log out
+            Cerrar sesión
           </button>
         </div>
       </nav>
