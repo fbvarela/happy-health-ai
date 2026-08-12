@@ -2,11 +2,5 @@
   "framework": "nextjs",
   "regions": ["iad1"],
   "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "headers": [
-    {
-      "source": "/api/stripe/webhook",
-      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
-    }
-  ]
+  "installCommand": "npm install"
 }

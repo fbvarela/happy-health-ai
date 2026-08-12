@@ -96,7 +96,7 @@ The app is a **journal log**: every record (vital, note, appointment, photo) is 
 
 ## 5. Proposed Data Model (Neon / Postgres — draft)
 
-Standard tables from the platform: `users`, `magic_links`, `sessions` (copy from the Happy Factory auth/Stripe pattern).
+Standard tables from the platform: `users`, `sessions` (copy from the Happy Factory auth pattern).
 
 App-specific:
 
@@ -188,7 +188,7 @@ patient_settings (                -- per-patient alert thresholds
   ...
 );
 
-chat_messages (                   -- premium persistence, future (per CHAT-SPEC §11)
+chat_messages (                   -- future (per CHAT-SPEC §11)
   id          UUID PK,
   user_id     UUID REFERENCES users(id),
   patient_id  UUID REFERENCES patients(id),
@@ -216,7 +216,7 @@ These are intentional deviations from the platform golden rules — **each must 
 | Chat scope | App domain + off-topic redirect | Health domain **+ no-medical-advice guardrail** | §9.10 |
 | Notifications | In-app only (CHAT-SPEC) | Web push considered | §9.9 |
 
-Everything else follows the platform: Next.js 16, Tailwind v4 + shelter tokens, DM Sans + Fraunces, bark/sun palette, dark sidebar + bottom nav, Stripe tiers, PWA, Vercel + Neon, `--webpack` build, `vercel.json` headers, `iad1` region.
+Everything else follows the platform: Next.js 16, Tailwind v4 + shelter tokens, DM Sans + Fraunces, bark/sun palette, dark sidebar + bottom nav, PWA, Vercel + Neon, `--webpack` build, `vercel.json` headers, `iad1` region.
 
 ---
 
@@ -231,8 +231,8 @@ Everything else follows the platform: Next.js 16, Tailwind v4 + shelter tokens, 
 
 ---
 
-## 8. Tiers (draft)
-- No tiers for the moment
+## 8. Monetization
+- None. Personal/family use only — no tiers, no plans, no payments (DECISION D13).
 
 ## 9. Open Questions & Doubts
 
@@ -250,7 +250,7 @@ Who owns the data, and can two different families ever share? Invites by email w
 - **Decision:** invites by email with roles (owner/caregiver/viewer).
 
 ### 9.4 How do vitals get in?
-Manual entry only for v1, or integrate devices (Bluetooth pulse oximeters, smartwatches, blood pressure cuffs)? Device integrations are expensive and platform-fragmented (Android/iOS/PWA limitations). **My recommendation:** manual entry v1 with a fast "last value" UI, device APIs as a future premium feature. **Doubt:** is recording by hand acceptable to the caregiver in practice?
+Manual entry only for v1, or integrate devices (Bluetooth pulse oximeters, smartwatches, blood pressure cuffs)? Device integrations are expensive and platform-fragmented (Android/iOS/PWA limitations). **My recommendation:** manual entry v1 with a fast "last value" UI, device APIs as a future enhancement. **Doubt:** is recording by hand acceptable to the caregiver in practice?
 - **Decision:** manual entry only for v1, with a fast "last value" UI.
 
 ### 9.5 Cloudflare storage vs Vercel Blob
@@ -267,7 +267,7 @@ Manual entry only for v1, or integrate devices (Bluetooth pulse oximeters, smart
 Neon already encrypts **at rest** by default. If the requirement means **field-level encryption** (e.g. vitals values, notes), options are: `pgcrypto` in Postgres (key in Neon env — mostly security theater if the key lives with the data) or application-level AES-GCM (key in Vercel env; real protection, but breaks search/aggregation, sorting, and SQL queries on encrypted columns). **Doubts:** what threat model? Compliance (GDPR special-category data, or HIPAA if US users) is handled differently from encryption — a legal/scope question. **My recommendation:** at-rest encryption + strict access control + audit log; field-level only if there is a concrete reason (e.g. DB shared with other apps). The app is not shared, and is in Spain: GDPR
 
 ### 9.8 Upload limits & media handling
-Photo/video sizes, per-upload and total quotas per tier, thumbnail generation (Cloudflare Images variants vs manual), video transcoding (Stream does this), and how the PWA handles uploads on flaky connections (chunked/resumable). Also: what media is actually useful in v1 (wound photos, medication boxes, prescriptions as documents) vs video. Photo and video.
+Photo/video sizes, per-upload and total quotas, thumbnail generation (Cloudflare Images variants vs manual), video transcoding (Stream does this), and how the PWA handles uploads on flaky connections (chunked/resumable). Also: what media is actually useful in v1 (wound photos, medication boxes, prescriptions as documents) vs video. Photo and video.
 
 ### 9.9 Push notifications vs in-app only
 Platform chat spec says in-app only. But anomaly alerts are the killer feature for a caregiver app — a low SpO₂ alert you only see when you open the app is weak. **Web Push** (VAPID + service worker) works with PWA on Android but **not iOS Safari** (no Web Push on iOS until 16.4+ — actually supported now, but with caveats). **Decision:** v1 in-app + web push, or in-app only? in-app for the moment.
@@ -284,13 +284,13 @@ Platform apps vary; several are Spanish-first (prepper, garden). For a caregiver
 Do elders log in and see their own data (big-text mode), or is this app strictly for caregivers? A read-only "for mom/dad" view is a nice differentiator but doubles UI work. **My recommendation:** defer to v2; v1 is caregiver-only. Strictly for caregivers.
 
 ### 9.13 Naming & branding
-Proposed per platform conventions: directory `happy-health-ai` ✓, domain `health.happyfactory.app`, PWA name "Happy Health AI", Stripe product "Happy Health AI Premium", env prefix `STRIPE_HEALTH_*`, Neon DB `health_db`. Confirm nothing already uses the `health` subdomain.
+Proposed per platform conventions: directory `happy-health-ai` ✓, domain `health.happyfactory.app`, PWA name "Happy Health AI", Neon DB `health_db`. Confirm nothing already uses the `health` subdomain.
 
 ---
 
 ## 10. Out of Scope (v1)
 
-- Medical device integrations (Bluetooth/wearables) — future premium feature.
+- Medical device integrations (Bluetooth/wearables) — future enhancement.
 - Telemedicine / contact with professionals through the app.
 - Emergency alerts to SMS/phone calls.
 - Multi-language elder UI.

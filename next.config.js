@@ -17,10 +17,6 @@ const nextConfig = {
         source: "/(.*)",
         headers: SECURITY_HEADERS,
       },
-      {
-        source: "/api/stripe/webhook",
-        headers: [{ key: "Cache-Control", value: "no-store" }],
-      },
     ];
   },
 };

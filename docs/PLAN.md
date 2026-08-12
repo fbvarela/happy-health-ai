@@ -44,7 +44,6 @@
 - [ ] Patient CRUD (name, DOB, allergies, medications — pinned on dashboard)
 - [ ] `/dashboard` — patient selector, pinned info, latest vitals summary
 - [ ] Invite-by-email share flow (DECIDED §9.3 / D16)
-- [ ] `GET /api/tier` + `PremiumGate` on premium-only actions
 
 **Exit criteria:** user can create a patient, see the dashboard, share read access.
 
@@ -85,7 +84,7 @@
 - [ ] `/chat` page + `ChatInterface` (streaming, ReactMarkdown, suggested questions in Spanish)
 - [ ] `POST /api/chat` with Cohere or Groq (Vercel AI SDK, free tier — DECIDED §9.10 / D8), domain restriction + **no medical advice** guardrail in system prompt, ES-only answers
 - [ ] Context injection: active patient + latest vitals + AI health score (SPEC §4.10)
-- [ ] Rate limit 20 msg/day free, unlimited premium
+- [ ] Rate limit 20 msg/day (no tiers — single limit for everyone)
 
 **Exit criteria:** chat answers health-record questions, refuses off-topic + diagnosis requests.
 
@@ -99,7 +98,7 @@
 - [ ] `uploads` table; gallery per patient; private access (signed URLs)
 - [ ] Photo carrousel per issue/wound, ordered by datetime, arrows + per-photo notes (SPEC §4.5)
 - [ ] Thumbnails (Cloudflare Images variants or manual); video via Cloudflare Stream (or skip video v1)
-- [ ] Quota enforcement per tier (§9.8)
+- [ ] Quota enforcement (§9.8 — size limits, no tier quotas)
 
 **Exit criteria:** photo upload → thumbnail → visible in gallery, private URL.
 
@@ -119,19 +118,18 @@
 ## Phase 8 — Launch (2–3 days)
 
 - [ ] Neon production migration + branch-per-preview integration
-- [ ] Stripe webhook registered (production URL), bundle webhook test
-- [ ] `.env.example` complete; env vars on Vercel (shared group + app-specific)
-- [ ] Test login flow, checkout, chat limits in production
+- [ ] `.env.example` complete; env vars on Vercel (OAuth, AI, R2)
+- [ ] Test login flow, chat limits in production
 - [ ] Announce + soft launch
 
 ---
 
 ## Backlog (future)
 
-- Device integrations (Bluetooth pulse oximeters) — premium feature
+- Device integrations (Bluetooth pulse oximeters) — future enhancement
 - Elder read-only view (big text)
 - Two-way calendar sync
-- Chat history persistence (premium)
+- Chat history persistence
 - Chat messages table, per-patient threads
 - Export PDF report for doctor visits
 - Audit log for sensitive data access

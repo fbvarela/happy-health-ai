@@ -16,7 +16,7 @@
 | D10 | **Language: JavaScript (JSX), not TypeScript** | **DECIDED**                     | Shelter-ai (design reference) is JS; consistent with it. Don't mix. |
 | D11 | **DB: Neon Postgres + `@neondatabase/serverless`** | **DECIDED**                     | Platform standard; branch-per-preview via Vercel integration. |
 | D12 | **PWA: `@ducanh2912/next-pwa`, `next build --webpack`** | **DECIDED**                     | Platform requirement; Turbopack incompatible with PWA plugin. |
-| D13 | **Monetization: no premium for the moment (family use)** | **DECIDED** (SPEC §1)           | Keep the Stripe tier scaffold for the platform but no paywall work in v1. |
+| D13 | **Monetization: none — personal/family use** | **DECIDED** (SPEC §1 / §8)      | No plans, tiers or payments in the app. Stripe scaffold removed entirely (no premium work at all). |
 | D14 | **Vitals in v1: photos AND video** | **DECIDED** (SPEC §9.8)         | Both media types from the start — uploads table already covers `photo \| video \| document`. |
 | D15 | **Usability: text inputs, big elements, clear layout** | **DECIDED** (SPEC §4.11)        | App principle on every screen: plain text input, ≥44–48px targets, one obvious action per screen. |
 | D16 | **Sharing: email invites with roles (owner/caregiver/viewer)** | **DECIDED** (SPEC §9.3)         | Owner invites caregivers by email; role enforcement on every route/query; admin approves the initial account (D1). |

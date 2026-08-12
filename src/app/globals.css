@@ -2423,47 +2423,6 @@ select.input {
   }
 }
 
-/* ── Premium Gate ─────────────────────────────────────────── */
-.premium-gate-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 48px 32px;
-  background: var(--surface);
-  border: 1.5px dashed var(--line);
-  border-radius: var(--radius);
-  gap: 12px;
-}
-
-.premium-gate-icon {
-  font-size: 2.5rem;
-  line-height: 1;
-}
-
-.premium-gate-title {
-  font-family: "Fraunces", serif;
-  font-size: 1.25rem;
-  color: var(--bark);
-  margin: 0;
-}
-
-.premium-gate-body {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
-  max-width: 360px;
-}
-
-.premium-gate-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 8px;
-}
-
 /* Chat styles */
 .suggested-chip { text-align: left; font-size: 0.875rem; background: var(--surface); border: 1px solid var(--line); color: var(--text-muted); border-radius: 10px; padding: 8px 14px; cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s; width: 100%; }
 .suggested-chip:hover { background: var(--bg); color: var(--text); border-color: var(--sun); }
