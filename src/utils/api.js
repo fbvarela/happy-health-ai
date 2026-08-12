@@ -39,6 +39,10 @@ export const api = {
     request(`/patients/${id}`, { method: "DELETE" }),
   invitePatient: (id, data) =>
     request(`/patients/${id}/invites`, { method: "POST", body: JSON.stringify(data) }),
+  updateMemberRole: (id, userId, role) =>
+    request(`/patients/${id}/members/${userId}`, { method: "PATCH", body: JSON.stringify({ role }) }),
+  removeMember: (id, userId) =>
+    request(`/patients/${id}/members/${userId}`, { method: "DELETE" }),
   getInvites: () => request("/invites", { cache: "no-store" }),
   respondInvite: (id, action) =>
     request(`/invites/${id}`, { method: "POST", body: JSON.stringify({ action }) }),

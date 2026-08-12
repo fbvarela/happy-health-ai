@@ -37,7 +37,29 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [localInvites, setLocalInvites] = useState(invites);
+  const [localMembers, setLocalMembers] = useState(members);
   const [refresh, setRefresh] = useState(0);
+  const [memberErr, setMemberErr] = useState("");
+
+  const handleRoleChange = async (userId, role) => {
+    setMemberErr("");
+    try {
+      await api.updateMemberRole(patient.id, userId, role);
+      setLocalMembers((prev) => prev.map((m) => (m.id === userId ? { ...m, role } : m)));
+    } catch (err) {
+      setMemberErr(err.message);
+    }
+  };
+
+  const handleRemoveMember = async (userId, name) => {
+    setMemberErr("");
+    try {
+      await api.removeMember(patient.id, userId);
+      setLocalMembers((prev) => prev.filter((m) => m.id !== userId));
+    } catch (err) {
+      setMemberErr(err.message);
+    }
+  };
 
   const handleInvite = async (e) => {
     e.preventDefault();
@@ -152,16 +174,42 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
           )}
         </div>
         <ul className="mt4 space-y-2">
-          {members.map((m) => (
-            <li key={m.id} className="flex items-center justify-between py-2 border-b border-line last:border-0">
-              <div>
-                <p className="font-medium text-bark">{m.name || m.email}</p>
-                {m.name && <p className="text-xs text-muted">{m.email}</p>}
+          {localMembers.map((m) => (
+            <li key={m.id} className="flex items-center justify-between py-2 border-b border-line last:border-0 gap-3">
+              <div className="min-w-0">
+                <p className="font-medium text-bark truncate">{m.name || m.email}</p>
+                {m.name && <p className="text-xs text-muted truncate">{m.email}</p>}
               </div>
-              <span className="badge badge-sun">{ROLE_LABELS[m.role] ?? m.role}</span>
+              <div className="flex items-center gap-2 shrink-0">
+                {isOwner && m.role === "owner" ? (
+                  <span className="badge badge-sun">Propietario</span>
+                ) : isOwner ? (
+                  <>
+                    <select
+                      className="input !py-1 !px-2 text-sm max-w-[130px]"
+                      value={m.role}
+                      onChange={(e) => handleRoleChange(m.id, e.target.value)}
+                      aria-label={`Rol de ${m.name || m.email}`}
+                    >
+                      <option value="caregiver">Cuidador</option>
+                      <option value="viewer">Lector</option>
+                    </select>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleRemoveMember(m.id, m.name || m.email)}
+                    >
+                      Quitar
+                    </button>
+                  </>
+                ) : (
+                  <span className="badge badge-sun">{ROLE_LABELS[m.role] ?? m.role}</span>
+                )}
+              </div>
             </li>
           ))}
         </ul>
+        {memberErr && <p className="text-red-600 text-sm mt2">{memberErr}</p>}
 
         {isOwner && localInvites.length > 0 && (
           <div className="mt4 pt-4 border-t border-line">
