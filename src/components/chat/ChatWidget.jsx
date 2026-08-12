@@ -13,6 +13,18 @@ const SUGGESTED = [
   "¿Por qué el score de hoy es más bajo que ayer?",
 ];
 
+/** v7 UIMessage: text lives in parts[], content may be empty. */
+function messageText(m) {
+  if (typeof m?.content === "string" && m.content) return m.content;
+  if (Array.isArray(m?.parts)) {
+    return m.parts
+      .filter((p) => p?.type === "text" && typeof p.text === "string")
+      .map((p) => p.text)
+      .join("");
+  }
+  return "";
+}
+
 /**
  * ChatWidget — floating assistant bubble (bottom-right) opening a chat modal.
  * Context = active patient (SPEC §4.10). ES-only, no-medical-advice guardrail
@@ -20,15 +32,19 @@ const SUGGESTED = [
  */
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState("");
   const { activePatientId } = useApp();
 
-  const { messages, input, handleInputChange, handleSubmit, status, error, sendMessage } = useChat({
+  const { messages, sendMessage, status, error } = useChat({
     api: "/api/chat",
     body: { patientId: activePatientId ?? null },
   });
 
-  const sendSuggested = (q) => {
-    sendMessage?.({ text: q });
+  const send = (text) => {
+    const t = (text ?? draft).trim();
+    if (!t || status === "streaming") return;
+    sendMessage?.({ text: t });
+    setDraft("");
   };
 
   return (
@@ -67,7 +83,7 @@ export default function ChatWidget() {
                 </p>
                 <div className="space-y-2">
                   {SUGGESTED.map((q) => (
-                    <button key={q} type="button" className="suggested-chip" onClick={() => sendSuggested(q)}>
+                    <button key={q} type="button" className="suggested-chip" onClick={() => send(q)}>
                       {q}
                     </button>
                   ))}
@@ -81,10 +97,10 @@ export default function ChatWidget() {
                     className={`chat-widget-msg ${m.role === "user" ? "chat-widget-msg--user" : "chat-widget-msg--ai"}`}
                   >
                     {m.role === "user" ? (
-                      m.content
+                      messageText(m)
                     ) : (
                       <ReactMarkdown components={{ p: "p", ul: "ul", ol: "ol", code: "code" }}>
-                        {m.content}
+                        {messageText(m)}
                       </ReactMarkdown>
                     )}
                   </div>
@@ -99,12 +115,15 @@ export default function ChatWidget() {
 
           <form
             className="chat-widget-inputbar"
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+              e.preventDefault();
+              send();
+            }}
           >
             <input
               className="input"
-              value={input ?? ""}
-              onChange={handleInputChange}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
               placeholder="Escribe tu pregunta…"
               aria-label="Mensaje"
             />
@@ -112,7 +131,7 @@ export default function ChatWidget() {
               type="submit"
               className="btn btn-primary shrink-0"
               aria-label="Enviar"
-              disabled={status === "streaming" || !input?.trim()}
+              disabled={status === "streaming" || !draft.trim()}
             >
               <Send size={18} />
             </button>
