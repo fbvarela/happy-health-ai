@@ -6,6 +6,10 @@ import Link from "next/link";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
+import QuickRecord from "@/components/vitals/QuickRecord";
+import DayTimeline from "@/components/vitals/DayTimeline";
+import NotesSection from "@/components/vitals/NotesSection";
+import SettingsForm from "@/components/vitals/SettingsForm";
 
 const ROLE_LABELS = { owner: "Propietario", caregiver: "Cuidador", viewer: "Lector" };
 const ROLE_OPTIONS = [
@@ -27,6 +31,7 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [localInvites, setLocalInvites] = useState(invites);
+  const [refresh, setRefresh] = useState(0);
 
   const handleInvite = async (e) => {
     e.preventDefault();
@@ -106,12 +111,16 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
       </div>
 
       {/* Latest vitals — populated in Phase 3 */}
-      <div className="stats-row-grid mt16" style={{ "--stats-cols": 4 }}>
-        <div className="stat-block"><div className="stat-number">–</div><div className="stat-label">SpO₂</div></div>
-        <div className="stat-block"><div className="stat-number">–</div><div className="stat-label">Frec. cardíaca</div></div>
-        <div className="stat-block"><div className="stat-number">–</div><div className="stat-label">Tensión</div></div>
-        <div className="stat-block"><div className="stat-number">–</div><div className="stat-label">Temperatura</div></div>
+      <div className="mt16 space-y-4">
+        <QuickRecord patientId={patient.id} canEdit={canEdit} onSaved={() => setRefresh((r) => r + 1)} />
+        <DayTimeline key={refresh} patientId={patient.id} canEdit={canEdit} />
       </div>
+
+      {canEdit && (
+        <div className="mt16">
+          <SettingsForm patientId={patient.id} />
+        </div>
+      )}
 
       {/* Members */}
       <div className="card mt16">
@@ -147,6 +156,10 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
             </ul>
           </div>
         )}
+      </div>
+
+      <div className="mt16">
+        <NotesSection patientId={patient.id} canEdit={canEdit} />
       </div>
 
       {isOwner && (

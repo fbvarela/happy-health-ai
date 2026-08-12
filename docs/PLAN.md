@@ -53,15 +53,15 @@
 
 **Goal:** record and visualize vitals.
 
-- [ ] `vitals` + `patient_settings` (alert thresholds) tables
-- [ ] Quick record UI (SpO₂ / HR / BP / temp, timestamp, device, notes) — 44px+ targets, manual entry with fast "last value" (DECIDED §9.4)
-- [ ] Poo log entry (checked + count) — SPEC §4.1, same quick-record pattern
-- [ ] **Day timeline view** — all entries per day (multiple readings/day), latest highlighted, min/max per metric (SPEC §4.1)
-- [ ] History list + trend charts (24h / 7d / 30d / 90d) — lightweight SVG, no chart lib dependency (or add one if needed)
-- [ ] Anomaly flagging vs thresholds → `notifications` rows
-- [ ] Notes CRUD (categories, pinning)
+- [x] `04-vitals.sql`: poo type + count, journal columns (`updated_at`/`deleted_at`), extended thresholds (temp, BP)
+- [x] Quick record UI (SpO₂ / HR / BP / temp / poo, timestamp, device, notes) — big buttons, text inputs, last-value prefill (DECIDED §9.4)
+- [x] Poo log entry (checked + count) — SPEC §4.1, same quick-record pattern
+- [x] **Day timeline view** — entries grouped per day, latest highlighted, min/max per metric (SPEC §4.1)
+- [x] History + trend charts (`/patients/[id]/history`, lightweight SVG, 24h / 7d / 30d / 90d)
+- [x] Anomaly flagging vs thresholds → `notifications` rows (`lib/vitals.js`, per-patient settings UI)
+- [x] Notes CRUD (categories, pinning) — `/api/patients/[id]/notes`
 
-**Exit criteria:** caregiver records a reading, sees the trend, gets flagged.
+**Exit criteria:** caregiver records a reading, sees the trend, gets flagged (✓ DB-level tested; browser round-trip pending live Google login).
 
 ---
 
