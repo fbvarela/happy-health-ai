@@ -74,6 +74,19 @@ export const api = {
   calendarDisconnect: () => request("/calendar/disconnect", { method: "POST" }),
   requestUploadUrl: (id, data) =>
     request(`/patients/${id}/uploads/signed-url`, { method: "POST", body: JSON.stringify(data) }),
+  requestAvatarUrl: (id, data) =>
+    request(`/patients/${id}/avatar/signed-url`, { method: "POST", body: JSON.stringify(data) }),
+  confirmAvatar: (id, key) =>
+    request(`/patients/${id}/avatar`, { method: "POST", body: JSON.stringify({ key }) }),
+  getIncidents: (id) => request(`/patients/${id}/incidents`, { cache: "no-store" }),
+  createIncident: (id, data) =>
+    request(`/patients/${id}/incidents`, { method: "POST", body: JSON.stringify(data) }),
+  getIncident: (id, incidentId) =>
+    request(`/patients/${id}/incidents/${incidentId}`, { cache: "no-store" }),
+  updateIncident: (id, incidentId, data) =>
+    request(`/patients/${id}/incidents/${incidentId}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteIncident: (id, incidentId) =>
+    request(`/patients/${id}/incidents/${incidentId}`, { method: "DELETE" }),
   confirmUpload: (id, data) =>
     request(`/patients/${id}/uploads/confirm`, { method: "POST", body: JSON.stringify(data) }),
   getUploads: (id) => request(`/patients/${id}/uploads`, { cache: "no-store" }),

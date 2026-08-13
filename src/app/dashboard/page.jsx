@@ -5,6 +5,8 @@ import { HeartPulse } from "lucide-react";
 import InvitesInbox from "@/components/InvitesInbox";
 import PatientSwitcher from "@/components/dashboard/PatientSwitcher";
 import VitalTiles from "@/components/dashboard/VitalTiles";
+import IncidentsSection from "@/components/dashboard/IncidentsSection";
+import { getSignedFileUrl } from "@/lib/r2";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +19,7 @@ export default async function DashboardPage({ searchParams }) {
   const { patient: patientParam } = await searchParams;
 
   const patients = await sql`
-    SELECT p.id, p.name, p.dob, p.allergies, p.medications, pm.role
+    SELECT p.id, p.name, p.dob, p.allergies, p.medications, p.avatar_key, pm.role
     FROM patients p
     JOIN patient_members pm ON pm.patient_id = p.id
     WHERE pm.user_id = ${user.id}
@@ -25,6 +27,16 @@ export default async function DashboardPage({ searchParams }) {
   `;
 
   const active = patients.find((p) => p.id === patientParam) ?? patients[0] ?? null;
+
+  // Sign the active patient's avatar
+  let avatarUrl = null;
+  if (active?.avatar_key) {
+    try {
+      avatarUrl = await getSignedFileUrl(active.avatar_key);
+    } catch {
+      avatarUrl = null;
+    }
+  }
 
   // Latest value per metric (last 24h) + thresholds for color coding
   let latest = {};
@@ -52,10 +64,28 @@ export default async function DashboardPage({ searchParams }) {
 
   return (
     <div className="page">
-      <h1 className="page-title">Dashboard</h1>
-      <p className="page-sub">
-        {active ? active.name : "Bienvenido, " + (user.name ?? "")}
-      </p>
+      <div className="flex items-center gap-4">
+        {active && (avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarUrl}
+            alt={active.name}
+            className="w-16 h-16 rounded-full object-cover border-2 border-line"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-[var(--sun)] flex items-center justify-center text-white font-serif text-2xl shrink-0">
+            {(active?.name ?? "?").charAt(0).toUpperCase()}
+          </div>
+        ))}
+        <div>
+          <h1 className="font-serif text-[1.9rem] text-bark leading-tight">{active ? active.name : "Dashboard"}</h1>
+          {active && (
+            <Link href={`/patients/${active.id}`} className="text-sm text-muted hover:text-bark">
+              Ver ficha completa →
+            </Link>
+          )}
+        </div>
+      </div>
 
       {patients.length === 0 ? (
         <div className="card mt16">
@@ -76,6 +106,10 @@ export default async function DashboardPage({ searchParams }) {
           )}
 
           <VitalTiles latest={latest} settings={settings} patientId={active.id} />
+
+          <div className="mt16">
+            <IncidentsSection patientId={active.id} canEdit={active.role !== "viewer"} />
+          </div>
 
           <div className="mt16">
             <InvitesInbox />
