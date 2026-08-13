@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
-import { HeartPulse } from "lucide-react";
+import { HeartPulse, UserPlus } from "lucide-react";
 import InvitesInbox from "@/components/InvitesInbox";
 import PatientSwitcher from "@/components/dashboard/PatientSwitcher";
 import VitalTiles from "@/components/dashboard/VitalTiles";
@@ -87,10 +87,12 @@ export default async function DashboardPage({ searchParams }) {
           </div>
         ))}
         <div>
-          <h1 className="font-serif text-[1.9rem] text-bark leading-tight">{active ? active.name : "Dashboard"}</h1>
+          <h1 className="font-serif text-[2.2rem] font-semibold text-bark leading-none">
+            {active ? active.name : "Dashboard"}
+          </h1>
           {active && (
-            <Link href={`/patients/${active.id}`} className="text-sm text-muted hover:text-bark">
-              Ver ficha completa →
+            <Link href={`/patients/${active.id}`} className="text-sm text-muted hover:text-bark inline-flex items-center gap-1 mt-1">
+              Ver ficha completa <span aria-hidden>→</span>
             </Link>
           )}
         </div>
@@ -102,7 +104,7 @@ export default async function DashboardPage({ searchParams }) {
             <div className="empty-icon"><HeartPulse size={28} /></div>
             <p>Aún no hay pacientes. Crea el primer perfil para empezar.</p>
             <Link href="/patients" className="btn btn-primary mt4">
-              Crear paciente
+              <UserPlus size={18} className="mr-1" /> Crear paciente
             </Link>
           </div>
         </div>

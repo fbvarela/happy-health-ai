@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity, Droplets, HeartPulse, Thermometer, CircleDot } from "lucide-react";
+import { Activity, Droplets, HeartPulse, Thermometer, CircleDot, Save } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -147,7 +147,7 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
 
           <div className="flex gap-3 pt-2">
             <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={saving}>
-              {saving ? "Guardando…" : "Guardar"}
+              <Save size={18} className="mr-1" /> {saving ? "Guardando…" : "Guardar"}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => setActive(null)}>
               Cancelar

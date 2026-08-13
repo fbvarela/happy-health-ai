@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { Camera, Save } from "lucide-react";
 import api from "@/utils/api";
 
 /**
@@ -86,7 +87,7 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarPreview} alt="vista previa" className="w-full h-full object-cover" />
             ) : (
-              <span className="w-full h-full flex items-center justify-center text-2xl text-muted">📷</span>
+              <span className="w-full h-full flex items-center justify-center text-muted"><Camera size={24} /></span>
             )}
             {uploadingAvatar && (
               <span className="absolute inset-0 bg-black/40 text-white text-xs flex items-center justify-center">
@@ -155,7 +156,7 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
 
       <div className="flex gap-3 pt-2">
         <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={saving}>
-          {saving ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear paciente"}
+          <Save size={18} className="mr-1" /> {saving ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear paciente"}
         </button>
         {onCancel && (
           <button type="button" className="btn btn-ghost" onClick={onCancel}>

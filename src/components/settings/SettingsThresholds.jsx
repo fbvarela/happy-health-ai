@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Save } from "lucide-react";
 import api from "@/utils/api";
 
 const FIELDS = [
@@ -73,7 +74,7 @@ export default function SettingsThresholds({ patientId, patientName, canEdit }) 
         </div>
         {canEdit && (
           <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? "Guardando…" : "Guardar umbrales"}
+            <Save size={16} className="mr-1" /> {busy ? "Guardando…" : "Guardar umbrales"}
           </button>
         )}
       </form>
