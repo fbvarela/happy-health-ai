@@ -15,7 +15,7 @@ export default function OfflinePage() {
       }}
     >
       <div>
-        <div style={{ fontSize: "3rem" }}>💚</div>
+        <div style={{ fontSize: "3rem" }}>📴</div>
         <h1 style={{ fontFamily: "Fraunces, serif", color: "var(--bark)" }}>
           You&apos;re offline
         </h1>

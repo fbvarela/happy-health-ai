@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { HeartPulse } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
@@ -49,7 +50,7 @@ export default function PatientsPage() {
       ) : patients.length === 0 ? (
         <div className="card">
           <div className="empty-state">
-            <div className="empty-icon">💚</div>
+            <div className="empty-icon"><HeartPulse size={28} /></div>
             <p>
               Aún no hay pacientes. Pulsa <b>+ Nuevo</b> para crear el primer
               perfil y empezar a registrar constantes, notas y citas.

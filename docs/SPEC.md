@@ -316,3 +316,5 @@ Proposed per platform conventions: directory `happy-health-ai` ✓, domain `heal
 - Measure limits should be removed from dashboard. It might be a menu option.
 - Buttons with text should not occupy the whole screen, the text should fit the element with no spaces.
 - use lucide icons instead of text as much as possible.
+
+> **Done (impl/dashboard-refinements):** measures on top color-coded (green/orange/red) via `VitalTiles`; poo one-tap increment → log entry; thresholds moved to `/settings`; full-width text buttons removed; lucide icons in QuickRecord + empty states; PWA icons regenerated to a red cross (`scripts/gen-icons.mjs`).

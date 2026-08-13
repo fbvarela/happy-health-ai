@@ -76,7 +76,7 @@ export default function NotificationsPage() {
       {items.length === 0 ? (
         <div className="card mt16">
           <div className="empty-state">
-            <div className="empty-icon">🔔</div>
+            <div className="empty-icon"><Bell size={28} /></div>
             <p>No hay notificaciones todavía.</p>
           </div>
         </div>

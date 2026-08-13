@@ -9,7 +9,6 @@ import PatientForm from "@/components/PatientForm";
 import QuickRecord from "@/components/vitals/QuickRecord";
 import DayTimeline from "@/components/vitals/DayTimeline";
 import NotesSection from "@/components/vitals/NotesSection";
-import SettingsForm from "@/components/vitals/SettingsForm";
 import GallerySection from "@/components/uploads/GallerySection";
 import { useApp } from "@/context/AppContext";
 
@@ -158,12 +157,6 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
         </div>
       </Link>
 
-      {canEdit && (
-        <div className="mt16">
-          <SettingsForm patientId={patient.id} />
-        </div>
-      )}
-
       {/* Members */}
       <div className="card mt16">
         <div className="flex items-center justify-between">
@@ -251,7 +244,7 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
               </div>
             </div>
           ) : (
-            <button type="button" className="btn btn-danger w-full" onClick={handleDelete}>
+            <button type="button" className="btn btn-danger" onClick={handleDelete}>
               Eliminar paciente
             </button>
           )}

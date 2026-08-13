@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { CalendarDays } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -219,7 +220,7 @@ export default function AppointmentsPage() {
       ) : patients.length === 0 ? (
         <div className="card mt16">
           <div className="empty-state">
-            <div className="empty-icon">📅</div>
+            <div className="empty-icon"><CalendarDays size={28} /></div>
             <p>Primero crea un paciente para poder registrar citas.</p>
             <Link href="/patients" className="btn btn-primary mt4">Ir a pacientes</Link>
           </div>
@@ -227,7 +228,7 @@ export default function AppointmentsPage() {
       ) : appts.length === 0 ? (
         <div className="card mt16">
           <div className="empty-state">
-            <div className="empty-icon">🗓️</div>
+            <div className="empty-icon"><CalendarDays size={28} /></div>
             <p>No hay citas todavía. Pulsa <b>+ Nueva</b> para crear la primera.</p>
           </div>
         </div>
