@@ -1,12 +1,14 @@
 import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import SettingsThresholds from "@/components/settings/SettingsThresholds";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
+  if (!user) redirect("/login");
 
   const patients = await sql`
     SELECT p.id, p.name, pm.role

@@ -1,12 +1,13 @@
 import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import IncidentsList from "./IncidentsList";
 
 export const dynamic = "force-dynamic";
 
 export default async function IncidentsPage({ searchParams }) {
   const user = await getCurrentUser();
+  if (!user) redirect("/login");
   const { all } = await searchParams;
   const showAll = all === "1";
 

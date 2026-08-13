@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { HeartPulse, UserPlus } from "lucide-react";
 import InvitesInbox from "@/components/InvitesInbox";
 import PatientSwitcher from "@/components/dashboard/PatientSwitcher";
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage({ searchParams }) {
   const user = await getCurrentUser();
+  if (!user) redirect("/login");
   const { patient: patientParam } = await searchParams;
 
   const patients = await sql`

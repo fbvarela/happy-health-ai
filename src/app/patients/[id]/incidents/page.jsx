@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ChevronLeft, ChevronRight, ImagePlus, Plus, ShieldAlert, Trash2, X,
+  ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, Plus, ShieldAlert, Trash2, X,
 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
@@ -196,8 +196,12 @@ export default function IncidentsListPage() {
         </button>
       </div>
 
-      <Link href={`/patients/${patientId}`} className="text-sm text-muted hover:text-bark inline-block mt2">
-        ← Volver al paciente
+      <Link
+        href={`/patients/${patientId}`}
+        aria-label="Volver al paciente"
+        className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] rounded-full bg-[var(--surface)] border-2 border-line text-bark hover:border-[var(--bark)] transition-colors mt2"
+      >
+        <ArrowLeft size={20} />
       </Link>
 
       {error && <p className="text-red-600 text-sm mt4">{error}</p>}

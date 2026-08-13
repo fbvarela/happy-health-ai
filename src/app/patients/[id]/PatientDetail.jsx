@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
+import { ArrowLeft, CalendarDays, Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
@@ -139,8 +139,12 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
   return (
     <div className="page">
-      <Link href="/patients" className="text-sm text-muted hover:text-bark inline-block mb-3">
-        ← Pacientes
+      <Link
+        href="/patients"
+        aria-label="Volver a pacientes"
+        className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] rounded-full bg-[var(--surface)] border-2 border-line text-bark hover:border-[var(--bark)] transition-colors mb-4"
+      >
+        <ArrowLeft size={20} />
       </Link>
 
       <div className="flex flex-row items-center gap-4">

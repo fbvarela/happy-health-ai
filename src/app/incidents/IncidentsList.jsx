@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ShieldAlert, Trash2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ShieldAlert, Trash2 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -145,8 +145,12 @@ export default function IncidentsList({ incidents, showAll = false }) {
             </label>
 
             {openIncident.notes && <p className="text-muted text-sm mb-3">{openIncident.notes}</p>}
-            <Link href={`/patients/${openIncident.patientId}`} className="text-sm text-muted hover:text-bark inline-block mb-3">
-              ← Ver paciente
+            <Link
+              href={`/patients/${openIncident.patientId}`}
+              aria-label="Ver paciente"
+              className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] rounded-full bg-[var(--surface)] border-2 border-line text-bark hover:border-[var(--bark)] transition-colors mb-3"
+            >
+              <ArrowLeft size={20} />
             </Link>
 
             {photos.length === 0 ? (
