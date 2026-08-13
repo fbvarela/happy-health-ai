@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
   if (!access) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const rows = await sql`
-    SELECT i.id, i.title, i.notes, i.severity, i.created_at, i.updated_at,
+    SELECT i.id, i.title, i.notes, i.severity, i.active, i.created_at, i.updated_at,
            u.name AS created_by_name,
            COUNT(uploads.id)::int AS photo_count
     FROM incidents i
@@ -23,7 +23,7 @@ export async function GET(request, { params }) {
     LEFT JOIN uploads ON uploads.incident_id = i.id AND uploads.deleted_at IS NULL
     WHERE i.patient_id = ${id} AND i.deleted_at IS NULL
     GROUP BY i.id, u.name
-    ORDER BY i.created_at DESC
+    ORDER BY i.active DESC, i.created_at DESC
   `;
   return Response.json(rows);
 }
@@ -47,11 +47,12 @@ export async function POST(request, { params }) {
   if (!title) return Response.json({ error: "El título es obligatorio" }, { status: 400 });
   const notes = (body.notes ?? "").trim() || null;
   const severity = ["green", "orange", "red"].includes(body.severity) ? body.severity : "green";
+  const active = body.active === undefined ? true : Boolean(body.active);
 
   const [row] = await sql`
-    INSERT INTO incidents (patient_id, title, notes, severity, created_by)
-    VALUES (${id}, ${title}, ${notes}, ${severity}, ${user.id})
-    RETURNING id, title, notes, severity, created_at
+    INSERT INTO incidents (patient_id, title, notes, severity, active, created_by)
+    VALUES (${id}, ${title}, ${notes}, ${severity}, ${active}, ${user.id})
+    RETURNING id, title, notes, severity, active, created_at
   `;
   return Response.json(row, { status: 201 });
 }

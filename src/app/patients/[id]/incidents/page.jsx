@@ -337,8 +337,8 @@ export default function IncidentsListPage() {
                 </div>
                 {(
                   <div className="flex gap-2 mt2">
-                    <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto}>
-                      <Trash2 size={14} className="mr-1" /> Quitar foto
+                    <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 )}
@@ -346,13 +346,13 @@ export default function IncidentsListPage() {
             )}
 
             <label className={`btn btn-sm btn-primary mt3 cursor-pointer ${uploading ? "opacity-60" : ""}`}>
-              <Plus size={14} className="mr-1" /> {uploading ? "Subiendo…" : "Añadir foto"}
+              <ImagePlus size={16} /> {uploading ? "…" : ""}
               <input type="file" className="hidden" accept="image/*" onChange={addPhoto} disabled={uploading} />
             </label>
 
-            <div className="mt4">
-              <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(openIncident)}>
-                <Trash2 size={14} className="mr-1" /> Eliminar incidente
+            <div className="mt4 flex items-center justify-between">
+              <button type="button" className="btn btn-sm btn-danger" onClick={() => setConfirmDelete(openIncident)} aria-label="Eliminar incidente">
+                <Trash2 size={16} />
               </button>
             </div>
           </div>

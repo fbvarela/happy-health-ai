@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Pin, PinOff, Save } from "lucide-react";
+import { Pencil, Pin, PinOff, Save, Trash2 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -121,18 +121,27 @@ export default function NotesSection({ patientId, canEdit }) {
                     <>
                       <button
                         type="button"
-                        className="text-xs text-muted hover:text-bark inline-flex items-center gap-1"
+                        className="text-muted hover:text-bark"
                         onClick={() => togglePin(n)}
                         aria-label={n.pinned ? "Quitar pin" : "Fijar"}
                       >
-                        {n.pinned ? <PinOff size={13} /> : <Pin size={13} />}
-                        {n.pinned ? "Quitar pin" : "Fijar"}
+                        {n.pinned ? <PinOff size={14} /> : <Pin size={14} />}
                       </button>
-                      <button type="button" className="text-xs text-muted hover:text-bark" onClick={() => openEdit(n)}>
-                        Editar
+                      <button
+                        type="button"
+                        className="text-muted hover:text-bark"
+                        onClick={() => openEdit(n)}
+                        aria-label="Editar nota"
+                      >
+                        <Pencil size={14} />
                       </button>
-                      <button type="button" className="text-xs text-red-600 hover:underline" onClick={() => setConfirmDelete(n.id)}>
-                        Eliminar
+                      <button
+                        type="button"
+                        className="text-red-600 hover:underline"
+                        onClick={() => setConfirmDelete(n.id)}
+                        aria-label="Eliminar nota"
+                      >
+                        <Trash2 size={14} />
                       </button>
                     </>
                   )}

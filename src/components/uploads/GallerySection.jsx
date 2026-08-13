@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Save, Trash2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Plus, Save, Trash2, X } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -92,9 +92,8 @@ export default function GallerySection({ patientId, canEdit }) {
       <div className="flex items-center justify-between">
         <div className="card-title">Fotos y archivos</div>
         {canEdit && (
-          <label className="btn btn-sm btn-primary cursor-pointer">
-            <Plus size={16} className="mr-1" />
-            {uploading ? "Subiendo…" : "Añadir"}
+          <label className="btn btn-sm btn-primary cursor-pointer" aria-label="Añadir archivo">
+            {uploading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
             <input type="file" className="hidden" accept="image/*,video/mp4,video/quicktime,application/pdf" onChange={handleFile} disabled={uploading} />
           </label>
         )}

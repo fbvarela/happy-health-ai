@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, CalendarPlus, Trash2 } from "lucide-react";
+import { CalendarDays, CalendarPlus, Pencil, Trash2 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -255,11 +255,21 @@ export default function AppointmentsPage() {
                       </div>
                       {canEditPatient(a.patient_id) && (
                         <div className="flex gap-2 shrink-0">
-                          <button type="button" className="btn btn-sm btn-ghost" onClick={() => openEdit(a)}>
-                            Editar
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-ghost"
+                            onClick={() => openEdit(a)}
+                            aria-label="Editar cita"
+                          >
+                            <Pencil size={14} />
                           </button>
-                          <button type="button" className="btn btn-sm btn-danger" onClick={() => setConfirmDelete(a)}>
-                            <Trash2 size={14} className="mr-1" /> Eliminar
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-danger"
+                            onClick={() => setConfirmDelete(a)}
+                            aria-label="Eliminar cita"
+                          >
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       )}

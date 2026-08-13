@@ -13,14 +13,15 @@ const SEVERITY = {
 };
 
 /**
- * /incidents — global menu option listing ALL active incidents across the
- * user's patients. Clicking one opens its carrousel.
+ * /incidents — global menu option listing incidents across the user's patients.
+ * Only ACTIVE by default; ?all=1 shows resolved too.
  */
-export default function IncidentsList({ incidents }) {
+export default function IncidentsList({ incidents, showAll = false }) {
   const [openIncident, setOpenIncident] = useState(null);
   const [viewerIdx, setViewerIdx] = useState(0);
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [busyActive, setBusyActive] = useState(false);
 
   const openDetail = async (patientId, incidentId) => {
     try {
@@ -29,6 +30,19 @@ export default function IncidentsList({ incidents }) {
       setViewerIdx(0);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const toggleActive = async () => {
+    if (!openIncident) return;
+    setBusyActive(true);
+    try {
+      await api.updateIncident(openIncident.patientId, openIncident.id, { active: !openIncident.active });
+      await openDetail(openIncident.patientId, openIncident.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusyActive(false);
     }
   };
 
@@ -60,8 +74,15 @@ export default function IncidentsList({ incidents }) {
 
   return (
     <div className="page">
-      <h1 className="page-title">Incidentes</h1>
-      <p className="page-sub">Incidentes activos de todos tus pacientes.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="page-title">Incidentes</h1>
+          <p className="page-sub">{showAll ? "Todos los incidentes." : "Incidentes activos."}</p>
+        </div>
+        <Link href={showAll ? "/incidents" : "/incidents?all=1"} className="btn btn-sm btn-ghost">
+          {showAll ? "Solo activos" : "Ver resueltos"}
+        </Link>
+      </div>
 
       {error && <p className="text-red-600 text-sm mt4">{error}</p>}
 
@@ -69,7 +90,7 @@ export default function IncidentsList({ incidents }) {
         <div className="card mt16">
           <div className="empty-state">
             <div className="empty-icon"><ShieldAlert size={28} /></div>
-            <p>No hay incidentes activos.</p>
+            <p>No hay incidentes {showAll ? "" : "activos"}.</p>
           </div>
         </div>
       ) : (
@@ -86,7 +107,10 @@ export default function IncidentsList({ incidents }) {
                   <div className="flex items-center gap-3">
                     <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-bark truncate">{inc.title}</p>
+                      <p className="font-semibold text-bark truncate">
+                        {inc.title}
+                        {!inc.active && <span className="text-xs text-muted font-normal ml-2">· resuelto</span>}
+                      </p>
                       <p className="text-xs text-muted">
                         {inc.patient_name} ·{" "}
                         {new Date(inc.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}
@@ -113,6 +137,13 @@ export default function IncidentsList({ incidents }) {
                 Gravedad: {SEVERITY[openIncident.severity].label}
               </span>
             )}
+
+            {/* Active toggle */}
+            <label className="flex items-center gap-2 text-sm mb-2">
+              <input type="checkbox" checked={Boolean(openIncident.active)} onChange={toggleActive} disabled={busyActive} className="w-5 h-5" />
+              Activo
+            </label>
+
             {openIncident.notes && <p className="text-muted text-sm mb-3">{openIncident.notes}</p>}
             <Link href={`/patients/${openIncident.patientId}`} className="text-sm text-muted hover:text-bark inline-block mb-3">
               ← Ver paciente
@@ -144,7 +175,7 @@ export default function IncidentsList({ incidents }) {
                 </div>
                 <div className="flex gap-2 mt2">
                   <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto}>
-                    <Trash2 size={14} className="mr-1" /> Quitar foto
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>

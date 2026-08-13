@@ -65,7 +65,7 @@ export default async function DashboardPage({ searchParams }) {
     incidents = await sql`
       SELECT id, severity, created_at
       FROM incidents
-      WHERE patient_id = ${active.id} AND deleted_at IS NULL
+      WHERE patient_id = ${active.id} AND deleted_at IS NULL AND active = true
       ORDER BY created_at DESC
       LIMIT 20
     `;

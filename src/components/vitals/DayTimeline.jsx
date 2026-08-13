@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Trash2 } from "lucide-react";
 import api from "@/utils/api";
 import { METRICS } from "@/lib/metrics";
 import Modal from "@/components/ui/Modal";
@@ -153,10 +154,11 @@ export default function DayTimeline({ patientId, canEdit }) {
                           <>
                             <button
                               type="button"
-                              className="text-xs text-red-600 hover:underline"
+                              className="text-red-600 hover:underline"
                               onClick={() => setConfirmDelete(v.id)}
+                              aria-label="Eliminar registro"
                             >
-                              Eliminar
+                              <Trash2 size={14} />
                             </button>
                             <Modal
                               open={confirmDelete === v.id}

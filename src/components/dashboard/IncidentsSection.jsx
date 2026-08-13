@@ -138,6 +138,17 @@ export default function IncidentsSection({ patientId, canEdit }) {
     }
   };
 
+  const toggleActive = async () => {
+    if (!openIncident) return;
+    try {
+      await api.updateIncident(patientId, openIncident.id, { active: !openIncident.active });
+      await openDetail(openIncident.id);
+      load();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleDelete = async () => {
     if (!confirmDelete) return;
     try {
@@ -293,6 +304,12 @@ export default function IncidentsSection({ patientId, canEdit }) {
                 Gravedad: {SEVERITY[openIncident.severity].label}
               </span>
             )}
+            {canEdit && (
+              <label className="flex items-center gap-2 text-sm mb-2">
+                <input type="checkbox" checked={Boolean(openIncident.active)} onChange={toggleActive} className="w-5 h-5" />
+                Activo
+              </label>
+            )}
             {openIncident.notes && <p className="text-muted text-sm mb-3">{openIncident.notes}</p>}
 
             {photos.length === 0 ? (
@@ -321,8 +338,8 @@ export default function IncidentsSection({ patientId, canEdit }) {
                 </div>
                 {canEdit && (
                   <div className="flex gap-2 mt2">
-                    <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto}>
-                      <Trash2 size={14} className="mr-1" /> Quitar foto
+                    <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 )}
@@ -331,15 +348,15 @@ export default function IncidentsSection({ patientId, canEdit }) {
 
             {canEdit && (
               <label className={`btn btn-sm btn-primary mt3 cursor-pointer ${uploading ? "opacity-60" : ""}`}>
-                <Plus size={14} className="mr-1" /> {uploading ? "Subiendo…" : "Añadir foto"}
+                <ImagePlus size={16} /> {uploading ? "…" : ""}
                 <input type="file" className="hidden" accept="image/*" onChange={addPhoto} disabled={uploading} />
               </label>
             )}
 
             {canEdit && (
-              <div className="mt4">
-                <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(openIncident)}>
-                  <Trash2 size={14} className="mr-1" /> Eliminar incidente
+              <div className="mt4 flex items-center justify-between">
+                <button type="button" className="btn btn-sm btn-danger" onClick={() => setConfirmDelete(openIncident)} aria-label="Eliminar incidente">
+                  <Trash2 size={16} />
                 </button>
               </div>
             )}

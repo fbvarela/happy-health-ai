@@ -17,7 +17,7 @@ export async function GET(request, { params }) {
   if (!access) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const [incident] = await sql`
-    SELECT id, title, notes, severity, created_at, updated_at
+    SELECT id, title, notes, severity, active, created_at, updated_at
     FROM incidents
     WHERE id = ${incidentId} AND patient_id = ${id} AND deleted_at IS NULL
   `;
@@ -73,6 +73,10 @@ export async function PATCH(request, { params }) {
     values.push(body.severity);
     fields.push(`severity = $${values.length}`);
   }
+  if (body.active !== undefined) {
+    values.push(Boolean(body.active));
+    fields.push(`active = $${values.length}`);
+  }
   if (fields.length === 0) {
     return Response.json({ error: "Nada que actualizar" }, { status: 400 });
   }
@@ -81,7 +85,7 @@ export async function PATCH(request, { params }) {
 
   const rows = await sql.query(
     `UPDATE incidents SET ${fields.join(", ")} WHERE id = $${values.length}
-     RETURNING id, title, notes, severity, updated_at`,
+     RETURNING id, title, notes, severity, active, updated_at`,
     values
   );
   return Response.json(rows.rows[0]);
