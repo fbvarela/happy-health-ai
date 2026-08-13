@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import BackButton from "@/components/BackButton";
 import {
-  ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Save, ShieldAlert, Trash2, X,
+  ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Save, ShieldAlert, Trash2, X,
 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
@@ -205,6 +205,7 @@ export default function IncidentsListPage() {
 
   return (
     <div className="page">
+      <BackButton fallback={`/patients/${patientId}`} label="Volver" />
       <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Incidentes</h1>
@@ -219,14 +220,6 @@ export default function IncidentsListPage() {
           <Plus size={20} />
         </button>
       </div>
-
-      <Link
-        href={`/patients/${patientId}`}
-        aria-label="Volver al paciente"
-        className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] rounded-full bg-[var(--surface)] border-2 border-line text-bark hover:border-[var(--bark)] transition-colors mt2"
-      >
-        <ArrowLeft size={20} />
-      </Link>
 
       {error && <p className="text-red-600 text-sm mt4">{error}</p>}
 

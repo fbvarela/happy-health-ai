@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "db:migrate": "node scripts/run-migration.mjs",
-    "db:migrate:prod": "DATABASE_URL=\"$DATABASE_URL\" node scripts/run-migration.mjs"
+    "db:migrate:prod": "DATABASE_URL=\"$DATABASE_URL\" node scripts/run-migration.mjs",
+    "test:r2": "node scripts/test-r2.mjs"
   },
   "dependencies": {
     "@ai-sdk/cohere": "^4.0.27",

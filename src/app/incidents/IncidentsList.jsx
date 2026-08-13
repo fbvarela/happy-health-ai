@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Save, ShieldAlert, Trash2, X } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
+import BackButton from "@/components/BackButton";
 
 const SEVERITY = {
   green: { label: "Leve", color: "#2e7d4f" },
@@ -93,6 +94,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
 
   return (
     <div className="page">
+      <BackButton fallback="/dashboard" label="Volver" />
       <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Incidentes</h1>
