@@ -53,7 +53,7 @@ export default function ChatWidget() {
       {open && (
         <div className="chat-widget-panel" role="dialog" aria-label="Asistente de salud">
           <div className="chat-widget-header">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-row items-center gap-2">
               <div className="chat-widget-avatar">💬</div>
               <div>
                 <p className="font-semibold text-bark text-sm">Asistente de salud</p>

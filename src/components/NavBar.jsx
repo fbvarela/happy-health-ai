@@ -64,7 +64,7 @@ export default function NavBar() {
       {/* Mobile top bar */}
       <div className="nav-mobile-bar">
         <div className="nav-logo">Happy Health</div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-row items-center gap-2">
           <Link href="/notifications" aria-label="Notificaciones" className="relative btn btn-sm btn-ghost">
             <Bell size={18} />
             {count > 0 && (
