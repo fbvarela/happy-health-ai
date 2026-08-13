@@ -143,7 +143,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, members, inv
         ← Pacientes
       </Link>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-row items-center gap-4">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -172,8 +172,13 @@ export default function PatientDetail({ patient, avatarUrl, myRole, members, inv
           </p>
         </div>
         {canEdit && (
-          <button type="button" className="btn btn-ghost ml-auto shrink-0" onClick={() => setEditOpen(true)}>
-            <Pencil size={16} className="mr-1" /> Editar
+          <button
+            type="button"
+            className="btn btn-sm btn-ghost ml-auto shrink-0"
+            onClick={() => setEditOpen(true)}
+            aria-label="Editar paciente"
+          >
+            <Pencil size={16} />
           </button>
         )}
       </div>

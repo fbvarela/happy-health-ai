@@ -73,7 +73,7 @@ export default async function DashboardPage({ searchParams }) {
 
   return (
     <div className="page">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-row items-center gap-4">
         {active && (avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
