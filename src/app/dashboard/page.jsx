@@ -5,14 +5,10 @@ import { HeartPulse, UserPlus } from "lucide-react";
 import InvitesInbox from "@/components/InvitesInbox";
 import PatientSwitcher from "@/components/dashboard/PatientSwitcher";
 import VitalTiles from "@/components/dashboard/VitalTiles";
-import IncidentsSection from "@/components/dashboard/IncidentsSection";
+import DashboardLinks from "@/components/dashboard/DashboardLinks";
 import { getSignedFileUrl } from "@/lib/r2";
 
 export const dynamic = "force-dynamic";
-
-function getYesterday() {
-  return new Date(Date.now() - 24 * 3600 * 1000);
-}
 
 export default async function DashboardPage({ searchParams }) {
   const user = await getCurrentUser();
@@ -38,16 +34,15 @@ export default async function DashboardPage({ searchParams }) {
     }
   }
 
-  // Latest value per metric (last 24h) + thresholds for color coding
+  // Latest value per metric (ANY time) + thresholds for color coding
   let latest = {};
   let settings = {};
   let incidents = [];
   if (active) {
-    const since = getYesterday();
     const rows = await sql`
       SELECT DISTINCT ON (type) type, value, unit, measured_at
       FROM vitals
-      WHERE patient_id = ${active.id} AND deleted_at IS NULL AND measured_at >= ${since}
+      WHERE patient_id = ${active.id} AND deleted_at IS NULL
       ORDER BY type, measured_at DESC
     `;
     for (const r of rows) latest[r.type] = r;
@@ -124,7 +119,7 @@ export default async function DashboardPage({ searchParams }) {
           />
 
           <div className="mt16">
-            <IncidentsSection patientId={active.id} canEdit={active.role !== "viewer"} />
+            <DashboardLinks patientId={active.id} />
           </div>
 
           <div className="mt16">
