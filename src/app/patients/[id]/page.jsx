@@ -49,6 +49,7 @@ export default async function PatientPage({ params }) {
       patient={patient}
       avatarUrl={avatarUrl}
       myRole={access.role}
+      myName={user.name}
       members={members}
       invites={invites}
     />

@@ -19,7 +19,7 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: "Lector (solo ver)" },
 ];
 
-export default function PatientDetail({ patient, avatarUrl, myRole, members, invites }) {
+export default function PatientDetail({ patient, avatarUrl, myRole, myName, members, invites }) {
   const router = useRouter();
   const { setActivePatientId } = useApp();
   const isOwner = myRole === "owner";
@@ -168,7 +168,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, members, inv
             ) : (
               "Fecha de nacimiento no indicada"
             )}
-            {myRole && <span className="ml-2">· {ROLE_LABELS[myRole]}</span>}
+            {myName && <span className="ml-2">· {myName}</span>}
           </p>
         </div>
         {canEdit && (
@@ -251,7 +251,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, members, inv
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {isOwner && m.role === "owner" ? (
-                  <span className="badge badge-sun">Propietario</span>
+                  <span className="badge badge-sun">{m.name || m.email}</span>
                 ) : isOwner ? (
                   <>
                     <select
