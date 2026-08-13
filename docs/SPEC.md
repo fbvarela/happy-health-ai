@@ -323,3 +323,17 @@ Proposed per platform conventions: directory `happy-health-ai` ✓, domain `heal
 - the dashboard should be clean and usable and show last measure (any time). 
 If there is no measure the current day for a particular one, it should show a small color warning (small ball). Also the dashboard show the number of measures of the current day (small number)
 - Apart from measures, the dashboard might show other info in the most simple way: name and a link icon: eg: history, incidents, etc. This other info should be accessible via menu.
+
+> **Done — dashboard (§13):**
+> - Measures on top via `VitalTiles`, color-coded green/orange/red by thresholds; shows the **last measure (any time)**.
+> - **Small warning ball** next to a label when the latest measure is not from today (tooltip shows last date).
+> - **Today count**: small **"Hoy N"** (with clock icon) on each tile = number of measures taken today; shows muted `Hoy 0` when none.
+> - Poo: one-tap increment (no modal) → log entry with current datetime.
+> - Thresholds moved to `/settings` (per-patient, read-only for viewers).
+> - **Info menu** (`DashboardLinks`): simple name + link icon rows — Historial, Incidentes, Notas y fotos, Citas, Ajustes; also reachable from sidebar/bottom-nav/drawer.
+> - Incidents: menu option + dashboard tile (count + worst-severity color); **severity** (green/orange/red) and **active/resolved** flag; photo upload at creation + carrousel with notes; `/incidents` lists active across patients (`?all=1` shows resolved).
+> - Patient header + dashboard: **bigger serif name with thumbnail** (R2 avatar), DOB with icon.
+> - Full-width text buttons removed; **lucide icons instead of text** on actions (Editar/Eliminar/Añadir foto/Fijar/Cerrar sesión…).
+> - PWA icons regenerated to a red cross (`scripts/gen-icons.mjs`); manifest lang=es.
+> - Caregivers: pick from the list of approved users ("Añadir cuidador"), change role / remove at will; email invite kept as fallback; caregiver name shown instead of the "Propietario" label.
+> - Notification center + unread badges (Phase 7).

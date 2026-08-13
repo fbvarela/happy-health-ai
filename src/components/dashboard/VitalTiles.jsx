@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldAlert } from "lucide-react";
+import { Clock, ShieldAlert } from "lucide-react";
 import api from "@/utils/api";
 
 /**
@@ -111,13 +111,13 @@ export default function VitalTiles({ latest, todayCounts = {}, settings, patient
                   />
                 )}
                 {t.count > 0 && (
-                  <span className="text-xs font-semibold text-bark" title={`${t.count} mediciones hoy`}>
-                    {t.count}
+                  <span className="text-xs font-semibold text-bark inline-flex items-center gap-0.5" title={`${t.count} mediciones hoy`}>
+                    <Clock size={12} /> Hoy {t.count}
                   </span>
                 )}
                 {t.count === 0 && (
-                  <span className="text-xs font-semibold text-muted opacity-60" title="Sin mediciones hoy">
-                    0
+                  <span className="text-xs font-semibold text-muted opacity-60 inline-flex items-center gap-0.5" title="Sin mediciones hoy">
+                    <Clock size={12} /> 0
                   </span>
                 )}
               </span>
