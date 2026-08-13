@@ -3,10 +3,13 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import ClientLayout from "@/components/ClientLayout";
 
 const PUBLIC_PATHS = ["/login", "/offline", "/pending"];
 
+/**
+ * Auth guard only — pages render their own shell (v0 pages use AppShell,
+ * legacy pages use ClientLayout themselves). No wrapping here.
+ */
 export default function Template({ children }) {
   const auth = useAuth();
   const { currentUser, loading } = auth ?? {};
@@ -39,9 +42,5 @@ export default function Template({ children }) {
     return null;
   }
 
-  if (PUBLIC_PATHS.includes(pathname)) {
-    return <>{children}</>;
-  }
-
-  return <ClientLayout>{children}</ClientLayout>;
+  return <>{children}</>;
 }
