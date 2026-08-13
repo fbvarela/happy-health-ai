@@ -111,12 +111,12 @@ export default function VitalTiles({ latest, todayCounts = {}, settings, patient
                   />
                 )}
                 {t.count > 0 && (
-                  <span className="text-[10px] text-muted" title={`${t.count} mediciones hoy`}>
+                  <span className="text-xs font-semibold text-bark" title={`${t.count} mediciones hoy`}>
                     {t.count}
                   </span>
                 )}
                 {t.count === 0 && (
-                  <span className="text-[10px] text-muted opacity-60" title="Sin mediciones hoy">
+                  <span className="text-xs font-semibold text-muted opacity-60" title="Sin mediciones hoy">
                     0
                   </span>
                 )}
