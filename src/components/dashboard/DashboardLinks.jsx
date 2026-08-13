@@ -25,16 +25,17 @@ export default function DashboardLinks({ patientId }) {
     <div className="mt16">
       <button
         type="button"
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--surface)] border border-line text-bark hover:border-sun transition-colors"
+        className="flex items-center gap-2 px-4 h-11 min-h-[44px] rounded-[12px] bg-[var(--surface)] border-2 border-[var(--bark)] text-bark font-medium hover:bg-[var(--bg)] transition-colors"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-label={open ? "Ocultar más opciones" : "Mostrar más opciones"}
+        aria-controls="dashboard-links"
       >
         {open ? <Minus size={20} /> : <Plus size={20} />}
+        <span>{open ? "Ocultar más" : "Más opciones"}</span>
       </button>
 
       {open && (
-        <div className="card mt8">
+        <div id="dashboard-links" className="card mt8">
           <ul>
             {links.map(({ href, label, icon: Icon }) => (
               <li key={href}>
