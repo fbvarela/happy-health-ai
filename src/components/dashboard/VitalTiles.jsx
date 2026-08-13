@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldAlert } from "lucide-react";
+import { Clock, ShieldAlert } from "lucide-react";
 import api from "@/utils/api";
 
 /**
@@ -38,19 +38,23 @@ function shortDate(iso) {
   return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
 }
 
-export default function VitalTiles({ latest, settings, patientId, incidents = [] }) {
+export default function VitalTiles({ latest, todayCounts = {}, settings, patientId, incidents = [] }) {
   const router = useRouter();
   const [pooCount, setPooCount] = useState(latest.poo?.value ? Number(latest.poo.value) : 0);
   const [pooSaving, setPooSaving] = useState(false);
 
   const measure = (type) => latest[type]?.value;
   const measuredAt = (type) => latest[type]?.measured_at;
+  const countFor = (type) => todayCounts[type] ?? 0;
+
+  // BP is a pair (systolic + diastolic) → count once
+  const bpToday = Math.max(countFor("bp_systolic"), countFor("bp_diastolic"));
 
   const tiles = [
-    { key: "spo2", label: "SpO₂", value: measure("spo2"), measuredAt: measuredAt("spo2"), unit: "%", href: `/patients/${patientId}/history` },
-    { key: "hr", label: "Frec.", value: measure("hr"), measuredAt: measuredAt("hr"), unit: "ppm", href: `/patients/${patientId}/history` },
-    { key: "bp", label: "Tensión", value: measure("bp_systolic") ? `${measure("bp_systolic")}/${measure("bp_diastolic") ?? "?"}` : null, measuredAt: measuredAt("bp_systolic"), unit: "mmHg", href: `/patients/${patientId}/history` },
-    { key: "temp", label: "Temp.", value: measure("temp"), measuredAt: measuredAt("temp"), unit: "°C", href: `/patients/${patientId}/history` },
+    { key: "spo2", label: "SpO₂", value: measure("spo2"), measuredAt: measuredAt("spo2"), count: countFor("spo2"), unit: "%", href: `/patients/${patientId}/history` },
+    { key: "hr", label: "Frec.", value: measure("hr"), measuredAt: measuredAt("hr"), count: countFor("hr"), unit: "ppm", href: `/patients/${patientId}/history` },
+    { key: "bp", label: "Tensión", value: measure("bp_systolic") ? `${measure("bp_systolic")}/${measure("bp_diastolic") ?? "?"}` : null, measuredAt: measuredAt("bp_systolic"), count: bpToday, unit: "mmHg", href: `/patients/${patientId}/history` },
+    { key: "temp", label: "Temp.", value: measure("temp"), measuredAt: measuredAt("temp"), count: countFor("temp"), unit: "°C", href: `/patients/${patientId}/history` },
   ];
 
   const handlePoo = async () => {
@@ -105,6 +109,16 @@ export default function VitalTiles({ latest, settings, patientId, incidents = []
                     aria-label={`Sin medición hoy (última: ${shortDate(t.measuredAt)})`}
                     className="inline-block w-2 h-2 rounded-full bg-[var(--sun)]"
                   />
+                )}
+                {t.count > 0 && (
+                  <span className="text-xs font-semibold text-bark inline-flex items-center gap-0.5" title={`${t.count} mediciones hoy`}>
+                    <Clock size={12} /> Hoy {t.count}
+                  </span>
+                )}
+                {t.count === 0 && (
+                  <span className="text-xs font-semibold text-muted opacity-60 inline-flex items-center gap-0.5" title="Sin mediciones hoy">
+                    <Clock size={12} /> 0
+                  </span>
                 )}
               </span>
             </div>

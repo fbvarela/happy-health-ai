@@ -17,12 +17,13 @@ export async function GET(request, { params }) {
   if (!access) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const rows = await sql`
-    SELECT id, kind, r2_key, mime_type, size_bytes, caption, created_at, updated_at,
+    SELECT uploads.id, uploads.kind, uploads.r2_key, uploads.mime_type, uploads.size_bytes,
+           uploads.caption, uploads.created_at, uploads.updated_at,
            u.name AS created_by_name
     FROM uploads
-    LEFT JOIN users u ON u.id = created_by
-    WHERE patient_id = ${id} AND deleted_at IS NULL
-    ORDER BY created_at ASC
+    LEFT JOIN users u ON u.id = uploads.created_by
+    WHERE uploads.patient_id = ${id} AND uploads.deleted_at IS NULL
+    ORDER BY uploads.created_at ASC
   `;
 
   // Sign all URLs (1h). Map r2_key -> signed url.

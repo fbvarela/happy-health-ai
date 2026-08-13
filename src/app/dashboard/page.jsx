@@ -1,17 +1,20 @@
 import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { HeartPulse, UserPlus } from "lucide-react";
 import InvitesInbox from "@/components/InvitesInbox";
 import PatientSwitcher from "@/components/dashboard/PatientSwitcher";
 import VitalTiles from "@/components/dashboard/VitalTiles";
 import DashboardLinks from "@/components/dashboard/DashboardLinks";
+import DashboardCharts from "@/components/dashboard/DashboardCharts";
 import { getSignedFileUrl } from "@/lib/r2";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage({ searchParams }) {
   const user = await getCurrentUser();
+  if (!user) redirect("/login");
   const { patient: patientParam } = await searchParams;
 
   const patients = await sql`
@@ -36,6 +39,7 @@ export default async function DashboardPage({ searchParams }) {
 
   // Latest value per metric (ANY time) + thresholds for color coding
   let latest = {};
+  let todayCounts = {};
   let settings = {};
   let incidents = [];
   if (active) {
@@ -46,6 +50,16 @@ export default async function DashboardPage({ searchParams }) {
       ORDER BY type, measured_at DESC
     `;
     for (const r of rows) latest[r.type] = r;
+
+    // Number of measures taken TODAY (for the small count on each tile)
+    const countRows = await sql`
+      SELECT type, COUNT(*)::int AS n
+      FROM vitals
+      WHERE patient_id = ${active.id} AND deleted_at IS NULL
+        AND measured_at >= date_trunc('day', now())
+      GROUP BY type
+    `;
+    for (const r of countRows) todayCounts[r.type] = r.n;
 
     const [s] = await sql`
       SELECT spo2_min, hr_min, hr_max, temp_min, temp_max, bp_sys_max, bp_dia_max
@@ -113,10 +127,15 @@ export default async function DashboardPage({ searchParams }) {
 
           <VitalTiles
             latest={latest}
+            todayCounts={todayCounts}
             settings={settings}
             patientId={active.id}
             incidents={incidents}
           />
+
+          <div className="mt16">
+            <DashboardCharts patientId={active.id} />
+          </div>
 
           <div className="mt16">
             <DashboardLinks patientId={active.id} />

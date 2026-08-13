@@ -320,5 +320,20 @@ Proposed per platform conventions: directory `happy-health-ai` ✓, domain `heal
 > **Done (impl/dashboard-refinements):** measures on top color-coded (green/orange/red) via `VitalTiles`; poo one-tap increment → log entry; thresholds moved to `/settings`; full-width text buttons removed; lucide icons in QuickRecord + empty states; PWA icons regenerated to a red cross (`scripts/gen-icons.mjs`); **patient name bigger + thumbnail** (avatar via R2, `07-incidents.sql`); **incidents** via menu + tile with severity/active flag (`08/09-incidents*.sql`).
 > **Done (feat/dashboard-clean):** dashboard shows the **last measure (any time)** per metric; a **small warning ball** marks measures not taken today; a simple **info menu** (name + link icon) lists Historial / Incidentes / Notas y fotos / Citas / Ajustes.
 - also on the dashboard should show the option of adding an incident: wound, or any other, that allows to upload photos and see them on a carousel with manual notes.
-- the dashboard should be clean and usable and show last measure (any time). If there is no measure the current day for a particular one, it should show a small color warning (small ball).
+- the dashboard should be clean and usable and show last measure (any time). 
+If there is no measure the current day for a particular one, it should show a small color warning (small ball). Also the dashboard show the number of measures of the current day (small number)
 - Apart from measures, the dashboard might show other info in the most simple way: name and a link icon: eg: history, incidents, etc. This other info should be accessible via menu.
+- There should be an option with measures charts by day, week and month. Also on the dashboard, there should be a toggle to show / hide this info. On the dashboard show a simple chart version with no x axis values, only the line
+> **Done — dashboard (§13):**
+> - Measures on top via `VitalTiles`, color-coded green/orange/red by thresholds; shows the **last measure (any time)**.
+> - **Small warning ball** next to a label when the latest measure is not from today (tooltip shows last date).
+> - **Today count**: small **"Hoy N"** (with clock icon) on each tile = number of measures taken today; shows muted `Hoy 0` when none.
+> - Poo: one-tap increment (no modal) → log entry with current datetime.
+> - Thresholds moved to `/settings` (per-patient, read-only for viewers).
+> - **Info menu** (`DashboardLinks`): simple name + link icon rows — Historial, Incidentes, Notas y fotos, Citas, Ajustes; also reachable from sidebar/bottom-nav/drawer.
+> - Incidents: menu option + dashboard tile (count + worst-severity color); **severity** (green/orange/red) and **active/resolved** flag; photo upload at creation + carrousel with notes; `/incidents` lists active across patients (`?all=1` shows resolved).
+> - Patient header + dashboard: **bigger serif name with thumbnail** (R2 avatar), DOB with icon.
+> - Full-width text buttons removed; **lucide icons instead of text** on actions (Editar/Eliminar/Añadir foto/Fijar/Cerrar sesión…).
+> - PWA icons regenerated to a red cross (`scripts/gen-icons.mjs`); manifest lang=es.
+> - Caregivers: pick from the list of approved users ("Añadir cuidador"), change role / remove at will; email invite kept as fallback; caregiver name shown instead of the "Propietario" label.
+> - Notification center + unread badges (Phase 7).
