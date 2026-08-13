@@ -6,6 +6,7 @@ import InvitesInbox from "@/components/InvitesInbox";
 import PatientSwitcher from "@/components/dashboard/PatientSwitcher";
 import VitalTiles from "@/components/dashboard/VitalTiles";
 import DashboardLinks from "@/components/dashboard/DashboardLinks";
+import DashboardCharts from "@/components/dashboard/DashboardCharts";
 import { getSignedFileUrl } from "@/lib/r2";
 
 export const dynamic = "force-dynamic";
@@ -129,6 +130,10 @@ export default async function DashboardPage({ searchParams }) {
             patientId={active.id}
             incidents={incidents}
           />
+
+          <div className="mt16">
+            <DashboardCharts patientId={active.id} />
+          </div>
 
           <div className="mt16">
             <DashboardLinks patientId={active.id} />

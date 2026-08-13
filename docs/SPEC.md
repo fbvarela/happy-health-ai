@@ -323,7 +323,7 @@ Proposed per platform conventions: directory `happy-health-ai` ✓, domain `heal
 - the dashboard should be clean and usable and show last measure (any time). 
 If there is no measure the current day for a particular one, it should show a small color warning (small ball). Also the dashboard show the number of measures of the current day (small number)
 - Apart from measures, the dashboard might show other info in the most simple way: name and a link icon: eg: history, incidents, etc. This other info should be accessible via menu.
-
+- There should be an option with measures charts by day, week and month. Also on the dashboard, there should be a toggle to show / hide this info. On the dashboard show a simple chart version with no x axis values, only the line
 > **Done — dashboard (§13):**
 > - Measures on top via `VitalTiles`, color-coded green/orange/red by thresholds; shows the **last measure (any time)**.
 > - **Small warning ball** next to a label when the latest measure is not from today (tooltip shows last date).
