@@ -143,7 +143,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, members, inv
         ← Pacientes
       </Link>
 
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -156,7 +156,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, members, inv
             {(patient.name ?? "?").charAt(0).toUpperCase()}
           </div>
         )}
-        <div className="min-w-0 pt-1">
+        <div className="min-w-0">
           <h1 className="font-serif text-[2.2rem] font-semibold text-bark leading-none break-words">
             {patient.name}
           </h1>

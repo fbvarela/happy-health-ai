@@ -73,7 +73,7 @@ export default async function DashboardPage({ searchParams }) {
 
   return (
     <div className="page">
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4">
         {active && (avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -86,7 +86,7 @@ export default async function DashboardPage({ searchParams }) {
             {(active?.name ?? "?").charAt(0).toUpperCase()}
           </div>
         ))}
-        <div className="pt-0.5">
+        <div>
           <h1 className="font-serif text-[2.2rem] font-semibold text-bark leading-none">
             {active ? active.name : "Dashboard"}
           </h1>
