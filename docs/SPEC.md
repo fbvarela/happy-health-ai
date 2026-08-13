@@ -310,7 +310,8 @@ Proposed per platform conventions: directory `happy-health-ai` ✓, domain `heal
 
 ## 13. Dashboard issues
 - It might be as simple as possible, making the best use of space as possible without scrolling.
-- The main measures should be put on top, showing the last measure. eg: O2 89% with different colors according to the measure: green, orange, red
+- The main measures should be put on top, showing the last measures. eg: O2 89% with different colors according to the measure: green, orange, red
+  It should be a photograph of the last state.s
 - Poo stuff should be simple: clicking the icon should increment the number and add an editable log in history with the current datetime. Do not open a modal to fill data in.
 - Measure limits should be removed from dashboard. It might be a menu option.
 - Buttons with text should not occupy the whole screen, the text should fit the element with no spaces.
