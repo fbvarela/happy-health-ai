@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const TEST_LOGIN_ENABLED = process.env.NEXT_PUBLIC_ENABLE_TEST_LOGIN === "true";
@@ -9,7 +9,6 @@ const TEST_LOGIN_EMAIL = process.env.NEXT_PUBLIC_TEST_LOGIN_EMAIL ?? "";
 
 function LoginForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const error = searchParams.get("error");
   const [loading, setLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
@@ -36,7 +35,10 @@ function LoginForm() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error ?? "Test login falló");
       }
-      router.push("/dashboard");
+      // Full page load so the freshly-set session cookie is applied on the
+      // server render (router.push races the Set-Cookie).
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign("/dashboard");
     } catch (err) {
       setTestError(err.message);
       setTestLoading(false);
