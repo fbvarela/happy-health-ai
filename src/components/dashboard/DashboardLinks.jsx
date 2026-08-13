@@ -35,21 +35,18 @@ export default function DashboardLinks({ patientId }) {
       </button>
 
       {open && (
-        <div id="dashboard-links" className="card mt8">
-          <ul>
-            {links.map(({ href, label, icon: Icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="flex items-center gap-3 py-3 border-b border-line last:border-0 hover:text-bark"
-                >
-                  <Icon size={18} className="text-muted shrink-0" />
-                  <span className="font-medium">{label}</span>
-                  <ChevronRight size={16} className="text-muted ml-auto shrink-0" />
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div id="dashboard-links" className="mt8 space-y-2">
+          {links.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-3 p-3.5 rounded-[12px] bg-[var(--surface)] border-2 border-line hover:border-[var(--bark)] transition-colors"
+            >
+              <Icon size={20} className="text-muted shrink-0" />
+              <span className="font-medium text-bark">{label}</span>
+              <ChevronRight size={18} className="text-muted ml-auto shrink-0" />
+            </Link>
+          ))}
         </div>
       )}
     </div>
