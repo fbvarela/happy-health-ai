@@ -125,9 +125,10 @@
 
 ## Phase 8 — Launch (2–3 days)
 
-- [ ] Neon production migration + branch-per-preview integration
-- [ ] `.env.example` complete; env vars on Vercel (OAuth, AI, R2)
-- [ ] Test login flow, chat limits in production
+- [x] `db:migrate:prod` script + migrations verified (00–06 in repo); production runs via `DATABASE_URL` override
+- [x] `.env.example` complete (OAuth, Calendar, AI, R2); Vercel env verified (SESSION_SECRET fixed — was empty, caused prod 500s)
+- [ ] `docs/LAUNCH.md` — operational checklist: prod migration, env, GCP redirects, smoke test, soft launch
+- [ ] Run `docs/LAUNCH.md` steps (prod migration, consent screen publish, smoke tests) — manual
 - [ ] Announce + soft launch
 
 ---

@@ -10,6 +10,7 @@ npm run build        # next build --webpack (PWA requires webpack, NOT Turbopack
 npm run start        # next start
 npm run lint         # eslint . (Next 16 removed `next lint`)
 npm run db:migrate   # node scripts/run-migration.mjs (runs src/db/migrations/*.sql against DATABASE_URL)
+npm run db:migrate:prod  # same, but for production (set DATABASE_URL in your shell)
 ```
 
 ## Architecture

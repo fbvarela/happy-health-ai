@@ -7,7 +7,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
-    "db:migrate": "node scripts/run-migration.mjs"
+    "db:migrate": "node scripts/run-migration.mjs",
+    "db:migrate:prod": "DATABASE_URL=\"$DATABASE_URL\" node scripts/run-migration.mjs"
   },
   "dependencies": {
     "@ai-sdk/cohere": "^4.0.27",
