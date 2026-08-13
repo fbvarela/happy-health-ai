@@ -25,7 +25,7 @@ export default function DashboardLinks({ patientId }) {
     <div className="mt16">
       <button
         type="button"
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--surface)] border border-line text-bark hover:border-sun transition-colors mx-auto"
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--surface)] border border-line text-bark hover:border-sun transition-colors"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={open ? "Ocultar más opciones" : "Mostrar más opciones"}
