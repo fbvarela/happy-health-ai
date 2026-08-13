@@ -10,6 +10,7 @@ import QuickRecord from "@/components/vitals/QuickRecord";
 import DayTimeline from "@/components/vitals/DayTimeline";
 import NotesSection from "@/components/vitals/NotesSection";
 import SettingsForm from "@/components/vitals/SettingsForm";
+import GallerySection from "@/components/uploads/GallerySection";
 import { useApp } from "@/context/AppContext";
 
 const ROLE_LABELS = { owner: "Propietario", caregiver: "Cuidador", viewer: "Lector" };
@@ -223,6 +224,10 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
             </ul>
           </div>
         )}
+      </div>
+
+      <div className="mt16">
+        <GallerySection patientId={patient.id} canEdit={canEdit} />
       </div>
 
       <div className="mt16">

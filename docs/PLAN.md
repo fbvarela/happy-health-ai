@@ -97,15 +97,15 @@
 
 ## Phase 6 — Uploads (4–6 days)
 
-**Goal:** photo/video storage (DECIDED §9.5: Cloudflare R2 + Stream, like `garden`).
+**Goal:** photo/video storage (DECIDED §9.5: Cloudflare R2 private bucket, garden pattern).
 
-- [ ] R2 buckets + presigned URL upload endpoint (garden pattern)
-- [ ] `uploads` table; gallery per patient; private access (signed URLs)
-- [ ] Photo carrousel per issue/wound, ordered by datetime, arrows + per-photo notes (SPEC §4.5)
-- [ ] Thumbnails (Cloudflare Images variants or manual); video via Cloudflare Stream (or skip video v1)
-- [ ] Quota enforcement (§9.8 — size limits, no tier quotas)
+- [x] `06-uploads.sql`: journal cols (`updated_at`/`deleted_at`); `uploads` table from 00-schema
+- [x] `lib/r2.js`: private-bucket client, signed URLs (read) + presigned PUT (upload), key namespacing `health/[userId]/...`
+- [x] Upload API (Pattern B, direct-to-R2): `signed-url` (validate type/size ≤15 MB) → client PUT → `confirm` (DB row); `GET` list with signed URLs; `PATCH` caption; `DELETE` soft-delete + R2 cleanup
+- [x] Gallery + carrousel UI on patient page: upload button, photo grid, viewer with arrows + per-photo caption (SPEC §4.5), caption edit, in-app delete
+- [x] `.env.example` R2 vars (private bucket only)
 
-**Exit criteria:** photo upload → thumbnail → visible in gallery, private URL.
+**Exit criteria:** photo upload → visible in gallery → signed URL view (pending R2 creds on Vercel + live test).
 
 ---
 

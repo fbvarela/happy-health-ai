@@ -72,6 +72,15 @@ export const api = {
     request(`/patients/${id}/appointments/${apptId}`, { method: "DELETE" }),
   calendarStatus: () => request("/calendar/status", { cache: "no-store" }),
   calendarDisconnect: () => request("/calendar/disconnect", { method: "POST" }),
+  requestUploadUrl: (id, data) =>
+    request(`/patients/${id}/uploads/signed-url`, { method: "POST", body: JSON.stringify(data) }),
+  confirmUpload: (id, data) =>
+    request(`/patients/${id}/uploads/confirm`, { method: "POST", body: JSON.stringify(data) }),
+  getUploads: (id) => request(`/patients/${id}/uploads`, { cache: "no-store" }),
+  updateUpload: (id, uploadId, data) =>
+    request(`/patients/${id}/uploads/${uploadId}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteUpload: (id, uploadId) =>
+    request(`/patients/${id}/uploads/${uploadId}`, { method: "DELETE" }),
 };
 
 export default api;
