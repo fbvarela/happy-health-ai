@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ChevronLeft, ChevronRight, ShieldAlert, Trash2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Save, ShieldAlert, Trash2, X } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -22,14 +22,33 @@ export default function IncidentsList({ incidents, showAll = false }) {
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [busyActive, setBusyActive] = useState(false);
+  const [editingCaption, setEditingCaption] = useState(false);
+  const [captionDraft, setCaptionDraft] = useState("");
+  const [savingCaption, setSavingCaption] = useState(false);
 
   const openDetail = async (patientId, incidentId) => {
     try {
       const data = await api.getIncident(patientId, incidentId);
       setOpenIncident({ ...data, patientId });
       setViewerIdx(0);
+      setEditingCaption(false);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const saveCaption = async () => {
+    const photo = openIncident?.photos?.[viewerIdx];
+    if (!photo) return;
+    setSavingCaption(true);
+    try {
+      await api.updateUpload(openIncident.patientId, photo.id, { caption: captionDraft });
+      setEditingCaption(false);
+      await openDetail(openIncident.patientId, openIncident.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingCaption(false);
     }
   };
 
@@ -170,15 +189,49 @@ export default function IncidentsList({ incidents, showAll = false }) {
                   </button>
                   <p className="text-sm text-muted">
                     {viewerIdx + 1} / {photos.length}
-                    {current.caption ? ` · ${current.caption}` : ""}
                   </p>
                   <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === photos.length - 1}
                     onClick={() => setViewerIdx((i) => Math.min(photos.length - 1, i + 1))} aria-label="Siguiente">
                     <ChevronRight size={20} />
                   </button>
                 </div>
-                <div className="flex gap-2 mt2">
-                  <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto}>
+
+                {/* Photo note */}
+                {editingCaption ? (
+                  <div className="mt3">
+                    <textarea
+                      className="input min-h-[70px]"
+                      value={captionDraft}
+                      onChange={(e) => setCaptionDraft(e.target.value)}
+                      placeholder="Nota de esta foto (evolución, observaciones…)"
+                    />
+                    <div className="flex gap-2 mt2">
+                      <button type="button" className="btn btn-sm btn-primary" onClick={saveCaption} disabled={savingCaption}>
+                        <Save size={14} className="mr-1" /> {savingCaption ? "Guardando…" : "Guardar"}
+                      </button>
+                      <button type="button" className="btn btn-sm btn-ghost" onClick={() => setEditingCaption(false)}>
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  current.caption && (
+                    <p className="text-sm text-bark mt3 whitespace-pre-wrap bg-[var(--bg)] border border-line rounded-[10px] p-3">
+                      {current.caption}
+                    </p>
+                  )
+                )}
+
+                <div className="flex items-center gap-2 mt2">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => { setCaptionDraft(current.caption ?? ""); setEditingCaption(true); }}
+                    aria-label="Añadir nota a la foto"
+                  >
+                    <Pencil size={14} className="mr-1" /> {current.caption ? "Editar nota" : "Añadir nota"}
+                  </button>
+                  <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
                     <Trash2 size={14} />
                   </button>
                 </div>
