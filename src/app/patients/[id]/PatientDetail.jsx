@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Send, Trash2, UserPlus } from "lucide-react";
+import { Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
@@ -153,7 +153,7 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
         </div>
         {canEdit && (
           <button type="button" className="btn btn-ghost" onClick={() => setEditOpen(true)}>
-            Editar
+            <Pencil size={16} className="mr-1" /> Editar
           </button>
         )}
       </div>
