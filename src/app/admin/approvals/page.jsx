@@ -62,7 +62,7 @@ function ApprovalsList({ adminEmail }) {
               <p className="text-muted text-sm truncate">{u.email}</p>
               <p className="text-xs text-muted mt-1">Registrado el {formatDate(u.created_at)}</p>
             </div>
-            <div className="flex gap-2 shrink-0">
+            <div className="flex flex-row gap-2 shrink-0">
               <button
                 type="button"
                 className="btn btn-primary"

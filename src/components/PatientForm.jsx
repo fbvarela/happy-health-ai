@@ -76,7 +76,7 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {isEdit && (
-        <div className="flex items-center gap-4">
+        <div className="flex flex-row items-center gap-4">
           <button
             type="button"
             className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-line bg-[var(--bg)]"

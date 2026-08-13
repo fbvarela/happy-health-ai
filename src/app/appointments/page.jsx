@@ -164,7 +164,7 @@ export default function AppointmentsPage() {
 
   return (
     <div className="page">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Citas</h1>
           <p className="page-sub">Consultas médicas y calendario</p>
@@ -185,7 +185,7 @@ export default function AppointmentsPage() {
 
       {/* Calendar connect */}
       <div className="card mt16">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-row items-center justify-between gap-3">
           <div>
             <div className="card-title">Google Calendar</div>
             <p className="dog-meta">

@@ -264,6 +264,8 @@
 }
 
 .page-title {
+  font-family: "Fraunces", serif;
+  font-weight: 700;
   font-size: 2rem;
   color: var(--bark);
   margin-bottom: 6px;

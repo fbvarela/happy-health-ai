@@ -89,7 +89,7 @@ export default function GallerySection({ patientId, canEdit }) {
 
   return (
     <div className="card">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <div className="card-title">Fotos y archivos</div>
         {canEdit && (
           <label className="btn btn-sm btn-primary cursor-pointer" aria-label="Añadir archivo">
@@ -141,7 +141,7 @@ export default function GallerySection({ patientId, canEdit }) {
               <img src={current.url} alt={current.caption || "foto"} className="w-full rounded-[10px]" />
             )}
 
-            <div className="flex items-center justify-between mt3">
+            <div className="flex flex-row items-center justify-between mt3">
               {uploads.length > 1 ? (
                 <button
                   type="button"

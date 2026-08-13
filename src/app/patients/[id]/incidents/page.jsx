@@ -205,13 +205,18 @@ export default function IncidentsListPage() {
 
   return (
     <div className="page">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Incidentes</h1>
           <p className="page-sub">Todos los incidentes registrados.</p>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
-          <Plus size={16} className="mr-1" /> Añadir
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => setShowForm(true)}
+          aria-label="Añadir incidente"
+        >
+          <Plus size={20} />
         </button>
       </div>
 
@@ -243,7 +248,7 @@ export default function IncidentsListPage() {
                   className="w-full text-left bg-surface rounded-[14px] border-[1.5px] border-line p-4 hover:border-sun transition-colors"
                   onClick={() => openDetail(inc.id)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-row items-center gap-3">
                     <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-bark truncate">{inc.title}</p>
@@ -301,7 +306,7 @@ export default function IncidentsListPage() {
             {photoFiles.length > 0 && (
               <ul className="mt2 space-y-1">
                 {photoFiles.map((f, i) => (
-                  <li key={i} className="flex items-center justify-between text-xs text-muted">
+                  <li key={i} className="flex flex-row items-center justify-between text-xs text-muted">
                     <span className="truncate">{f.name}</span>
                     <button type="button" onClick={() => setPhotoFiles((prev) => prev.filter((_, j) => j !== i))} aria-label="Quitar">
                       <X size={14} />
@@ -344,7 +349,7 @@ export default function IncidentsListPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={current.url} alt={current.caption || "foto"} className="w-full rounded-[10px]" />
                 )}
-                <div className="flex items-center justify-between mt3">
+                <div className="flex flex-row items-center justify-between mt3">
                   <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === 0}
                     onClick={() => setViewerIdx((i) => Math.max(0, i - 1))} aria-label="Anterior">
                     <ChevronLeft size={20} />
@@ -366,7 +371,7 @@ export default function IncidentsListPage() {
                       onChange={(e) => setCaptionDraft(e.target.value)}
                       placeholder="Nota de esta foto (evolución, observaciones…)"
                     />
-                    <div className="flex gap-2 mt2">
+                    <div className="flex flex-row gap-2 mt2">
                       <button type="button" className="btn btn-sm btn-primary" onClick={saveCaption} disabled={savingCaption}>
                         <Save size={14} className="mr-1" /> {savingCaption ? "Guardando…" : "Guardar"}
                       </button>
@@ -383,14 +388,14 @@ export default function IncidentsListPage() {
                   )
                 )}
 
-                <div className="flex items-center gap-2 mt2">
+                <div className="flex flex-row items-center gap-2 mt2">
                   <button
                     type="button"
                     className="btn btn-sm btn-ghost"
                     onClick={() => { setCaptionDraft(current.caption ?? ""); setEditingCaption(true); }}
-                    aria-label="Añadir nota a la foto"
+                    aria-label={current.caption ? "Editar nota" : "Añadir nota"}
                   >
-                    <Pencil size={14} className="mr-1" /> {current.caption ? "Editar nota" : "Añadir nota"}
+                    <Pencil size={14} />
                   </button>
                   <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
                     <Trash2 size={16} />

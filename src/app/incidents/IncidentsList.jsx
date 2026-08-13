@@ -93,7 +93,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
 
   return (
     <div className="page">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Incidentes</h1>
           <p className="page-sub">{showAll ? "Todos los incidentes." : "Incidentes activos."}</p>
@@ -123,7 +123,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
                   className="w-full text-left bg-surface rounded-[14px] border-[1.5px] border-line p-4 hover:border-sun transition-colors"
                   onClick={() => openDetail(inc.patient_id, inc.id)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-row items-center gap-3">
                     <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-bark truncate">
@@ -158,7 +158,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
             )}
 
             {/* Active toggle */}
-            <label className="flex items-center gap-2 text-sm mb-2">
+            <label className="flex flex-row items-center gap-2 text-sm mb-2">
               <input type="checkbox" checked={Boolean(openIncident.active)} onChange={toggleActive} disabled={busyActive} className="w-5 h-5" />
               Activo
             </label>
@@ -182,7 +182,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={current.url} alt={current.caption || "foto"} className="w-full rounded-[10px]" />
                 )}
-                <div className="flex items-center justify-between mt3">
+                <div className="flex flex-row items-center justify-between mt3">
                   <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === 0}
                     onClick={() => setViewerIdx((i) => Math.max(0, i - 1))} aria-label="Anterior">
                     <ChevronLeft size={20} />
@@ -205,7 +205,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
                       onChange={(e) => setCaptionDraft(e.target.value)}
                       placeholder="Nota de esta foto (evolución, observaciones…)"
                     />
-                    <div className="flex gap-2 mt2">
+                    <div className="flex flex-row gap-2 mt2">
                       <button type="button" className="btn btn-sm btn-primary" onClick={saveCaption} disabled={savingCaption}>
                         <Save size={14} className="mr-1" /> {savingCaption ? "Guardando…" : "Guardar"}
                       </button>
@@ -222,14 +222,14 @@ export default function IncidentsList({ incidents, showAll = false }) {
                   )
                 )}
 
-                <div className="flex items-center gap-2 mt2">
+                <div className="flex flex-row items-center gap-2 mt2">
                   <button
                     type="button"
                     className="btn btn-sm btn-ghost"
                     onClick={() => { setCaptionDraft(current.caption ?? ""); setEditingCaption(true); }}
-                    aria-label="Añadir nota a la foto"
+                    aria-label={current.caption ? "Editar nota" : "Añadir nota"}
                   >
-                    <Pencil size={14} className="mr-1" /> {current.caption ? "Editar nota" : "Añadir nota"}
+                    <Pencil size={14} />
                   </button>
                   <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
                     <Trash2 size={14} />

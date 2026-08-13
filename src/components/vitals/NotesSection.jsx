@@ -93,7 +93,7 @@ export default function NotesSection({ patientId, canEdit }) {
 
   return (
     <div className="card">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <div className="card-title">Notas de cuidado</div>
         {canEdit && (
           <button type="button" className="btn btn-sm btn-primary" onClick={openNew}>
@@ -110,12 +110,12 @@ export default function NotesSection({ patientId, canEdit }) {
         <ul className="mt4 space-y-3">
           {notes.map((n) => (
             <li key={n.id} className="border border-line rounded-[12px] p-4">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-row items-center justify-between mb-1">
+                <div className="flex flex-row items-center gap-2">
                   <span className="badge badge-sun">{CATEGORY_LABELS[n.category] ?? n.category}</span>
                   {n.pinned && <span className="text-xs text-muted">📌 Fijada</span>}
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-row items-center gap-3">
                   <span className="text-xs text-muted">{fmtDate(n.created_at)}</span>
                   {canEdit && (
                     <>
@@ -167,7 +167,7 @@ export default function NotesSection({ patientId, canEdit }) {
             <label className="input-label">Nota</label>
             <textarea className="input min-h-[100px]" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Cómo está hoy, qué le ha dicho el médico…" required />
           </div>
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex flex-row items-center gap-2 text-sm text-muted">
             <input type="checkbox" checked={form.pinned} onChange={(e) => setForm({ ...form, pinned: e.target.checked })} className="w-5 h-5" />
             Fijar en el panel principal
           </label>

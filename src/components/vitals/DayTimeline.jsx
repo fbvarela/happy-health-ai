@@ -98,7 +98,7 @@ export default function DayTimeline({ patientId, canEdit }) {
 
   return (
     <div className="card">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <div className="card-title">Historial reciente</div>
         <Link href={`/patients/${patientId}/history`} className="text-sm text-muted hover:text-bark">
           Ver tendencias →
@@ -118,7 +118,7 @@ export default function DayTimeline({ patientId, canEdit }) {
             const isToday = new Date(vitals[0].measured_at).toDateString() === new Date().toDateString();
             return (
               <div key={day}>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-row items-center justify-between mb-2">
                   <p className={`text-sm font-semibold ${isToday ? "text-bark" : "text-muted"}`}>
                     {day}
                     {isToday ? " · Hoy" : ""}
@@ -148,7 +148,7 @@ export default function DayTimeline({ patientId, canEdit }) {
                           </p>
                         ) : null}
                       </div>
-                      <div className="flex items-center gap-3 shrink-0">
+                      <div className="flex flex-row items-center gap-3 shrink-0">
                         <span className="text-xs text-muted">{fmt(v.measured_at)}</span>
                         {canEdit && (
                           <>

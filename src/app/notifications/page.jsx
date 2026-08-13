@@ -57,7 +57,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="page">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Notificaciones</h1>
           <p className="page-sub">
@@ -98,7 +98,7 @@ export default function NotificationsPage() {
                     <Icon size={20} style={{ color: meta.color }} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex flex-row items-center justify-between gap-2">
                       <p className={`text-sm ${n.read_at ? "text-muted" : "text-bark font-semibold"}`}>
                         {n.title}
                       </p>
