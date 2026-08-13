@@ -4,34 +4,44 @@ import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getEnv } from "@/lib/env";
 
 /**
- * R2 private storage (health data is sensitive — never public URLs, SPEC §9.5/D2).
- * Follows the Happy Factory `garden` pattern but uses the PRIVATE bucket + signed URLs.
+ * R2 storage (health data is sensitive — SPEC §9.5/D2).
+ * Follows the Happy Factory `garden` pattern: accepts both env naming styles
+ * (canonical `R2_ACCOUNT_ID`/`R2_BUCKET_NAME` and legacy `CLOUDFLARE_ACCOUNT_ID`),
+ * so the same vars as other apps work unchanged.
  */
+function accountId() {
+  return getEnv("R2_ACCOUNT_ID") || getEnv("CLOUDFLARE_ACCOUNT_ID");
+}
+
+function accessKey() {
+  return getEnv("R2_ACCESS_KEY_ID");
+}
+
+function secretKey() {
+  return getEnv("R2_SECRET_ACCESS_KEY");
+}
+
+function getBucket() {
+  return getEnv("R2_PRIVATE_BUCKET_NAME") || getEnv("R2_BUCKET_NAME") || "happyfactory-private";
+}
+
 let _r2;
 export function getR2() {
   if (!_r2) {
     _r2 = new S3Client({
       region: "auto",
-      endpoint: `https://${getEnv("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
+      endpoint: `https://${accountId()}.r2.cloudflarestorage.com`,
       credentials: {
-        accessKeyId: getEnv("R2_ACCESS_KEY_ID"),
-        secretAccessKey: getEnv("R2_SECRET_ACCESS_KEY"),
+        accessKeyId: accessKey(),
+        secretAccessKey: secretKey(),
       },
     });
   }
   return _r2;
 }
 
-function getBucket() {
-  return getEnv("R2_PRIVATE_BUCKET_NAME") ?? "happyfactory-private";
-}
-
 export function hasR2Creds() {
-  return Boolean(
-    getEnv("R2_ACCOUNT_ID") &&
-    getEnv("R2_ACCESS_KEY_ID") &&
-    getEnv("R2_SECRET_ACCESS_KEY")
-  );
+  return Boolean(accountId() && accessKey() && secretKey());
 }
 
 /** Keys must be namespaced: [app]/[userId]/[timestamp]-[uuid].[ext] */
