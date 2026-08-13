@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, Bell, CalendarDays, HeartPulse, LayoutDashboard, Menu } from "lucide-react";
+import { Activity, Bell, CalendarDays, HeartPulse, LayoutDashboard, Menu, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
@@ -37,6 +37,10 @@ export default function NavBar() {
             </Link>
           ))}
           <div className="sidebar-section">Actividad</div>
+          <Link href="/incidents" className={`sideitem ${pathname === "/incidents" ? "active" : ""}`}>
+            <span className="sideitem-icon"><ShieldAlert size={18} /></span>
+            <span className="sideitem-label">Incidentes</span>
+          </Link>
           <Link href="/notifications" className={`sideitem ${pathname === "/notifications" ? "active" : ""}`}>
             <span className="sideitem-icon"><Bell size={18} /></span>
             <span className="sideitem-label">Notificaciones</span>

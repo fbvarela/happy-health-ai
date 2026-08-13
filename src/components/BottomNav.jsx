@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, HeartPulse, LayoutDashboard, MoreHorizontal } from "lucide-react";
+import { CalendarDays, HeartPulse, LayoutDashboard, MoreHorizontal, ShieldAlert } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 const ITEMS = [
   { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
   { href: "/patients", label: "Pacientes", icon: HeartPulse },
+  { href: "/incidents", label: "Incidentes", icon: ShieldAlert },
   { href: "/appointments", label: "Citas", icon: CalendarDays },
 ];
 

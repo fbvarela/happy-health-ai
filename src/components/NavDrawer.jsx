@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, FileText, HeartPulse, LogOut, Settings } from "lucide-react";
+import { Bell, FileText, HeartPulse, LogOut, Settings, ShieldAlert } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
@@ -25,6 +25,9 @@ export default function NavDrawer() {
         <div className="drawer-divider" />
         <Link href="/patients" className="drawer-item" onClick={() => setDrawerOpen(false)}>
           <FileText size={18} /> Notas de cuidado
+        </Link>
+        <Link href="/incidents" className="drawer-item" onClick={() => setDrawerOpen(false)}>
+          <ShieldAlert size={18} /> Incidentes
         </Link>
         <Link href="/notifications" className="drawer-item" onClick={() => setDrawerOpen(false)}>
           <Bell size={18} /> Notificaciones
