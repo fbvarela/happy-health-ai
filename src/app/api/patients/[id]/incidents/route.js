@@ -4,7 +4,7 @@ import { requirePatientAccess } from "@/lib/patients";
 
 /**
  * GET /api/patients/[id]/incidents — list (viewer+).
- * POST /api/patients/[id]/incidents — create (caregiver+). { title, notes }
+ * POST /api/patients/[id]/incidents — create (caregiver+). { title, notes, severity }
  */
 export async function GET(request, { params }) {
   const user = await getCurrentUser();
@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
   if (!access) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const rows = await sql`
-    SELECT i.id, i.title, i.notes, i.created_at, i.updated_at,
+    SELECT i.id, i.title, i.notes, i.severity, i.created_at, i.updated_at,
            u.name AS created_by_name,
            COUNT(uploads.id)::int AS photo_count
     FROM incidents i
@@ -46,11 +46,12 @@ export async function POST(request, { params }) {
   const title = (body.title ?? "").trim();
   if (!title) return Response.json({ error: "El título es obligatorio" }, { status: 400 });
   const notes = (body.notes ?? "").trim() || null;
+  const severity = ["green", "orange", "red"].includes(body.severity) ? body.severity : "green";
 
   const [row] = await sql`
-    INSERT INTO incidents (patient_id, title, notes, created_by)
-    VALUES (${id}, ${title}, ${notes}, ${user.id})
-    RETURNING id, title, notes, created_at
+    INSERT INTO incidents (patient_id, title, notes, severity, created_by)
+    VALUES (${id}, ${title}, ${notes}, ${severity}, ${user.id})
+    RETURNING id, title, notes, severity, created_at
   `;
   return Response.json(row, { status: 201 });
 }

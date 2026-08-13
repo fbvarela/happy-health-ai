@@ -1,45 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  AlertTriangle, ChevronLeft, ChevronRight, ImagePlus, Plus, ShieldAlert, Trash2, X,
+  ChevronLeft, ChevronRight, ImagePlus, Plus, ShieldAlert, Trash2, X,
 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
 const SEVERITY = {
-  green: { label: "Leve", color: "#2e7d4f", dot: "#2e7d4f" },
-  orange: { label: "Moderado", color: "#c97f1e", dot: "#c97f1e" },
-  red: { label: "Grave", color: "#d94f3d", dot: "#d94f3d" },
+  green: { label: "Leve", color: "#2e7d4f" },
+  orange: { label: "Moderado", color: "#c97f1e" },
+  red: { label: "Grave", color: "#d94f3d" },
 };
 const SEVERITY_ORDER = ["red", "orange", "green"];
 
 /**
- * IncidentsSection — report incidents (wounds, issues) with severity, photos
- * and notes (SPEC §13). Lucide icons, carrousel viewer, severity badge.
+ * /patients/[id]/incidents — list ALL incidents for a patient (menu option).
+ * ?open=<id> opens that incident's carrousel (e.g. from the dashboard tile).
  */
-export default function IncidentsSection({ patientId, canEdit }) {
+export default function IncidentsListPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const patientId = params.id;
+
   const [incidents, setIncidents] = useState(null);
   const [error, setError] = useState("");
+  const [openIncident, setOpenIncident] = useState(null);
+  const [viewerIdx, setViewerIdx] = useState(0);
+
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
   const [severity, setSeverity] = useState("green");
   const [photoFiles, setPhotoFiles] = useState([]);
   const [busy, setBusy] = useState(false);
-
-  const [openIncident, setOpenIncident] = useState(null);
-  const [viewerIdx, setViewerIdx] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
 
-  const load = () => {
-    api
-      .getIncidents(patientId)
-      .then((rows) => setIncidents(rows ?? []))
-      .catch((err) => setError(err.message));
-  };
+  const canEdit = true; // role checked server-side per API; UI allows, API enforces
+
+  const load = useCallback(async () => {
+    try {
+      const rows = await api.getIncidents(patientId);
+      setIncidents(rows ?? []);
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [patientId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,13 +60,42 @@ export default function IncidentsSection({ patientId, canEdit }) {
     return () => { cancelled = true; };
   }, [patientId]);
 
+  const openDetail = async (incidentId) => {
+    try {
+      const data = await api.getIncident(patientId, incidentId);
+      setOpenIncident(data);
+      setViewerIdx(0);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Open incident from ?open= param
+  useEffect(() => {
+    const id = searchParams.get("open");
+    if (!id) return;
+    let cancelled = false;
+    api
+      .getIncident(patientId, id)
+      .then((data) => {
+        if (!cancelled) {
+          setOpenIncident(data);
+          setViewerIdx(0);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const createIncident = async (e) => {
     e.preventDefault();
     setBusy(true);
     setError("");
     try {
       const inc = await api.createIncident(patientId, { title, notes, severity });
-      // Upload any photos selected at creation
       for (const file of photoFiles) {
         const { uploadUrl, key, kind } = await api.requestUploadUrl(patientId, {
           filename: file.name,
@@ -80,21 +119,11 @@ export default function IncidentsSection({ patientId, canEdit }) {
       setPhotoFiles([]);
       setShowForm(false);
       await openDetail(inc.id);
-      load();
+      await load();
     } catch (err) {
       setError(err.message);
     } finally {
       setBusy(false);
-    }
-  };
-
-  const openDetail = async (incidentId) => {
-    try {
-      const data = await api.getIncident(patientId, incidentId);
-      setOpenIncident(data);
-      setViewerIdx(0);
-    } catch (err) {
-      setError(err.message);
     }
   };
 
@@ -103,7 +132,6 @@ export default function IncidentsSection({ patientId, canEdit }) {
     e.target.value = "";
     if (!file || !openIncident) return;
     setUploading(true);
-    setError("");
     try {
       const { uploadUrl, key, kind } = await api.requestUploadUrl(patientId, {
         filename: file.name,
@@ -144,7 +172,7 @@ export default function IncidentsSection({ patientId, canEdit }) {
       await api.deleteIncident(patientId, confirmDelete);
       setConfirmDelete(null);
       setOpenIncident(null);
-      load();
+      await load();
     } catch (err) {
       setError(err.message);
       setConfirmDelete(null);
@@ -157,78 +185,69 @@ export default function IncidentsSection({ patientId, canEdit }) {
   const current = photos[viewerIdx];
 
   return (
-    <div className="card">
+    <div className="page">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <ShieldAlert size={20} className="text-bark" />
-          <div className="card-title">Incidentes</div>
+        <div>
+          <h1 className="page-title">Incidentes</h1>
+          <p className="page-sub">Todos los incidentes registrados.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href={`/patients/${patientId}/incidents`} className="btn btn-sm btn-ghost">
-            Ver todos
-          </Link>
-          {canEdit && (
-            <button type="button" className="btn btn-sm btn-primary" onClick={() => setShowForm(true)}>
-              <Plus size={16} className="mr-1" /> Añadir
-            </button>
-          )}
-        </div>
+        <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
+          <Plus size={16} className="mr-1" /> Añadir
+        </button>
       </div>
 
-      {error && <p className="text-red-600 text-sm mt2">{error}</p>}
+      <Link href={`/patients/${patientId}`} className="text-sm text-muted hover:text-bark inline-block mt2">
+        ← Volver al paciente
+      </Link>
+
+      {error && <p className="text-red-600 text-sm mt4">{error}</p>}
 
       {incidents.length === 0 ? (
-        <p className="dog-meta mt4">Registra incidentes: heridas, caídas u otros con fotos y notas.</p>
+        <div className="card mt16">
+          <div className="empty-state">
+            <div className="empty-icon"><ShieldAlert size={28} /></div>
+            <p>No hay incidentes registrados.</p>
+          </div>
+        </div>
       ) : (
-        <ul className="mt4 space-y-2">
-          {incidents.slice(0, 4).map((inc) => {
+        <ul className="mt16 space-y-2">
+          {incidents.map((inc) => {
             const sev = SEVERITY[inc.severity] ?? SEVERITY.green;
             return (
               <li key={inc.id}>
                 <button
                   type="button"
-                  className="w-full text-left bg-[var(--bg)] border border-line rounded-[12px] p-3 hover:border-sun transition-colors"
+                  className="w-full text-left bg-surface rounded-[14px] border-[1.5px] border-line p-4 hover:border-sun transition-colors"
                   onClick={() => openDetail(inc.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <span
-                      className="w-3 h-3 rounded-full shrink-0"
-                      style={{ background: sev.dot }}
-                      aria-label={`Severidad: ${sev.label}`}
-                    />
+                    <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-bark truncate">{inc.title}</p>
                       <p className="text-xs text-muted">
                         {inc.photo_count} foto{inc.photo_count === 1 ? "" : "s"} ·{" "}
-                        {new Date(inc.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}
+                        {new Date(inc.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
                     </div>
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${sev.color}20`, color: sev.color }}>
                       {sev.label}
                     </span>
+                    <span className="text-2xl text-muted">›</span>
                   </div>
                 </button>
               </li>
             );
           })}
-          {incidents.length > 4 && (
-            <li>
-              <Link href={`/patients/${patientId}/incidents`} className="btn btn-sm btn-ghost w-full justify-center">
-                Ver los {incidents.length} incidentes
-              </Link>
-            </li>
-          )}
         </ul>
       )}
 
-      {/* New incident form — with severity + photos */}
+      {/* New incident form */}
       <Modal open={showForm} onClose={() => setShowForm(false)} title="Añadir incidente">
         <form onSubmit={createIncident} className="space-y-4">
           <div>
             <label className="input-label">Título</label>
             <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej. Herida en la mano" required />
           </div>
-
           <div>
             <label className="input-label">Gravedad</label>
             <div className="flex gap-2">
@@ -245,12 +264,10 @@ export default function IncidentsSection({ patientId, canEdit }) {
               ))}
             </div>
           </div>
-
           <div>
             <label className="input-label">Notas</label>
             <textarea className="input min-h-[80px]" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Descripción…" />
           </div>
-
           <div>
             <label className="input-label">Fotos</label>
             <label className="btn btn-ghost btn-sm cursor-pointer w-full justify-center border border-dashed border-line">
@@ -271,7 +288,6 @@ export default function IncidentsSection({ patientId, canEdit }) {
               </ul>
             )}
           </div>
-
           <div className="flex gap-3 pt-2">
             <button type="submit" className="btn btn-primary" disabled={busy}>
               {busy ? "Creando…" : "Crear incidente"}
@@ -319,7 +335,7 @@ export default function IncidentsSection({ patientId, canEdit }) {
                     <ChevronRight size={20} />
                   </button>
                 </div>
-                {canEdit && (
+                {(
                   <div className="flex gap-2 mt2">
                     <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto}>
                       <Trash2 size={14} className="mr-1" /> Quitar foto
@@ -329,20 +345,16 @@ export default function IncidentsSection({ patientId, canEdit }) {
               </div>
             )}
 
-            {canEdit && (
-              <label className={`btn btn-sm btn-primary mt3 cursor-pointer ${uploading ? "opacity-60" : ""}`}>
-                <Plus size={14} className="mr-1" /> {uploading ? "Subiendo…" : "Añadir foto"}
-                <input type="file" className="hidden" accept="image/*" onChange={addPhoto} disabled={uploading} />
-              </label>
-            )}
+            <label className={`btn btn-sm btn-primary mt3 cursor-pointer ${uploading ? "opacity-60" : ""}`}>
+              <Plus size={14} className="mr-1" /> {uploading ? "Subiendo…" : "Añadir foto"}
+              <input type="file" className="hidden" accept="image/*" onChange={addPhoto} disabled={uploading} />
+            </label>
 
-            {canEdit && (
-              <div className="mt4">
-                <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(openIncident)}>
-                  <Trash2 size={14} className="mr-1" /> Eliminar incidente
-                </button>
-              </div>
-            )}
+            <div className="mt4">
+              <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(openIncident)}>
+                <Trash2 size={14} className="mr-1" /> Eliminar incidente
+              </button>
+            </div>
           </div>
         )}
       </Modal>

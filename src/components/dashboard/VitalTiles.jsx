@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ShieldAlert } from "lucide-react";
 import api from "@/utils/api";
 
 /**
@@ -9,6 +10,7 @@ import api from "@/utils/api";
  * - Latest value per measure, color-coded green/orange/red by thresholds
  * - Click a tile → patient history (timeline of that measure)
  * - Poo: one-tap increment, no modal — creates a log entry with current time
+ * - Incidents tile: count + worst-severity color; click → last incident
  */
 
 function tileColor(type, value, s) {
@@ -21,8 +23,9 @@ function tileColor(type, value, s) {
 }
 
 const COLORS = { green: "#2e7d4f", orange: "#c97f1e", red: "#d94f3d" };
+const SEVERITY_RANK = { red: 3, orange: 2, green: 1 };
 
-export default function VitalTiles({ latest, settings, patientId }) {
+export default function VitalTiles({ latest, settings, patientId, incidents = [] }) {
   const router = useRouter();
   const [pooCount, setPooCount] = useState(latest.poo?.value ? Number(latest.poo.value) : 0);
   const [pooSaving, setPooSaving] = useState(false);
@@ -48,6 +51,17 @@ export default function VitalTiles({ latest, settings, patientId }) {
       setPooSaving(false);
     }
   };
+
+  // Incidents summary: count + worst severity + latest id
+  let incidentColor = COLORS.green;
+  if (incidents.length > 0) {
+    let worst = "green";
+    for (const inc of incidents) {
+      if (SEVERITY_RANK[inc.severity] > SEVERITY_RANK[worst]) worst = inc.severity;
+    }
+    incidentColor = COLORS[worst];
+  }
+  const latestIncident = incidents[0] ?? null;
 
   return (
     <div className="stats-row-grid mt16" style={{ "--stats-cols": 4 }}>
@@ -86,6 +100,21 @@ export default function VitalTiles({ latest, settings, patientId }) {
         </div>
         <div className="stat-label">Deposición +1</div>
       </button>
+
+      {/* Incidents tile */}
+      <button
+        type="button"
+        className="stat-block cursor-pointer text-left"
+        onClick={() => latestIncident && router.push(`/patients/${patientId}/incidents?open=${latestIncident.id}`)}
+        aria-label="Ver incidentes"
+      >
+        <div className="stat-number" style={{ color: incidents.length ? incidentColor : "#c2b5a3" }}>
+          <ShieldAlert size={20} style={{ display: "inline", marginRight: 4, verticalAlign: -3 }} />
+          {incidents.length}
+        </div>
+        <div className="stat-label">Incidentes</div>
+      </button>
     </div>
   );
 }
+

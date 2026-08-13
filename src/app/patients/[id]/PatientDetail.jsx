@@ -145,6 +145,19 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
       </div>
 
       <Link
+        href={`/patients/${patient.id}/incidents`}
+        className="block card mt16 hover:border-sun transition-colors"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="card-title">Incidentes</div>
+            <p className="dog-meta">Heridas, caídas y otros con fotos.</p>
+          </div>
+          <span className="text-2xl">›</span>
+        </div>
+      </Link>
+
+      <Link
         href="/appointments"
         className="block card mt16 hover:border-sun transition-colors"
       >

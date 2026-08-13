@@ -41,6 +41,7 @@ export default async function DashboardPage({ searchParams }) {
   // Latest value per metric (last 24h) + thresholds for color coding
   let latest = {};
   let settings = {};
+  let incidents = [];
   if (active) {
     const since = getYesterday();
     const rows = await sql`
@@ -60,6 +61,14 @@ export default async function DashboardPage({ searchParams }) {
       bp_sys_max: 140, bp_dia_max: 90,
       ...(s ?? {}),
     };
+
+    incidents = await sql`
+      SELECT id, severity, created_at
+      FROM incidents
+      WHERE patient_id = ${active.id} AND deleted_at IS NULL
+      ORDER BY created_at DESC
+      LIMIT 20
+    `;
   }
 
   return (
@@ -105,7 +114,12 @@ export default async function DashboardPage({ searchParams }) {
             </div>
           )}
 
-          <VitalTiles latest={latest} settings={settings} patientId={active.id} />
+          <VitalTiles
+            latest={latest}
+            settings={settings}
+            patientId={active.id}
+            incidents={incidents}
+          />
 
           <div className="mt16">
             <IncidentsSection patientId={active.id} canEdit={active.role !== "viewer"} />
