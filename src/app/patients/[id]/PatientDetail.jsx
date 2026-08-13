@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Mail, Send, Trash2, UserPlus } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
 import QuickRecord from "@/components/vitals/QuickRecord";
 import DayTimeline from "@/components/vitals/DayTimeline";
 import NotesSection from "@/components/vitals/NotesSection";
-import SettingsForm from "@/components/vitals/SettingsForm";
 import GallerySection from "@/components/uploads/GallerySection";
 import { useApp } from "@/context/AppContext";
 
@@ -41,6 +41,37 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
   const [localMembers, setLocalMembers] = useState(members);
   const [refresh, setRefresh] = useState(0);
   const [memberErr, setMemberErr] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [caregivers, setCaregivers] = useState([]);
+  const [pickUserId, setPickUserId] = useState("");
+  const [pickRole, setPickRole] = useState("caregiver");
+
+  const openAdd = async () => {
+    setAddOpen(true);
+    setPickUserId("");
+    setPickRole("caregiver");
+    setMemberErr("");
+    try {
+      const rows = await api.getCaregivers(patient.id);
+      setCaregivers(rows ?? []);
+    } catch (err) {
+      setMemberErr(err.message);
+    }
+  };
+
+  const handleAddMember = async (e) => {
+    e.preventDefault();
+    if (!pickUserId) return;
+    setMemberErr("");
+    try {
+      await api.addMember(patient.id, { userId: pickUserId, role: pickRole });
+      const added = caregivers.find((c) => c.id === pickUserId);
+      setLocalMembers((prev) => [...prev, { id: pickUserId, role: pickRole, name: added?.name ?? added?.email ?? "", email: added?.email ?? "" }]);
+      setAddOpen(false);
+    } catch (err) {
+      setMemberErr(err.message);
+    }
+  };
 
   const handleRoleChange = async (userId, role) => {
     setMemberErr("");
@@ -146,6 +177,19 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
       </div>
 
       <Link
+        href={`/patients/${patient.id}/incidents`}
+        className="block card mt16 hover:border-sun transition-colors"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="card-title">Incidentes</div>
+            <p className="dog-meta">Heridas, caídas y otros con fotos.</p>
+          </div>
+          <span className="text-2xl">›</span>
+        </div>
+      </Link>
+
+      <Link
         href="/appointments"
         className="block card mt16 hover:border-sun transition-colors"
       >
@@ -158,20 +202,19 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
         </div>
       </Link>
 
-      {canEdit && (
-        <div className="mt16">
-          <SettingsForm patientId={patient.id} />
-        </div>
-      )}
-
       {/* Members */}
       <div className="card mt16">
         <div className="flex items-center justify-between">
           <div className="card-title">Quién cuida</div>
           {isOwner && (
-            <button type="button" className="btn btn-sm btn-primary" onClick={() => setInviteOpen(true)}>
-              + Invitar
-            </button>
+            <div className="flex items-center gap-2">
+              <button type="button" className="btn btn-sm btn-ghost" onClick={openAdd}>
+                <UserPlus size={16} className="mr-1" /> Añadir cuidador
+              </button>
+              <button type="button" className="btn btn-sm btn-primary" onClick={() => setInviteOpen(true)}>
+                <Mail size={16} className="mr-1" /> Invitar por email
+              </button>
+            </div>
           )}
         </div>
         <ul className="mt4 space-y-2">
@@ -251,8 +294,8 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
               </div>
             </div>
           ) : (
-            <button type="button" className="btn btn-danger w-full" onClick={handleDelete}>
-              Eliminar paciente
+            <button type="button" className="btn btn-danger" onClick={handleDelete}>
+              <Trash2 size={16} className="mr-1" /> Eliminar paciente
             </button>
           )}
         </div>
@@ -267,6 +310,40 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
             router.refresh();
           }}
         />
+      </Modal>
+
+      <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Añadir cuidador">
+        <form onSubmit={handleAddMember} className="space-y-4">
+          {memberErr && <p className="text-red-600 text-sm">{memberErr}</p>}
+          <div>
+            <label className="input-label">Cuidador</label>
+            {caregivers.length === 0 ? (
+              <p className="text-sm text-muted">No hay más usuarios aprobados para añadir.</p>
+            ) : (
+              <select className="input" value={pickUserId} onChange={(e) => setPickUserId(e.target.value)} required>
+                <option value="">— Selecciona —</option>
+                {caregivers.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name || c.email}</option>
+                ))}
+              </select>
+            )}
+          </div>
+          <div>
+            <label className="input-label">Rol</label>
+            <select className="input" value={pickRole} onChange={(e) => setPickRole(e.target.value)}>
+              <option value="caregiver">Cuidador (edita)</option>
+              <option value="viewer">Lector (solo ver)</option>
+            </select>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={!pickUserId}>
+              <UserPlus size={18} className="mr-1" /> Añadir
+            </button>
+            <button type="button" className="btn btn-ghost" onClick={() => setAddOpen(false)}>
+              Cancelar
+            </button>
+          </div>
+        </form>
       </Modal>
 
       <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invitar a cuidar">
@@ -294,7 +371,7 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={busy}>
-              {busy ? "Enviando…" : "Enviar invitación"}
+              <Send size={18} className="mr-1" /> {busy ? "Enviando…" : "Enviar invitación"}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => setInviteOpen(false)}>
               Cerrar

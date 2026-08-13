@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Activity, Droplets, HeartPulse, Thermometer, CircleDot, Save } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
 const METRIC_BUTTONS = [
-  { key: "spo2", label: "SpO₂", hint: "%", symbol: "🫁" },
-  { key: "hr", label: "Frecuencia", hint: "ppm", symbol: "💓" },
-  { key: "bp", label: "Tensión", hint: "mmHg", symbol: "🩺" },
-  { key: "temp", label: "Temperatura", hint: "°C", symbol: "🌡️" },
-  { key: "poo", label: "Deposición", hint: "nº", symbol: "🟤" },
+  { key: "spo2", label: "SpO₂", hint: "%", icon: Droplets },
+  { key: "hr", label: "Frecuencia", hint: "ppm", icon: HeartPulse },
+  { key: "bp", label: "Tensión", hint: "mmHg", icon: Activity },
+  { key: "temp", label: "Temperatura", hint: "°C", icon: Thermometer },
+  { key: "poo", label: "Deposición", hint: "nº", icon: CircleDot },
 ];
 
 /**
@@ -85,18 +86,21 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
     <div className="card">
       <div className="card-title">Registrar</div>
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt4">
-        {METRIC_BUTTONS.map((m) => (
-          <button
-            key={m.key}
-            type="button"
-            className="btn btn-ghost flex-col justify-center items-center py-4 min-h-[88px]"
-            onClick={() => open(m.key)}
-          >
-            <span className="text-2xl mb-1">{m.symbol}</span>
-            <span className="font-semibold text-sm">{m.label}</span>
-            <span className="text-xs text-muted">{m.hint}</span>
-          </button>
-        ))}
+        {METRIC_BUTTONS.map((m) => {
+          const Icon = m.icon;
+          return (
+            <button
+              key={m.key}
+              type="button"
+              className="btn btn-ghost flex-col justify-center items-center py-4 min-h-[88px]"
+              onClick={() => open(m.key)}
+            >
+              <Icon className="mb-1" size={26} />
+              <span className="font-semibold text-sm">{m.label}</span>
+              <span className="text-xs text-muted">{m.hint}</span>
+            </button>
+          );
+        })}
       </div>
 
       <Modal open={Boolean(active)} onClose={() => setActive(null)} title={`Registrar ${labels[active] ?? ""}`}>
@@ -143,7 +147,7 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
 
           <div className="flex gap-3 pt-2">
             <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={saving}>
-              {saving ? "Guardando…" : "Guardar"}
+              <Save size={18} className="mr-1" /> {saving ? "Guardando…" : "Guardar"}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => setActive(null)}>
               Cancelar

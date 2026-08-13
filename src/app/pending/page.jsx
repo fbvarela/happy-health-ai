@@ -1,5 +1,6 @@
 "use client";
 
+import { LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function PendingPage() {
@@ -24,7 +25,7 @@ export default function PendingPage() {
           )}
         </p>
         <button type="button" className="btn btn-ghost" onClick={logout}>
-          Cerrar sesión
+          <LogOut size={16} className="mr-1" /> Cerrar sesión
         </button>
       </div>
     </div>

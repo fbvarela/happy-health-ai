@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Pin, PinOff, Save } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -118,7 +119,13 @@ export default function NotesSection({ patientId, canEdit }) {
                   <span className="text-xs text-muted">{fmtDate(n.created_at)}</span>
                   {canEdit && (
                     <>
-                      <button type="button" className="text-xs text-muted hover:text-bark" onClick={() => togglePin(n)}>
+                      <button
+                        type="button"
+                        className="text-xs text-muted hover:text-bark inline-flex items-center gap-1"
+                        onClick={() => togglePin(n)}
+                        aria-label={n.pinned ? "Quitar pin" : "Fijar"}
+                      >
+                        {n.pinned ? <PinOff size={13} /> : <Pin size={13} />}
                         {n.pinned ? "Quitar pin" : "Fijar"}
                       </button>
                       <button type="button" className="text-xs text-muted hover:text-bark" onClick={() => openEdit(n)}>
@@ -157,7 +164,7 @@ export default function NotesSection({ patientId, canEdit }) {
           </label>
           <div className="flex gap-3 pt-2">
             <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={busy}>
-              {busy ? "Guardando…" : "Guardar"}
+              <Save size={18} className="mr-1" /> {busy ? "Guardando…" : "Guardar"}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)}>
               Cancelar

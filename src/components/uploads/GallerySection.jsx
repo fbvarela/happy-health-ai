@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Trash2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Save, Trash2, X } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -203,7 +203,7 @@ export default function GallerySection({ patientId, canEdit }) {
           />
           <div className="flex gap-3">
             <button type="button" className="btn btn-primary flex-1 justify-center" onClick={saveCaption}>
-              Guardar
+              <Save size={16} className="mr-1" /> Guardar
             </button>
             <button type="button" className="btn btn-ghost flex-1 justify-center" onClick={() => setEditCaptionFor(null)}>
               Cancelar

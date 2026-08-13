@@ -316,3 +316,6 @@ Proposed per platform conventions: directory `happy-health-ai` ✓, domain `heal
 - Measure limits should be removed from dashboard. It might be a menu option.
 - Buttons with text should not occupy the whole screen, the text should fit the element with no spaces.
 - use lucide icons instead of text as much as possible.
+- the patient name should be bigger and have a thumbnail associated.
+- also on the dashboard should show the option of adding an incident: wound, or any other, that allows to upload photos and see them on a carousel with manual notes.
+> **Done (impl/dashboard-refinements):** measures on top color-coded (green/orange/red) via `VitalTiles`; poo one-tap increment → log entry; thresholds moved to `/settings`; full-width text buttons removed; lucide icons in QuickRecord + empty states; PWA icons regenerated to a red cross (`scripts/gen-icons.mjs`); **patient name bigger + thumbnail** (avatar via R2, `07-incidents.sql`); **incidents on the dashboard** (wound/other with photo upload + carrousel + manual notes, `IncidentsSection`).

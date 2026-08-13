@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { CalendarDays, CalendarPlus, Trash2 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -219,7 +220,7 @@ export default function AppointmentsPage() {
       ) : patients.length === 0 ? (
         <div className="card mt16">
           <div className="empty-state">
-            <div className="empty-icon">📅</div>
+            <div className="empty-icon"><CalendarDays size={28} /></div>
             <p>Primero crea un paciente para poder registrar citas.</p>
             <Link href="/patients" className="btn btn-primary mt4">Ir a pacientes</Link>
           </div>
@@ -227,7 +228,7 @@ export default function AppointmentsPage() {
       ) : appts.length === 0 ? (
         <div className="card mt16">
           <div className="empty-state">
-            <div className="empty-icon">🗓️</div>
+            <div className="empty-icon"><CalendarDays size={28} /></div>
             <p>No hay citas todavía. Pulsa <b>+ Nueva</b> para crear la primera.</p>
           </div>
         </div>
@@ -258,7 +259,7 @@ export default function AppointmentsPage() {
                             Editar
                           </button>
                           <button type="button" className="btn btn-sm btn-danger" onClick={() => setConfirmDelete(a)}>
-                            Eliminar
+                            <Trash2 size={14} className="mr-1" /> Eliminar
                           </button>
                         </div>
                       )}
@@ -311,7 +312,7 @@ export default function AppointmentsPage() {
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={busy}>
-              {busy ? "Guardando…" : editing ? "Guardar cambios" : "Crear cita"}
+              <CalendarPlus size={18} className="mr-1" /> {busy ? "Guardando…" : editing ? "Guardar cambios" : "Crear cita"}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)}>
               Cancelar

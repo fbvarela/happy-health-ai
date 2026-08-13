@@ -68,11 +68,20 @@ export async function POST(request, { params }) {
   const kind = VALID_KINDS.includes(body.kind) ? body.kind : "photo";
   const caption = (body.caption ?? "").trim() || null;
   const size = Number(body.size_bytes) || null;
+  const incidentId = body.incident_id || null;
+
+  // If referencing an incident, verify it belongs to this patient
+  if (incidentId) {
+    const [inc] = await sql`
+      SELECT id FROM incidents WHERE id = ${incidentId} AND patient_id = ${id} AND deleted_at IS NULL
+    `;
+    if (!inc) return Response.json({ error: "Incidente no encontrado" }, { status: 404 });
+  }
 
   const [row] = await sql`
-    INSERT INTO uploads (patient_id, kind, r2_key, mime_type, size_bytes, caption, created_by)
-    VALUES (${id}, ${kind}, ${key}, ${body.mime_type ?? null}, ${size}, ${caption}, ${user.id})
-    RETURNING id, kind, r2_key, mime_type, size_bytes, caption, created_at
+    INSERT INTO uploads (patient_id, kind, r2_key, mime_type, size_bytes, caption, created_by, incident_id)
+    VALUES (${id}, ${kind}, ${key}, ${body.mime_type ?? null}, ${size}, ${caption}, ${user.id}, ${incidentId})
+    RETURNING id, kind, r2_key, mime_type, size_bytes, caption, created_at, incident_id
   `;
   return Response.json(row, { status: 201 });
 }
