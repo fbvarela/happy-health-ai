@@ -33,7 +33,7 @@ export default function PatientsPage() {
 
   return (
     <div className="page">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-row items-center justify-between mb-4">
         <div>
           <h1 className="page-title">Pacientes</h1>
           <p className="page-sub">Las personas a las que cuidas</p>
@@ -62,7 +62,7 @@ export default function PatientsPage() {
           {patients.map((p) => (
             <Link key={p.id} href={`/patients/${p.id}`} className="block">
               <div className="bg-surface rounded-[14px] border-[1.5px] border-line p-5 hover:border-sun transition-colors">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-row items-center justify-between">
                   <div>
                     <p className="font-semibold text-bark text-[1.1rem]">{p.name}</p>
                     {p.dob && (

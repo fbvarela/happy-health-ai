@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ChevronLeft, ChevronRight, ShieldAlert, Trash2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Save, ShieldAlert, Trash2, X } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
+import BackButton from "@/components/BackButton";
 
 const SEVERITY = {
   green: { label: "Leve", color: "#2e7d4f" },
@@ -22,14 +23,33 @@ export default function IncidentsList({ incidents, showAll = false }) {
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [busyActive, setBusyActive] = useState(false);
+  const [editingCaption, setEditingCaption] = useState(false);
+  const [captionDraft, setCaptionDraft] = useState("");
+  const [savingCaption, setSavingCaption] = useState(false);
 
   const openDetail = async (patientId, incidentId) => {
     try {
       const data = await api.getIncident(patientId, incidentId);
       setOpenIncident({ ...data, patientId });
       setViewerIdx(0);
+      setEditingCaption(false);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const saveCaption = async () => {
+    const photo = openIncident?.photos?.[viewerIdx];
+    if (!photo) return;
+    setSavingCaption(true);
+    try {
+      await api.updateUpload(openIncident.patientId, photo.id, { caption: captionDraft });
+      setEditingCaption(false);
+      await openDetail(openIncident.patientId, openIncident.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingCaption(false);
     }
   };
 
@@ -74,7 +94,8 @@ export default function IncidentsList({ incidents, showAll = false }) {
 
   return (
     <div className="page">
-      <div className="flex items-center justify-between">
+      <BackButton fallback="/dashboard" label="Volver" />
+      <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Incidentes</h1>
           <p className="page-sub">{showAll ? "Todos los incidentes." : "Incidentes activos."}</p>
@@ -104,7 +125,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
                   className="w-full text-left bg-surface rounded-[14px] border-[1.5px] border-line p-4 hover:border-sun transition-colors"
                   onClick={() => openDetail(inc.patient_id, inc.id)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-row items-center gap-3">
                     <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-bark truncate">
@@ -139,7 +160,7 @@ export default function IncidentsList({ incidents, showAll = false }) {
             )}
 
             {/* Active toggle */}
-            <label className="flex items-center gap-2 text-sm mb-2">
+            <label className="flex flex-row items-center gap-2 text-sm mb-2">
               <input type="checkbox" checked={Boolean(openIncident.active)} onChange={toggleActive} disabled={busyActive} className="w-5 h-5" />
               Activo
             </label>
@@ -163,22 +184,56 @@ export default function IncidentsList({ incidents, showAll = false }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={current.url} alt={current.caption || "foto"} className="w-full rounded-[10px]" />
                 )}
-                <div className="flex items-center justify-between mt3">
+                <div className="flex flex-row items-center justify-between mt3">
                   <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === 0}
                     onClick={() => setViewerIdx((i) => Math.max(0, i - 1))} aria-label="Anterior">
                     <ChevronLeft size={20} />
                   </button>
                   <p className="text-sm text-muted">
                     {viewerIdx + 1} / {photos.length}
-                    {current.caption ? ` · ${current.caption}` : ""}
                   </p>
                   <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === photos.length - 1}
                     onClick={() => setViewerIdx((i) => Math.min(photos.length - 1, i + 1))} aria-label="Siguiente">
                     <ChevronRight size={20} />
                   </button>
                 </div>
-                <div className="flex gap-2 mt2">
-                  <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto}>
+
+                {/* Photo note */}
+                {editingCaption ? (
+                  <div className="mt3">
+                    <textarea
+                      className="input min-h-[70px]"
+                      value={captionDraft}
+                      onChange={(e) => setCaptionDraft(e.target.value)}
+                      placeholder="Nota de esta foto (evolución, observaciones…)"
+                    />
+                    <div className="flex flex-row gap-2 mt2">
+                      <button type="button" className="btn btn-sm btn-primary" onClick={saveCaption} disabled={savingCaption}>
+                        <Save size={14} className="mr-1" /> {savingCaption ? "Guardando…" : "Guardar"}
+                      </button>
+                      <button type="button" className="btn btn-sm btn-ghost" onClick={() => setEditingCaption(false)}>
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  current.caption && (
+                    <p className="text-sm text-bark mt3 whitespace-pre-wrap bg-[var(--bg)] border border-line rounded-[10px] p-3">
+                      {current.caption}
+                    </p>
+                  )
+                )}
+
+                <div className="flex flex-row items-center gap-2 mt2">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => { setCaptionDraft(current.caption ?? ""); setEditingCaption(true); }}
+                    aria-label={current.caption ? "Editar nota" : "Añadir nota"}
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
                     <Trash2 size={14} />
                   </button>
                 </div>

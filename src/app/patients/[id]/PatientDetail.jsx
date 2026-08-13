@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
+import { CalendarDays, Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
+import BackButton from "@/components/BackButton";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
@@ -139,13 +140,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
   return (
     <div className="page">
-      <Link
-        href="/patients"
-        aria-label="Volver a pacientes"
-        className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] rounded-full bg-[var(--surface)] border-2 border-line text-bark hover:border-[var(--bark)] transition-colors mb-4"
-      >
-        <ArrowLeft size={20} />
-      </Link>
+      <BackButton fallback="/patients" label="Volver" />
 
       <div className="flex flex-row items-center gap-4">
         {avatarUrl ? (
@@ -209,7 +204,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         href={`/patients/${patient.id}/incidents`}
         className="block card mt16 hover:border-sun transition-colors"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-row items-center justify-between">
           <div>
             <div className="card-title">Incidentes</div>
             <p className="dog-meta">Heridas, caídas y otros con fotos.</p>
@@ -222,7 +217,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         href="/appointments"
         className="block card mt16 hover:border-sun transition-colors"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-row items-center justify-between">
           <div>
             <div className="card-title">Citas</div>
             <p className="dog-meta">Consultas médicas y calendario.</p>
@@ -233,27 +228,27 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       {/* Members */}
       <div className="card mt16">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-row items-center justify-between">
           <div className="card-title">Quién cuida</div>
           {isOwner && (
-            <div className="flex items-center gap-2">
-              <button type="button" className="btn btn-sm btn-ghost" onClick={openAdd}>
-                <UserPlus size={16} className="mr-1" /> Añadir cuidador
+            <div className="flex flex-row items-center gap-2">
+              <button type="button" className="btn btn-sm btn-ghost" onClick={openAdd} aria-label="Añadir cuidador">
+                <UserPlus size={18} />
               </button>
-              <button type="button" className="btn btn-sm btn-primary" onClick={() => setInviteOpen(true)}>
-                <Mail size={16} className="mr-1" /> Invitar por email
+              <button type="button" className="btn btn-sm btn-primary" onClick={() => setInviteOpen(true)} aria-label="Invitar por email">
+                <Mail size={18} />
               </button>
             </div>
           )}
         </div>
         <ul className="mt4 space-y-2">
           {localMembers.map((m) => (
-            <li key={m.id} className="flex items-center justify-between py-2 border-b border-line last:border-0 gap-3">
+            <li key={m.id} className="flex flex-row items-center justify-between py-2 border-b border-line last:border-0 gap-3">
               <div className="min-w-0">
                 <p className="font-medium text-bark truncate">{m.name || m.email}</p>
                 {m.name && <p className="text-xs text-muted truncate">{m.email}</p>}
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-row items-center gap-2 shrink-0">
                 {isOwner && m.role === "owner" ? (
                   <span className="badge badge-sun">{m.name || m.email}</span>
                 ) : isOwner ? (
@@ -365,8 +360,8 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
             </select>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={!pickUserId}>
-              <UserPlus size={18} className="mr-1" /> Añadir
+            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={!pickUserId} aria-label="Añadir cuidador">
+              <UserPlus size={18} />
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => setAddOpen(false)}>
               Cancelar

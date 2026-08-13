@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import BackButton from "@/components/BackButton";
 import {
-  ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, Plus, ShieldAlert, Trash2, X,
+  ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Save, ShieldAlert, Trash2, X,
 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
@@ -39,6 +39,9 @@ export default function IncidentsListPage() {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [editingCaption, setEditingCaption] = useState(false);
+  const [captionDraft, setCaptionDraft] = useState("");
+  const [savingCaption, setSavingCaption] = useState(false);
 
   const canEdit = true; // role checked server-side per API; UI allows, API enforces
 
@@ -65,8 +68,24 @@ export default function IncidentsListPage() {
       const data = await api.getIncident(patientId, incidentId);
       setOpenIncident(data);
       setViewerIdx(0);
+      setEditingCaption(false);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const saveCaption = async () => {
+    const photo = openIncident?.photos?.[viewerIdx];
+    if (!photo) return;
+    setSavingCaption(true);
+    try {
+      await api.updateUpload(patientId, photo.id, { caption: captionDraft });
+      setEditingCaption(false);
+      await openDetail(openIncident.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingCaption(false);
     }
   };
 
@@ -169,7 +188,7 @@ export default function IncidentsListPage() {
   const handleDelete = async () => {
     if (!confirmDelete) return;
     try {
-      await api.deleteIncident(patientId, confirmDelete);
+      await api.deleteIncident(patientId, confirmDelete.id);
       setConfirmDelete(null);
       setOpenIncident(null);
       await load();
@@ -186,23 +205,21 @@ export default function IncidentsListPage() {
 
   return (
     <div className="page">
-      <div className="flex items-center justify-between">
+      <BackButton fallback={`/patients/${patientId}`} label="Volver" />
+      <div className="flex flex-row items-center justify-between">
         <div>
           <h1 className="page-title">Incidentes</h1>
           <p className="page-sub">Todos los incidentes registrados.</p>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
-          <Plus size={16} className="mr-1" /> Añadir
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => setShowForm(true)}
+          aria-label="Añadir incidente"
+        >
+          <Plus size={20} />
         </button>
       </div>
-
-      <Link
-        href={`/patients/${patientId}`}
-        aria-label="Volver al paciente"
-        className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] rounded-full bg-[var(--surface)] border-2 border-line text-bark hover:border-[var(--bark)] transition-colors mt2"
-      >
-        <ArrowLeft size={20} />
-      </Link>
 
       {error && <p className="text-red-600 text-sm mt4">{error}</p>}
 
@@ -224,7 +241,7 @@ export default function IncidentsListPage() {
                   className="w-full text-left bg-surface rounded-[14px] border-[1.5px] border-line p-4 hover:border-sun transition-colors"
                   onClick={() => openDetail(inc.id)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-row items-center gap-3">
                     <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-bark truncate">{inc.title}</p>
@@ -282,7 +299,7 @@ export default function IncidentsListPage() {
             {photoFiles.length > 0 && (
               <ul className="mt2 space-y-1">
                 {photoFiles.map((f, i) => (
-                  <li key={i} className="flex items-center justify-between text-xs text-muted">
+                  <li key={i} className="flex flex-row items-center justify-between text-xs text-muted">
                     <span className="truncate">{f.name}</span>
                     <button type="button" onClick={() => setPhotoFiles((prev) => prev.filter((_, j) => j !== i))} aria-label="Quitar">
                       <X size={14} />
@@ -325,27 +342,58 @@ export default function IncidentsListPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={current.url} alt={current.caption || "foto"} className="w-full rounded-[10px]" />
                 )}
-                <div className="flex items-center justify-between mt3">
+                <div className="flex flex-row items-center justify-between mt3">
                   <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === 0}
                     onClick={() => setViewerIdx((i) => Math.max(0, i - 1))} aria-label="Anterior">
                     <ChevronLeft size={20} />
                   </button>
                   <p className="text-sm text-muted">
                     {viewerIdx + 1} / {photos.length}
-                    {current.caption ? ` · ${current.caption}` : ""}
                   </p>
                   <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === photos.length - 1}
                     onClick={() => setViewerIdx((i) => Math.min(photos.length - 1, i + 1))} aria-label="Siguiente">
                     <ChevronRight size={20} />
                   </button>
                 </div>
-                {(
-                  <div className="flex gap-2 mt2">
-                    <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
-                      <Trash2 size={16} />
-                    </button>
+
+                {editingCaption ? (
+                  <div className="mt3">
+                    <textarea
+                      className="input min-h-[70px]"
+                      value={captionDraft}
+                      onChange={(e) => setCaptionDraft(e.target.value)}
+                      placeholder="Nota de esta foto (evolución, observaciones…)"
+                    />
+                    <div className="flex flex-row gap-2 mt2">
+                      <button type="button" className="btn btn-sm btn-primary" onClick={saveCaption} disabled={savingCaption}>
+                        <Save size={14} className="mr-1" /> {savingCaption ? "Guardando…" : "Guardar"}
+                      </button>
+                      <button type="button" className="btn btn-sm btn-ghost" onClick={() => setEditingCaption(false)}>
+                        Cancelar
+                      </button>
+                    </div>
                   </div>
+                ) : (
+                  current.caption && (
+                    <p className="text-sm text-bark mt3 whitespace-pre-wrap bg-[var(--bg)] border border-line rounded-[10px] p-3">
+                      {current.caption}
+                    </p>
+                  )
                 )}
+
+                <div className="flex flex-row items-center gap-2 mt2">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => { setCaptionDraft(current.caption ?? ""); setEditingCaption(true); }}
+                    aria-label={current.caption ? "Editar nota" : "Añadir nota"}
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
             )}
 

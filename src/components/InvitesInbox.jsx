@@ -43,7 +43,7 @@ export default function InvitesInbox() {
     <div className="card mt16 border-sun">
       <div className="card-title">Invitaciones</div>
       {invites.map((inv) => (
-        <div key={inv.id} className="flex items-center justify-between gap-3 py-3 border-b border-line last:border-0">
+        <div key={inv.id} className="flex flex-row items-center justify-between gap-3 py-3 border-b border-line last:border-0">
           <div className="min-w-0">
             <p className="font-medium text-bark truncate">{inv.patient_name}</p>
             <p className="text-xs text-muted">

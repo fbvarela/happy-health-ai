@@ -15,7 +15,7 @@ export default function DashboardCharts({ patientId }) {
     <div className="mt16">
       <button
         type="button"
-        className="flex items-center justify-center w-11 h-11 min-h-[44px] rounded-[12px] bg-[var(--surface)] border-2 border-[var(--bark)] text-bark hover:bg-[var(--bg)] transition-colors"
+        className="flex flex-row items-center justify-center w-11 h-11 min-h-[44px] rounded-[12px] bg-[var(--surface)] border-2 border-[var(--bark)] text-bark hover:bg-[var(--bg)] transition-colors"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={open ? "Ocultar gráficas" : "Mostrar gráficas"}
