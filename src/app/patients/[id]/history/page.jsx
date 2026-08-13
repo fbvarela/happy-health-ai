@@ -1,8 +1,8 @@
 import Link from "next/link";
 import VitalCharts from "@/components/vitals/VitalCharts";
 
-export default function PatientHistoryPage({ params }) {
-  const { id } = params;
+export default async function PatientHistoryPage({ params }) {
+  const { id } = await params;
   return (
     <div className="page">
       <Link href={`/patients/${id}`} className="text-sm text-muted hover:text-bark inline-block mb-3">
