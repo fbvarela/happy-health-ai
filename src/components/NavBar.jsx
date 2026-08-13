@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarDays, HeartPulse, LayoutDashboard, Menu } from "lucide-react";
+import { Activity, Bell, CalendarDays, HeartPulse, LayoutDashboard, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
+import { useUnreadCount } from "@/hooks/useUnreadCount";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
@@ -16,6 +17,7 @@ export default function NavBar() {
   const pathname = usePathname();
   const { currentUser, logout } = useAuth();
   const { setDrawerOpen } = useApp();
+  const { count } = useUnreadCount();
 
   return (
     <>
@@ -35,6 +37,11 @@ export default function NavBar() {
             </Link>
           ))}
           <div className="sidebar-section">Actividad</div>
+          <Link href="/notifications" className={`sideitem ${pathname === "/notifications" ? "active" : ""}`}>
+            <span className="sideitem-icon"><Bell size={18} /></span>
+            <span className="sideitem-label">Notificaciones</span>
+            {count > 0 && <span className="ml-auto badge badge-sun">{count}</span>}
+          </Link>
           <Link href="/dashboard" className={`sideitem ${pathname === "/" ? "active" : ""}`}>
             <span className="sideitem-icon"><Activity size={18} /></span>
             <span className="sideitem-label">Constantes</span>
@@ -53,14 +60,24 @@ export default function NavBar() {
       {/* Mobile top bar */}
       <div className="nav-mobile-bar">
         <div className="nav-logo">Happy Health</div>
-        <button
-          type="button"
-          aria-label="Open menu"
-          className="btn btn-sm btn-sun"
-          onClick={() => setDrawerOpen(true)}
-        >
-          <Menu size={18} />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link href="/notifications" aria-label="Notificaciones" className="relative btn btn-sm btn-ghost">
+            <Bell size={18} />
+            {count > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--sun)] text-white text-[10px] flex items-center justify-center font-semibold">
+                {count > 9 ? "9+" : count}
+              </span>
+            )}
+          </Link>
+          <button
+            type="button"
+            aria-label="Open menu"
+            className="btn btn-sm btn-sun"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <Menu size={18} />
+          </button>
+        </div>
       </div>
     </>
   );

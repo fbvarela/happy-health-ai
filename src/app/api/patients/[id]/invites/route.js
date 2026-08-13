@@ -47,6 +47,14 @@ export async function POST(request, { params }) {
     await sql`
       INSERT INTO patient_members (patient_id, user_id, role) VALUES (${id}, ${existing.id}, ${role})
     `;
+    const [patient] = await sql`SELECT name FROM patients WHERE id = ${id}`;
+    await sql`
+      INSERT INTO notifications (user_id, type, title, body, data)
+      VALUES (${existing.id}, 'share_invite',
+              'Nueva invitación',
+              'Te han añadido como ${role === "viewer" ? "lector" : "cuidador"} de ${patient?.name ?? "un paciente"}.',
+              ${JSON.stringify({ patient_id: id, role })})
+    `;
     return Response.json({ ok: true, direct: true, email });
   }
 

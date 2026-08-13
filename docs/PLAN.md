@@ -111,10 +111,13 @@
 
 ## Phase 7 — Notifications & Polish (3–5 days)
 
-- [ ] Notification center page + unread badge (in-app only — DECIDED §9.9 / D5; no web push in v1)
-- [ ] Final ES (es-ES) language pass — single locale (DECIDED §9.11 / D9)
-- [ ] Responsive QA at 320/375/768/1440, Lighthouse, PWA offline check
-- [ ] Legal pages: privacy policy (health data, GDPR — §9.7), disclaimer
+- [x] Notification center page (`/notifications`, ES) — list, read states, empty state, mark one/all read
+- [x] Notifications API: list, mark-read, read-all, unread-count
+- [x] Unread badge in NavBar (desktop + mobile bell) + NavDrawer (`useUnreadCount`, polls 30s)
+- [x] Share-invite notification when an existing user is added to a patient
+- [x] Legal pages: `/privacy` + `/disclaimer` (ES, GDPR §9.7, no-medical-advice)
+- [x] ES pass: template "Cargando…", layout description, remaining strings (in-app only — DECIDED §9.9 / D5; no web push in v1)
+- [ ] Responsive QA at 320/375/768/1440, Lighthouse, PWA offline check (manual)
 
 **Exit criteria:** Lighthouse ≥ 90, PWA installs offline, ES+EN toggle.
 

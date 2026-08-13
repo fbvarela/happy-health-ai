@@ -3,7 +3,7 @@ import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "Happy Health AI",
-  description: "Track the health of the people you care for",
+  description: "Lleva el control de la salud de tus mayores",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

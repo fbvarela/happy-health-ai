@@ -81,6 +81,10 @@ export const api = {
     request(`/patients/${id}/uploads/${uploadId}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteUpload: (id, uploadId) =>
     request(`/patients/${id}/uploads/${uploadId}`, { method: "DELETE" }),
+  getNotifications: () => request("/notifications", { cache: "no-store" }),
+  getUnreadCount: () => request("/notifications/unread-count", { cache: "no-store" }),
+  markNotificationRead: (id) => request(`/notifications/${id}/read`, { method: "POST" }),
+  markAllRead: () => request("/notifications/read-all", { method: "POST" }),
 };
 
 export default api;

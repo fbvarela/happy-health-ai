@@ -30,7 +30,7 @@ export default function Template({ children }) {
           height: "100vh",
         }}
       >
-        <div>Loading...</div>
+        <div>Cargando…</div>
       </div>
     );
   }
