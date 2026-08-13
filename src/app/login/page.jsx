@@ -4,15 +4,10 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-const TEST_LOGIN_ENABLED = process.env.NEXT_PUBLIC_ENABLE_TEST_LOGIN === "true";
-const TEST_LOGIN_EMAIL = process.env.NEXT_PUBLIC_TEST_LOGIN_EMAIL ?? "";
-
 function LoginForm() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const [loading, setLoading] = useState(false);
-  const [testLoading, setTestLoading] = useState(false);
-  const [testError, setTestError] = useState("");
 
   const handleGoogle = () => {
     setLoading(true);
@@ -20,29 +15,6 @@ function LoginForm() {
     // redirect to Google — client-side routing cannot follow that flow.
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.assign("/api/auth/google");
-  };
-
-  const handleTestLogin = async () => {
-    setTestLoading(true);
-    setTestError("");
-    try {
-      const res = await fetch("/api/auth/test-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: TEST_LOGIN_EMAIL }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error ?? "Test login falló");
-      }
-      // Full page load so the freshly-set session cookie is applied on the
-      // server render (router.push races the Set-Cookie).
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.assign("/dashboard");
-    } catch (err) {
-      setTestError(err.message);
-      setTestLoading(false);
-    }
   };
 
   return (
@@ -87,20 +59,6 @@ function LoginForm() {
             </>
           )}
         </button>
-
-        {TEST_LOGIN_ENABLED && (
-          <div className="mt-4">
-            <button
-              type="button"
-              onClick={handleTestLogin}
-              disabled={testLoading}
-              className="btn btn-ghost w-full justify-center"
-            >
-              {testLoading ? "Entrando…" : "Test login (dev)"}
-            </button>
-            {testError && <p className="text-red-600 text-sm mt-2 text-center">{testError}</p>}
-          </div>
-        )}
 
         <p className="text-xs text-muted mt-6 text-center">
           Esta aplicación guarda información de salud. Nunca la compartimos y
