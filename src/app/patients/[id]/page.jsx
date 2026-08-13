@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import { requirePatientAccess } from "@/lib/patients";
+import { getSignedFileUrl } from "@/lib/r2";
 import { redirect } from "next/navigation";
 import PatientDetail from "./PatientDetail";
 
@@ -15,9 +16,18 @@ export default async function PatientPage({ params }) {
   if (!access) redirect("/dashboard");
 
   const [patient] = await sql`
-    SELECT id, name, dob, gender, allergies, medications, created_at, updated_at
+    SELECT id, name, dob, gender, allergies, medications, avatar_key, created_at, updated_at
     FROM patients WHERE id = ${id}
   `;
+
+  let avatarUrl = null;
+  if (patient?.avatar_key) {
+    try {
+      avatarUrl = await getSignedFileUrl(patient.avatar_key);
+    } catch {
+      avatarUrl = null;
+    }
+  }
 
   const members = await sql`
     SELECT pm.role, u.id, u.email, u.name
@@ -37,6 +47,7 @@ export default async function PatientPage({ params }) {
   return (
     <PatientDetail
       patient={patient}
+      avatarUrl={avatarUrl}
       myRole={access.role}
       members={members}
       invites={invites}

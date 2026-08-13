@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
+import { CalendarDays, Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
@@ -19,7 +19,7 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: "Lector (solo ver)" },
 ];
 
-export default function PatientDetail({ patient, myRole, members, invites }) {
+export default function PatientDetail({ patient, avatarUrl, myRole, members, invites }) {
   const router = useRouter();
   const { setActivePatientId } = useApp();
   const isOwner = myRole === "owner";
@@ -143,16 +143,36 @@ export default function PatientDetail({ patient, myRole, members, invites }) {
         ← Pacientes
       </Link>
 
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="page-title">{patient.name}</h1>
-          <p className="page-sub">
-            {dobLabel ? `Nacido/a el ${dobLabel}` : "Fecha de nacimiento no indicada"}
-            {myRole && ` · ${ROLE_LABELS[myRole]}`}
+      <div className="flex items-center gap-4">
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarUrl}
+            alt={patient.name}
+            className="w-20 h-20 rounded-full object-cover border-2 border-line shrink-0"
+          />
+        ) : (
+          <div className="w-20 h-20 rounded-full bg-[var(--sun)] flex items-center justify-center text-white font-serif text-3xl shrink-0">
+            {(patient.name ?? "?").charAt(0).toUpperCase()}
+          </div>
+        )}
+        <div className="min-w-0">
+          <h1 className="font-serif text-[2.2rem] font-semibold text-bark leading-none break-words">
+            {patient.name}
+          </h1>
+          <p className="text-muted mt-2">
+            {dobLabel ? (
+              <>
+                <span className="inline-flex items-center gap-1"><CalendarDays size={14} /> Nacido/a el {dobLabel}</span>
+              </>
+            ) : (
+              "Fecha de nacimiento no indicada"
+            )}
+            {myRole && <span className="ml-2">· {ROLE_LABELS[myRole]}</span>}
           </p>
         </div>
         {canEdit && (
-          <button type="button" className="btn btn-ghost" onClick={() => setEditOpen(true)}>
+          <button type="button" className="btn btn-ghost ml-auto shrink-0" onClick={() => setEditOpen(true)}>
             <Pencil size={16} className="mr-1" /> Editar
           </button>
         )}
