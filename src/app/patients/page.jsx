@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HeartPulse } from "lucide-react";
+import { Plus, Users } from "lucide-react";
+import { AppShell, EmptyState } from "@/components/app-shell";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
@@ -32,51 +33,40 @@ export default function PatientsPage() {
   const roleLabel = { owner: "Propietario", caregiver: "Cuidador", viewer: "Lector" };
 
   return (
-    <div className="page">
-      <div className="flex flex-row items-center justify-between mb-4">
-        <div>
-          <h1 className="page-title">Pacientes</h1>
-          <p className="page-sub">Las personas a las que cuidas</p>
-        </div>
-        <button type="button" className="btn btn-primary" onClick={() => setShowCreate(true)}>
-          + Nuevo
-        </button>
-      </div>
-
-      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+    <AppShell title="Pacientes" eyebrow="Las personas a las que cuidas" action={
+      <button type="button" onClick={() => setShowCreate(true)} className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-label="Añadir paciente">
+        <Plus className="h-5 w-5" />
+      </button>
+    }>
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {loading ? (
-        <p className="text-muted">Cargando…</p>
+        <p className="py-10 text-center text-sm text-muted-foreground">Cargando…</p>
       ) : patients.length === 0 ? (
-        <div className="card">
-          <div className="empty-state">
-            <div className="empty-icon"><HeartPulse size={28} /></div>
-            <p>
-              Aún no hay pacientes. Pulsa <b>+ Nuevo</b> para crear el primer
-              perfil y empezar a registrar constantes, notas y citas.
-            </p>
-          </div>
+        <div className="mt-2">
+          <EmptyState title="Aún no hay pacientes" detail="Pulsa + para crear el primer perfil y empezar a registrar constantes, notas y citas." />
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="mt-2 space-y-3">
           {patients.map((p) => (
-            <Link key={p.id} href={`/patients/${p.id}`} className="block">
-              <div className="bg-surface rounded-[14px] border-[1.5px] border-line p-5 hover:border-sun transition-colors">
-                <div className="flex flex-row items-center justify-between">
+            <Link key={p.id} href={`/patients/${p.id}`} className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-muted/50">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-base font-bold text-primary">
+                    {(p.name ?? "?").charAt(0).toUpperCase()}
+                  </div>
                   <div>
-                    <p className="font-semibold text-bark text-[1.1rem]">{p.name}</p>
+                    <p className="font-semibold">{p.name}</p>
                     {p.dob && (
-                      <p className="text-muted text-sm">
-                        {new Date(p.dob).toLocaleDateString("es-ES", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(p.dob).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
                       </p>
                     )}
                   </div>
-                  <span className="badge badge-sun">{roleLabel[p.role] ?? p.role}</span>
                 </div>
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                  {roleLabel[p.role] ?? p.role}
+                </span>
               </div>
             </Link>
           ))}
@@ -91,6 +81,6 @@ export default function PatientsPage() {
       >
         <PatientForm onSaved={handleCreated} onCancel={() => setShowCreate(false)} />
       </Modal>
-    </div>
+    </AppShell>
   );
 }

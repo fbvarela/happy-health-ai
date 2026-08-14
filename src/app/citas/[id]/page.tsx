@@ -33,6 +33,11 @@ export default function CitaDetailPage() {
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
+  const toLocalInput = (iso: string) => {
+    const d = new Date(iso)
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+  }
+
   const load = useCallback(async () => {
     if (!patientId || !params.id) return
     try {
@@ -46,12 +51,20 @@ export default function CitaDetailPage() {
     }
   }, [patientId, params.id])
 
-  useEffect(() => { load() }, [load])
-
-  const toLocalInput = (iso: string) => {
-    const d = new Date(iso)
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
-  }
+  useEffect(() => {
+    if (!patientId || !params.id) return
+    let cancelled = false
+    api
+      .getAppointment(patientId, params.id)
+      .then((a) => {
+        if (cancelled) return
+        setAppt(a)
+        setForm({ title: a.title, doctor_name: a.doctor_name ?? "", location: a.location ?? "", starts_at: toLocalInput(a.starts_at) })
+      })
+      .catch((err) => { if (!cancelled) setError(err.message) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [patientId, params.id])
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
