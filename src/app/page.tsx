@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, BarChart3, ChevronRight, Droplets, HeartPulse, Thermometer, UserPlus } from "lucide-react";
+import { Activity, BarChart3, ChevronRight, HeartPulse, Thermometer, UserPlus } from "lucide-react";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
 import PooCounter from "@/components/dashboard/PooCounter";
@@ -10,41 +10,9 @@ import MoodPicker from "@/components/dashboard/MoodPicker";
 import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
 import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
 import WalkCheck from "@/components/dashboard/WalkCheck";
+import SpO2Recorder from "@/components/dashboard/SpO2Recorder";
 
 export const dynamic = "force-dynamic";
-
-const WARNING_DOT = <span className="size-2 shrink-0 rounded-full bg-warning" aria-hidden="true" />;
-
-function SpO2Hero({ today, yesterday, count }) {
-  return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="spo2-heading">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-success/10 text-success">
-            <Droplets className="size-5" />
-          </span>
-          <div>
-            <h2 id="spo2-heading" className="text-sm font-semibold">Saturación de oxígeno</h2>
-            <p className="text-xs text-muted-foreground">SpO₂ · medida principal</p>
-          </div>
-        </div>
-        {today == null && <span title="Sin medición hoy">{WARNING_DOT}</span>}
-      </div>
-
-      <div className="mt-4 flex items-end gap-3">
-        <p className="font-mono text-5xl font-semibold tracking-tight tabular-nums">
-          {today ?? "–"}
-          <span className="ml-1 text-lg font-medium text-muted-foreground">%</span>
-        </p>
-        <p className="pb-1.5 text-sm text-muted-foreground">
-          Ayer <span className="font-semibold text-foreground">{yesterday != null ? `${yesterday}%` : "–"}</span>
-        </p>
-      </div>
-
-      <p className="mt-2 text-xs text-muted-foreground">{count} mediciones hoy</p>
-    </section>
-  );
-}
 
 function MeasureCard({ label, icon: Icon, today, yesterday, unit, count, accent = "text-primary" }) {
   return (
@@ -157,7 +125,7 @@ export default async function DashboardPage({ searchParams }) {
             </div>
           )}
 
-          <SpO2Hero today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
+          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
