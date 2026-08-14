@@ -81,23 +81,26 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
     return <p className="py-5 text-sm text-muted-foreground">No hay datos para este periodo.</p>;
   }
 
-  const height = simple ? 100 : 220;
+  const height = simple ? 72 : 220;
   const left = simple ? 4 : 42;
   const right = 12;
   const top = 12;
   const bottom = simple ? 4 : 32;
-  const width = Math.max(640, points.length * 38 + left + right);
+  const width = simple
+    ? Math.max(220, points.length * 30 + left + right)
+    : Math.max(640, points.length * 38 + left + right);
   const values = points.map((point) => point.v);
   const min = Math.min(...values);
   const max = Math.max(...values);
   const domain = CHART_DOMAINS[type] ?? [0, Math.max(max, 1)];
-  const scaleMin = Math.min(domain[0], min);
-  const scaleMax = Math.max(domain[1], max);
+  const compactDomain = simple && points.length > 1 && max > min ? [min, max] : domain;
+  const scaleMin = Math.min(compactDomain[0], min);
+  const scaleMax = Math.max(compactDomain[1], max);
   const range = scaleMax - scaleMin || 1;
   const chartWidth = width - left - right;
   const chartHeight = height - top - bottom;
   const gap = 2;
-  const barWidth = Math.min(36, Math.max(4, chartWidth / points.length - gap));
+  const barWidth = Math.min(simple ? 26 : 36, Math.max(4, chartWidth / points.length - gap));
 
   return (
     <div className="overflow-x-auto">
