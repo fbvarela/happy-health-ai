@@ -1,11 +1,13 @@
 'use client'
 
 import Link from "next/link"
-import { ChevronRight, CircleHelp, LogOut, Settings, ShieldCheck, UserRound } from "lucide-react"
+import { BarChart3, ChevronRight, CircleHelp, LogOut, Pill, Settings, ShieldCheck, UserRound } from "lucide-react"
 import { AppShell, SectionHeading } from "@/components/app-shell"
 import { useAuth } from "@/context/AuthContext"
 
 const settings = [
+  { label: "Evolución", detail: "Gráficas diarias, semanales y mensuales", icon: BarChart3, href: "/evolucion" },
+  { label: "Medicación", detail: "Tratamiento y tomas de hoy", icon: Pill, href: "/medications" },
   { label: "Mi perfil", detail: "Datos personales y preferencias", icon: UserRound, href: "/settings" },
   { label: "Configuración", detail: "Notificaciones, privacidad y acceso", icon: Settings, href: "/settings" },
   { label: "Seguridad y permisos", detail: "Gestiona el acceso del equipo", icon: ShieldCheck, href: "/admin/approvals" },
