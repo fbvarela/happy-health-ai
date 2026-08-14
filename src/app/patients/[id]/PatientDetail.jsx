@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CalendarDays, Mail, Pencil, Send, Trash2, UserPlus } from "lucide-react";
-import BackButton from "@/components/BackButton";
+import { AppShell } from "@/components/app-shell";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import PatientForm from "@/components/PatientForm";
@@ -139,27 +139,25 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
     : null;
 
   return (
-    <div className="page">
-      <BackButton fallback="/patients" label="Volver" />
-
+    <AppShell title={patient.name} eyebrow="Paciente" showBack>
       <div className="flex flex-row items-center gap-4">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarUrl}
             alt={patient.name}
-            className="w-20 h-20 rounded-full object-cover border-2 border-line shrink-0"
+            className="h-20 w-20 shrink-0 rounded-full border-2 border-border object-cover"
           />
         ) : (
-          <div className="w-20 h-20 rounded-full bg-[var(--sun)] flex items-center justify-center text-white font-serif text-3xl shrink-0">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary font-serif text-3xl text-primary-foreground">
             {(patient.name ?? "?").charAt(0).toUpperCase()}
           </div>
         )}
         <div className="min-w-0">
-          <h1 className="font-serif text-[2.2rem] font-semibold text-bark leading-none break-words">
+          <h1 className="font-serif text-[2.2rem] font-semibold leading-none text-foreground break-words">
             {patient.name}
           </h1>
-          <p className="text-muted mt-2">
+          <p className="mt-2 text-muted-foreground">
             {dobLabel ? (
               <>
                 <span className="inline-flex items-center gap-1"><CalendarDays size={14} /> Nacido/a el {dobLabel}</span>
@@ -173,7 +171,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         {canEdit && (
           <button
             type="button"
-            className="btn btn-sm btn-ghost ml-auto shrink-0"
+            className="ml-auto flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted"
             onClick={() => setEditOpen(true)}
             aria-label="Editar paciente"
           >
@@ -184,13 +182,13 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       {/* Pinned info (SPEC §4.2) — always visible */}
       <div className="stats-row-grid" style={{ "--stats-cols": 2 }}>
-        <div className="card">
-          <div className="card-title">Alergias</div>
-          <p className="dog-meta">{patient.allergies || "Sin alergias registradas"}</p>
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <div className="text-base font-semibold">Alergias</div>
+          <p className="text-sm text-muted-foreground">{patient.allergies || "Sin alergias registradas"}</p>
         </div>
-        <div className="card">
-          <div className="card-title">Medicación actual</div>
-          <p className="dog-meta">{patient.medications || "Sin medicación registrada"}</p>
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <div className="text-base font-semibold">Medicación actual</div>
+          <p className="text-sm text-muted-foreground">{patient.medications || "Sin medicación registrada"}</p>
         </div>
       </div>
 
@@ -202,12 +200,12 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       <Link
         href={`/patients/${patient.id}/incidents`}
-        className="block card mt16 hover:border-sun transition-colors"
+        className="mt16 block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
       >
         <div className="flex flex-row items-center justify-between">
           <div>
-            <div className="card-title">Incidentes</div>
-            <p className="dog-meta">Heridas, caídas y otros con fotos.</p>
+            <div className="text-base font-semibold">Incidentes</div>
+            <p className="text-sm text-muted-foreground">Heridas, caídas y otros con fotos.</p>
           </div>
           <span className="text-2xl">›</span>
         </div>
@@ -215,27 +213,27 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       <Link
         href="/appointments"
-        className="block card mt16 hover:border-sun transition-colors"
+        className="mt16 block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
       >
         <div className="flex flex-row items-center justify-between">
           <div>
-            <div className="card-title">Citas</div>
-            <p className="dog-meta">Consultas médicas y calendario.</p>
+            <div className="text-base font-semibold">Citas</div>
+            <p className="text-sm text-muted-foreground">Consultas médicas y calendario.</p>
           </div>
           <span className="text-2xl">›</span>
         </div>
       </Link>
 
       {/* Members */}
-      <div className="card mt16">
+      <div className="mt16 rounded-2xl border border-border bg-card p-4 shadow-sm">
         <div className="flex flex-row items-center justify-between">
-          <div className="card-title">Quién cuida</div>
+          <div className="text-base font-semibold">Quién cuida</div>
           {isOwner && (
             <div className="flex flex-row items-center gap-2">
-              <button type="button" className="btn btn-sm btn-ghost" onClick={openAdd} aria-label="Añadir cuidador">
+              <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted" onClick={openAdd} aria-label="Añadir cuidador">
                 <UserPlus size={18} />
               </button>
-              <button type="button" className="btn btn-sm btn-primary" onClick={() => setInviteOpen(true)} aria-label="Invitar por email">
+              <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground" onClick={() => setInviteOpen(true)} aria-label="Invitar por email">
                 <Mail size={18} />
               </button>
             </div>
@@ -243,18 +241,18 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         </div>
         <ul className="mt4 space-y-2">
           {localMembers.map((m) => (
-            <li key={m.id} className="flex flex-row items-center justify-between py-2 border-b border-line last:border-0 gap-3">
+            <li key={m.id} className="flex flex-row items-center justify-between gap-3 border-b border-border py-2 last:border-0">
               <div className="min-w-0">
-                <p className="font-medium text-bark truncate">{m.name || m.email}</p>
-                {m.name && <p className="text-xs text-muted truncate">{m.email}</p>}
+                <p className="truncate font-medium text-foreground">{m.name || m.email}</p>
+                {m.name && <p className="truncate text-xs text-muted-foreground">{m.email}</p>}
               </div>
               <div className="flex flex-row items-center gap-2 shrink-0">
                 {isOwner && m.role === "owner" ? (
-                  <span className="badge badge-sun">{m.name || m.email}</span>
+                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{m.name || m.email}</span>
                 ) : isOwner ? (
                   <>
                     <select
-                      className="input !py-1 !px-2 text-sm max-w-[130px]"
+                      className="h-9 max-w-[130px] rounded-lg border border-input bg-background px-2 text-sm outline-none focus:border-ring"
                       value={m.role}
                       onChange={(e) => handleRoleChange(m.id, e.target.value)}
                       aria-label={`Rol de ${m.name || m.email}`}
@@ -264,27 +262,27 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
                     </select>
                     <button
                       type="button"
-                      className="btn btn-sm btn-danger"
+                      className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-destructive hover:bg-muted"
                       onClick={() => handleRemoveMember(m.id, m.name || m.email)}
                     >
                       Quitar
                     </button>
                   </>
                 ) : (
-                  <span className="badge badge-sun">{ROLE_LABELS[m.role] ?? m.role}</span>
+                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{ROLE_LABELS[m.role] ?? m.role}</span>
                 )}
               </div>
             </li>
           ))}
         </ul>
-        {memberErr && <p className="text-red-600 text-sm mt2">{memberErr}</p>}
+        {memberErr && <p className="mt2 text-sm text-destructive">{memberErr}</p>}
 
         {isOwner && localInvites.length > 0 && (
-          <div className="mt4 pt-4 border-t border-line">
-            <p className="text-xs text-muted mb-2">Invitaciones pendientes</p>
+          <div className="mt4 border-t border-border pt-4">
+            <p className="mb-2 text-xs text-muted-foreground">Invitaciones pendientes</p>
             <ul className="space-y-1">
               {localInvites.map((inv, i) => (
-                <li key={i} className="text-sm text-muted">
+                <li key={i} className="text-sm text-muted-foreground">
                   {inv.email} — {ROLE_LABELS[inv.role] ?? inv.role}
                 </li>
               ))}
@@ -304,22 +302,22 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
       {isOwner && (
         <div className="mt16">
           {confirmDelete ? (
-            <div className="bg-surface rounded-[14px] border-[1.5px] border-red-300 p-5">
-              <p className="font-semibold text-bark mb-3">
+            <div className="rounded-2xl border border-destructive/30 bg-card p-5">
+              <p className="mb-3 font-semibold text-foreground">
                 ¿Seguro que quieres eliminar a {patient.name}? Se borrarán todos sus datos.
               </p>
               <div className="flex gap-3">
-                <button type="button" className="btn btn-danger flex-1 justify-center" onClick={handleDelete}>
+                <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 text-sm font-semibold text-destructive" onClick={handleDelete}>
                   Sí, eliminar
                 </button>
-                <button type="button" className="btn btn-ghost flex-1 justify-center" onClick={() => setConfirmDelete(false)}>
+                <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setConfirmDelete(false)}>
                   Cancelar
                 </button>
               </div>
             </div>
           ) : (
-            <button type="button" className="btn btn-danger" onClick={handleDelete}>
-              <Trash2 size={16} className="mr-1" /> Eliminar paciente
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 text-sm font-semibold text-destructive" onClick={handleDelete}>
+              <Trash2 size={16} /> Eliminar paciente
             </button>
           )}
         </div>
@@ -338,13 +336,13 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Añadir cuidador">
         <form onSubmit={handleAddMember} className="space-y-4">
-          {memberErr && <p className="text-red-600 text-sm">{memberErr}</p>}
+          {memberErr && <p className="text-sm text-destructive">{memberErr}</p>}
           <div>
-            <label className="input-label">Cuidador</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Cuidador</label>
             {caregivers.length === 0 ? (
-              <p className="text-sm text-muted">No hay más usuarios aprobados para añadir.</p>
+              <p className="text-sm text-muted-foreground">No hay más usuarios aprobados para añadir.</p>
             ) : (
-              <select className="input" value={pickUserId} onChange={(e) => setPickUserId(e.target.value)} required>
+              <select className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={pickUserId} onChange={(e) => setPickUserId(e.target.value)} required>
                 <option value="">— Selecciona —</option>
                 {caregivers.map((c) => (
                   <option key={c.id} value={c.id}>{c.name || c.email}</option>
@@ -353,17 +351,17 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
             )}
           </div>
           <div>
-            <label className="input-label">Rol</label>
-            <select className="input" value={pickRole} onChange={(e) => setPickRole(e.target.value)}>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Rol</label>
+            <select className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={pickRole} onChange={(e) => setPickRole(e.target.value)}>
               <option value="caregiver">Cuidador (edita)</option>
               <option value="viewer">Lector (solo ver)</option>
             </select>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={!pickUserId} aria-label="Añadir cuidador">
+            <button type="submit" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={!pickUserId} aria-label="Añadir cuidador">
               <UserPlus size={18} />
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => setAddOpen(false)}>
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setAddOpen(false)}>
               Cancelar
             </button>
           </div>
@@ -372,13 +370,13 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invitar a cuidar">
         <form onSubmit={handleInvite} className="space-y-4">
-          {inviteErr && <p className="text-red-600 text-sm">{inviteErr}</p>}
-          {inviteMsg && <p className="text-green-700 text-sm">{inviteMsg}</p>}
+          {inviteErr && <p className="text-sm text-destructive">{inviteErr}</p>}
+          {inviteMsg && <p className="text-sm text-success">{inviteMsg}</p>}
           <div>
-            <label className="input-label">Email del cuidador</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Email del cuidador</label>
             <input
               type="email"
-              className="input"
+              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="cuidador@ejemplo.com"
@@ -386,23 +384,23 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
             />
           </div>
           <div>
-            <label className="input-label">Rol</label>
-            <select className="input" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Rol</label>
+            <select className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}>
               {ROLE_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={busy}>
-              <Send size={18} className="mr-1" /> {busy ? "Enviando…" : "Enviar invitación"}
+            <button type="submit" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={busy}>
+              <Send size={18} /> {busy ? "Enviando…" : "Enviar invitación"}
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => setInviteOpen(false)}>
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setInviteOpen(false)}>
               Cerrar
             </button>
           </div>
         </form>
       </Modal>
-    </div>
+    </AppShell>
   );
 }

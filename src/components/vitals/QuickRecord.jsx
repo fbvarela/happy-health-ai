@@ -83,21 +83,21 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
   const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Deposiciones" };
 
   return (
-    <div className="card">
-      <div className="card-title">Registrar</div>
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt4">
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="text-base font-semibold">Registrar</div>
+      <div className="mt4 grid grid-cols-2 gap-3 sm:grid-cols-5">
         {METRIC_BUTTONS.map((m) => {
           const Icon = m.icon;
           return (
             <button
               key={m.key}
               type="button"
-              className="btn btn-ghost flex-col justify-center items-center py-4 min-h-[88px]"
+              className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-lg px-3 text-muted-foreground hover:bg-muted"
               onClick={() => open(m.key)}
             >
-              <Icon className="mb-1" size={26} />
+              <Icon className="mb-1 text-foreground" size={26} />
               <span className="font-semibold text-sm">{m.label}</span>
-              <span className="text-xs text-muted">{m.hint}</span>
+              <span className="text-xs text-muted-foreground">{m.hint}</span>
             </button>
           );
         })}
@@ -105,51 +105,51 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
 
       <Modal open={Boolean(active)} onClose={() => setActive(null)} title={`Registrar ${labels[active] ?? ""}`}>
         <form onSubmit={handleSave} className="space-y-4">
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
           {active === "bp" ? (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="input-label">Sistólica</label>
-                <input className="input" inputMode="decimal" value={form.systolic ?? ""} onChange={set("systolic")} placeholder="120" required />
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Sistólica</label>
+                <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="decimal" value={form.systolic ?? ""} onChange={set("systolic")} placeholder="120" required />
               </div>
               <div>
-                <label className="input-label">Diastólica</label>
-                <input className="input" inputMode="decimal" value={form.diastolic ?? ""} onChange={set("diastolic")} placeholder="80" required />
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Diastólica</label>
+                <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="decimal" value={form.diastolic ?? ""} onChange={set("diastolic")} placeholder="80" required />
               </div>
             </div>
           ) : active === "poo" ? (
             <div>
-              <label className="input-label">Número de deposiciones</label>
-              <input className="input" inputMode="numeric" value={form.count ?? "1"} onChange={set("count")} placeholder="1" />
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Número de deposiciones</label>
+              <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="numeric" value={form.count ?? "1"} onChange={set("count")} placeholder="1" />
             </div>
           ) : (
             <div>
-              <label className="input-label">Valor</label>
-              <input className="input" inputMode="decimal" value={form.value ?? ""} onChange={set("value")} placeholder="—" required />
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Valor</label>
+              <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="decimal" value={form.value ?? ""} onChange={set("value")} placeholder="—" required />
             </div>
           )}
 
           <div>
-            <label className="input-label">Fecha y hora</label>
-            <input type="datetime-local" className="input" value={form.measured_at ?? ""} onChange={set("measured_at")} required />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Fecha y hora</label>
+            <input type="datetime-local" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.measured_at ?? ""} onChange={set("measured_at")} required />
           </div>
 
           <div>
-            <label className="input-label">Dispositivo (opcional)</label>
-            <input className="input" value={form.device ?? ""} onChange={set("device")} placeholder="Ej. pulsioxímetro" />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Dispositivo (opcional)</label>
+            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.device ?? ""} onChange={set("device")} placeholder="Ej. pulsioxímetro" />
           </div>
 
           <div>
-            <label className="input-label">Notas (opcional)</label>
-            <input className="input" value={form.notes ?? ""} onChange={set("notes")} placeholder="Contexto breve" />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Notas (opcional)</label>
+            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.notes ?? ""} onChange={set("notes")} placeholder="Contexto breve" />
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={saving}>
-              <Save size={18} className="mr-1" /> {saving ? "Guardando…" : "Guardar"}
+            <button type="submit" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={saving}>
+              <Save size={18} /> {saving ? "Guardando…" : "Guardar"}
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => setActive(null)}>
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setActive(null)}>
               Cancelar
             </button>
           </div>

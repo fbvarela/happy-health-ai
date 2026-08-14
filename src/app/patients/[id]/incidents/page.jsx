@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import BackButton from "@/components/BackButton";
+import { AppShell, EmptyState } from "@/components/app-shell";
 import {
-  ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Save, ShieldAlert, Trash2, X,
+  ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Save, Trash2, X,
 } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
@@ -198,86 +198,88 @@ export default function IncidentsListPage() {
     }
   };
 
-  if (incidents === null) return <p className="text-muted">Cargando…</p>;
-
   const photos = openIncident?.photos ?? [];
   const current = photos[viewerIdx];
 
   return (
-    <div className="page">
-      <BackButton fallback={`/patients/${patientId}`} label="Volver" />
-      <div className="flex flex-row items-center justify-between">
-        <div>
-          <h1 className="page-title">Incidentes</h1>
-          <p className="page-sub">Todos los incidentes registrados.</p>
-        </div>
+    <AppShell
+      title="Incidentes"
+      eyebrow="Todos los incidentes registrados"
+      showBack
+      action={
         <button
           type="button"
-          className="btn btn-primary"
+          className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground"
           onClick={() => setShowForm(true)}
           aria-label="Añadir incidente"
         >
           <Plus size={20} />
         </button>
-      </div>
-
-      {error && <p className="text-red-600 text-sm mt4">{error}</p>}
-
-      {incidents.length === 0 ? (
-        <div className="card mt16">
-          <div className="empty-state">
-            <div className="empty-icon"><ShieldAlert size={28} /></div>
-            <p>No hay incidentes registrados.</p>
-          </div>
-        </div>
+      }
+    >
+      {incidents === null ? (
+        <p className="text-sm text-muted-foreground">Cargando…</p>
       ) : (
-        <ul className="mt16 space-y-2">
-          {incidents.map((inc) => {
-            const sev = SEVERITY[inc.severity] ?? SEVERITY.green;
-            return (
-              <li key={inc.id}>
-                <button
-                  type="button"
-                  className="w-full text-left bg-surface rounded-[14px] border-[1.5px] border-line p-4 hover:border-sun transition-colors"
-                  onClick={() => openDetail(inc.id)}
-                >
-                  <div className="flex flex-row items-center gap-3">
-                    <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-bark truncate">{inc.title}</p>
-                      <p className="text-xs text-muted">
-                        {inc.photo_count} foto{inc.photo_count === 1 ? "" : "s"} ·{" "}
-                        {new Date(inc.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}
-                      </p>
-                    </div>
-                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${sev.color}20`, color: sev.color }}>
-                      {sev.label}
-                    </span>
-                    <span className="text-2xl text-muted">›</span>
-                  </div>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          {error && <p className="mt4 text-sm text-destructive">{error}</p>}
+
+          {incidents.length === 0 ? (
+            <div className="mt16">
+              <EmptyState
+                title="No hay incidentes registrados"
+                detail="Registra heridas, caídas y otros eventos para llevar el seguimiento."
+              />
+            </div>
+          ) : (
+            <ul className="mt16 space-y-2">
+              {incidents.map((inc) => {
+                const sev = SEVERITY[inc.severity] ?? SEVERITY.green;
+                return (
+                  <li key={inc.id}>
+                    <button
+                      type="button"
+                      className="w-full rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary"
+                      onClick={() => openDetail(inc.id)}
+                    >
+                      <div className="flex flex-row items-center gap-3">
+                        <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: sev.color }} />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-semibold text-foreground">{inc.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {inc.photo_count} foto{inc.photo_count === 1 ? "" : "s"} ·{" "}
+                            {new Date(inc.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}
+                          </p>
+                        </div>
+                        <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: `${sev.color}20`, color: sev.color }}>
+                          {sev.label}
+                        </span>
+                        <span className="text-2xl text-muted-foreground">›</span>
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       )}
 
       {/* New incident form */}
       <Modal open={showForm} onClose={() => setShowForm(false)} title="Añadir incidente">
         <form onSubmit={createIncident} className="space-y-4">
           <div>
-            <label className="input-label">Título</label>
-            <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej. Herida en la mano" required />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Título</label>
+            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej. Herida en la mano" required />
           </div>
           <div>
-            <label className="input-label">Gravedad</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Gravedad</label>
             <div className="flex gap-2">
               {SEVERITY_ORDER.map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setSeverity(s)}
-                  className={`btn btn-sm flex-1 justify-center ${severity === s ? "btn-primary" : "btn-ghost"}`}
+                  className={`flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium ${severity === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
                   style={severity === s ? { background: SEVERITY[s].color, borderColor: SEVERITY[s].color } : {}}
                 >
                   {SEVERITY[s].label}
@@ -286,20 +288,20 @@ export default function IncidentsListPage() {
             </div>
           </div>
           <div>
-            <label className="input-label">Notas</label>
-            <textarea className="input min-h-[80px]" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Descripción…" />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Notas</label>
+            <textarea className="h-10 min-h-[80px] w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Descripción…" />
           </div>
           <div>
-            <label className="input-label">Fotos</label>
-            <label className="btn btn-ghost btn-sm cursor-pointer w-full justify-center border border-dashed border-line">
-              <ImagePlus size={16} className="mr-1" /> Elegir fotos
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Fotos</label>
+            <label className="flex min-h-9 w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed border-border px-3 text-xs font-medium text-muted-foreground hover:bg-muted">
+              <ImagePlus size={16} /> Elegir fotos
               <input type="file" multiple accept="image/*" className="hidden"
                 onChange={(e) => setPhotoFiles((prev) => [...prev, ...Array.from(e.target.files ?? [])])} />
             </label>
             {photoFiles.length > 0 && (
               <ul className="mt2 space-y-1">
                 {photoFiles.map((f, i) => (
-                  <li key={i} className="flex flex-row items-center justify-between text-xs text-muted">
+                  <li key={i} className="flex flex-row items-center justify-between text-xs text-muted-foreground">
                     <span className="truncate">{f.name}</span>
                     <button type="button" onClick={() => setPhotoFiles((prev) => prev.filter((_, j) => j !== i))} aria-label="Quitar">
                       <X size={14} />
@@ -310,10 +312,10 @@ export default function IncidentsListPage() {
             )}
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="btn btn-primary" disabled={busy}>
+            <button type="submit" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={busy}>
               {busy ? "Creando…" : "Crear incidente"}
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)}>
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setShowForm(false)}>
               Cancelar
             </button>
           </div>
@@ -325,15 +327,15 @@ export default function IncidentsListPage() {
         {openIncident && (
           <div>
             {openIncident.severity && (
-              <span className="inline-block text-xs px-2 py-0.5 rounded-full mb-2"
+              <span className="mb-2 inline-block rounded-full px-2 py-0.5 text-xs"
                 style={{ background: `${SEVERITY[openIncident.severity].color}20`, color: SEVERITY[openIncident.severity].color }}>
                 Gravedad: {SEVERITY[openIncident.severity].label}
               </span>
             )}
-            {openIncident.notes && <p className="text-muted text-sm mb-3">{openIncident.notes}</p>}
+            {openIncident.notes && <p className="mb-3 text-sm text-muted-foreground">{openIncident.notes}</p>}
 
             {photos.length === 0 ? (
-              <p className="text-muted text-sm mb-3">Sin fotos todavía.</p>
+              <p className="mb-3 text-sm text-muted-foreground">Sin fotos todavía.</p>
             ) : (
               <div>
                 {current.kind === "video" ? (
@@ -342,15 +344,15 @@ export default function IncidentsListPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={current.url} alt={current.caption || "foto"} className="w-full rounded-[10px]" />
                 )}
-                <div className="flex flex-row items-center justify-between mt3">
-                  <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === 0}
+                <div className="mt3 flex flex-row items-center justify-between">
+                  <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted" disabled={viewerIdx === 0}
                     onClick={() => setViewerIdx((i) => Math.max(0, i - 1))} aria-label="Anterior">
                     <ChevronLeft size={20} />
                   </button>
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-muted-foreground">
                     {viewerIdx + 1} / {photos.length}
                   </p>
-                  <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === photos.length - 1}
+                  <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted" disabled={viewerIdx === photos.length - 1}
                     onClick={() => setViewerIdx((i) => Math.min(photos.length - 1, i + 1))} aria-label="Siguiente">
                     <ChevronRight size={20} />
                   </button>
@@ -359,51 +361,51 @@ export default function IncidentsListPage() {
                 {editingCaption ? (
                   <div className="mt3">
                     <textarea
-                      className="input min-h-[70px]"
+                      className="h-10 min-h-[70px] w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring"
                       value={captionDraft}
                       onChange={(e) => setCaptionDraft(e.target.value)}
                       placeholder="Nota de esta foto (evolución, observaciones…)"
                     />
-                    <div className="flex flex-row gap-2 mt2">
-                      <button type="button" className="btn btn-sm btn-primary" onClick={saveCaption} disabled={savingCaption}>
-                        <Save size={14} className="mr-1" /> {savingCaption ? "Guardando…" : "Guardar"}
+                    <div className="mt2 flex flex-row gap-2">
+                      <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground disabled:opacity-50" onClick={saveCaption} disabled={savingCaption}>
+                        <Save size={14} /> {savingCaption ? "Guardando…" : "Guardar"}
                       </button>
-                      <button type="button" className="btn btn-sm btn-ghost" onClick={() => setEditingCaption(false)}>
+                      <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted" onClick={() => setEditingCaption(false)}>
                         Cancelar
                       </button>
                     </div>
                   </div>
                 ) : (
                   current.caption && (
-                    <p className="text-sm text-bark mt3 whitespace-pre-wrap bg-[var(--bg)] border border-line rounded-[10px] p-3">
+                    <p className="mt3 whitespace-pre-wrap rounded-xl border border-border bg-muted p-3 text-sm text-foreground">
                       {current.caption}
                     </p>
                   )
                 )}
 
-                <div className="flex flex-row items-center gap-2 mt2">
+                <div className="mt2 flex flex-row items-center gap-2">
                   <button
                     type="button"
-                    className="btn btn-sm btn-ghost"
+                    className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted"
                     onClick={() => { setCaptionDraft(current.caption ?? ""); setEditingCaption(true); }}
                     aria-label={current.caption ? "Editar nota" : "Añadir nota"}
                   >
                     <Pencil size={14} />
                   </button>
-                  <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
+                  <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-destructive hover:bg-muted" onClick={removePhoto} aria-label="Quitar foto">
                     <Trash2 size={16} />
                   </button>
                 </div>
               </div>
             )}
 
-            <label className={`btn btn-sm btn-primary mt3 cursor-pointer ${uploading ? "opacity-60" : ""}`}>
+            <label className={`mt3 flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground disabled:opacity-50 ${uploading ? "opacity-60" : ""}`}>
               <ImagePlus size={16} /> {uploading ? "…" : ""}
               <input type="file" className="hidden" accept="image/*" onChange={addPhoto} disabled={uploading} />
             </label>
 
             <div className="mt4 flex items-center justify-between">
-              <button type="button" className="btn btn-sm btn-danger" onClick={() => setConfirmDelete(openIncident)} aria-label="Eliminar incidente">
+              <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-destructive hover:bg-muted" onClick={() => setConfirmDelete(openIncident)} aria-label="Eliminar incidente">
                 <Trash2 size={16} />
               </button>
             </div>
@@ -412,16 +414,16 @@ export default function IncidentsListPage() {
       </Modal>
 
       <Modal open={Boolean(confirmDelete)} onClose={() => setConfirmDelete(null)} title="Eliminar incidente">
-        <p className="text-muted mb-4">¿Seguro que quieres eliminar este incidente y sus fotos?</p>
+        <p className="mb-4 text-muted-foreground">¿Seguro que quieres eliminar este incidente y sus fotos?</p>
         <div className="flex gap-3">
-          <button type="button" className="btn btn-danger" onClick={handleDelete}>
+          <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 text-sm font-semibold text-destructive" onClick={handleDelete}>
             Eliminar
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>
+          <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setConfirmDelete(null)}>
             Cancelar
           </button>
         </div>
       </Modal>
-    </div>
+    </AppShell>
   );
 }

@@ -73,40 +73,40 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {isEdit && (
         <div className="flex flex-row items-center gap-4">
           <button
             type="button"
-            className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-line bg-[var(--bg)]"
+            className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-border bg-muted"
             onClick={() => fileRef.current?.click()}
             aria-label="Añadir foto"
           >
             {avatarPreview ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarPreview} alt="vista previa" className="w-full h-full object-cover" />
+              <img src={avatarPreview} alt="vista previa" className="h-full w-full object-cover" />
             ) : (
-              <span className="w-full h-full flex items-center justify-center text-muted"><Camera size={24} /></span>
+              <span className="flex h-full w-full items-center justify-center text-muted-foreground"><Camera size={24} /></span>
             )}
             {uploadingAvatar && (
-              <span className="absolute inset-0 bg-black/40 text-white text-xs flex items-center justify-center">
+              <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-xs text-white">
                 Subiendo…
               </span>
             )}
           </button>
           <div>
-            <p className="font-medium text-bark text-sm">Foto del paciente</p>
-            <p className="text-xs text-muted">Toca la foto para añadir o cambiar.</p>
+            <p className="text-sm font-medium text-foreground">Foto del paciente</p>
+            <p className="text-xs text-muted-foreground">Toca la foto para añadir o cambiar.</p>
           </div>
           <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleAvatar} />
         </div>
       )}
 
       <div>
-        <label className="input-label">Nombre</label>
+        <label className="mb-1 block text-xs font-medium text-muted-foreground">Nombre</label>
         <input
-          className="input"
+          className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring"
           value={form.name}
           onChange={set("name")}
           placeholder="Ej. María"
@@ -115,18 +115,18 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
       </div>
 
       <div>
-        <label className="input-label">Fecha de nacimiento</label>
+        <label className="mb-1 block text-xs font-medium text-muted-foreground">Fecha de nacimiento</label>
         <input
           type="date"
-          className="input"
+          className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring"
           value={form.dob}
           onChange={set("dob")}
         />
       </div>
 
       <div>
-        <label className="input-label">Género</label>
-        <select className="input" value={form.gender} onChange={set("gender")}>
+        <label className="mb-1 block text-xs font-medium text-muted-foreground">Género</label>
+        <select className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.gender} onChange={set("gender")}>
           <option value="">—</option>
           <option value="female">Mujer</option>
           <option value="male">Hombre</option>
@@ -135,9 +135,9 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
       </div>
 
       <div>
-        <label className="input-label">Alergias</label>
+        <label className="mb-1 block text-xs font-medium text-muted-foreground">Alergias</label>
         <textarea
-          className="input min-h-[80px]"
+          className="h-10 min-h-[80px] w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring"
           value={form.allergies}
           onChange={set("allergies")}
           placeholder="Ej. Penicilina, frutos secos…"
@@ -145,9 +145,9 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
       </div>
 
       <div>
-        <label className="input-label">Medicación actual</label>
+        <label className="mb-1 block text-xs font-medium text-muted-foreground">Medicación actual</label>
         <textarea
-          className="input min-h-[80px]"
+          className="h-10 min-h-[80px] w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring"
           value={form.medications}
           onChange={set("medications")}
           placeholder="Ej. Losartán 50 mg al día, omeprazol…"
@@ -155,11 +155,11 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={saving}>
-          <Save size={18} className="mr-1" /> {saving ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear paciente"}
+        <button type="submit" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={saving}>
+          <Save size={18} /> {saving ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear paciente"}
         </button>
         {onCancel && (
-          <button type="button" className="btn btn-ghost" onClick={onCancel}>
+          <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={onCancel}>
             Cancelar
           </button>
         )}
