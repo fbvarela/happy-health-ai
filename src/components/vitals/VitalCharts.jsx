@@ -10,11 +10,11 @@ export const CHART_PERIODS = [
 ];
 
 const SERIES = [
-  { type: "spo2", label: "SpO₂", unit: "%", color: "#2e7d4f" },
-  { type: "hr", label: "Frecuencia cardíaca", unit: "ppm", color: "#c96f4a" },
-  { type: "temp", label: "Temperatura", unit: "°C", color: "#d94f3d" },
-  { type: "bp_systolic", label: "Tensión sistólica", unit: "mmHg", color: "#5b7fa6" },
-  { type: "bp_diastolic", label: "Tensión diastólica", unit: "mmHg", color: "#8a6bbd" },
+  { type: "spo2", label: "SpO₂", unit: "%", color: "#8fbd9f" },
+  { type: "hr", label: "Frecuencia cardíaca", unit: "ppm", color: "#e5b078" },
+  { type: "temp", label: "Temperatura", unit: "°C", color: "#e3a0a0" },
+  { type: "bp_systolic", label: "Tensión sistólica", unit: "mmHg", color: "#e5b078" },
+  { type: "bp_diastolic", label: "Tensión diastólica", unit: "mmHg", color: "#8fbd9f" },
 ];
 
 function bucketLabel(timestamp, period) {
