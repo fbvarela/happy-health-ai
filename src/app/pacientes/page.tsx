@@ -54,7 +54,7 @@ export default function PacientesPage() {
     query.trim() === "" || p.name.toLowerCase().includes(query.trim().toLowerCase())
   )
 
-  return <AppShell title="Pacientes" eyebrow="Seguimiento clínico" action={<Link href="/patients" className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-primary" aria-label="Añadir paciente"><Plus className="h-5 w-5" /></Link>}>
+  return <AppShell title="Pacientes" eyebrow="Seguimiento clínico" showBack action={<Link href="/patients" className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-primary" aria-label="Añadir paciente"><Plus className="h-5 w-5" /></Link>}>
     <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3"><Search className="h-5 w-5 text-muted-foreground" /><input className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" placeholder="Buscar paciente" aria-label="Buscar paciente" value={query} onChange={(e) => setQuery(e.target.value)} /></div>
 
     <div className="mt-6 flex items-center justify-between"><SectionHeading title="Todos los pacientes" /><span className="text-sm text-muted-foreground">{patients.length} {patients.length === 1 ? "activo" : "activos"}</span></div>

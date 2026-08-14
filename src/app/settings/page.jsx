@@ -20,7 +20,7 @@ export default async function SettingsPage() {
   `;
 
   return (
-    <AppShell title="Ajustes" eyebrow="Umbrales de alerta por paciente">
+    <AppShell title="Ajustes" eyebrow="Umbrales de alerta por paciente" showBack>
       {patients.length === 0 ? (
         <div className="mt-2 space-y-4">
           <EmptyState title="Aún no hay pacientes" detail="Cuando crees un perfil podrás ajustar aquí sus umbrales de alerta." />

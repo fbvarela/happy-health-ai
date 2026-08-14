@@ -51,7 +51,7 @@ export default function CitasPage() {
   const next = appointments.find((a) => new Date(a.starts_at) >= new Date())
   const upcoming = appointments.filter((a) => new Date(a.starts_at) >= new Date()).slice(0, 5)
 
-  return <AppShell title="Citas" eyebrow="Agenda del equipo" action={<Link href="/appointments" className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-label="Crear cita"><Plus className="h-5 w-5" /></Link>}>
+  return <AppShell title="Citas" eyebrow="Agenda del equipo" showBack action={<Link href="/appointments" className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-label="Crear cita"><Plus className="h-5 w-5" /></Link>}>
     {loading ? (
       <p className="py-10 text-center text-sm text-muted-foreground">Cargando…</p>
     ) : appointments.length === 0 ? (

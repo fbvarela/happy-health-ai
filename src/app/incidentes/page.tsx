@@ -50,6 +50,7 @@ export default async function IncidentesPage() {
     <AppShell
       title="Incidentes"
       eyebrow="Centro de alertas"
+      showBack
       action={<Link href="/incidents" className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground" aria-label="Filtrar alertas"><Clock3 className="h-5 w-5" /></Link>}
     >
       {activeCount > 0 ? (
