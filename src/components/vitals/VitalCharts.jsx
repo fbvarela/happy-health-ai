@@ -77,7 +77,7 @@ function aggregate(rows, period) {
   return [...buckets.values()].map((bucket) => ({ ...bucket, v: bucket.total / bucket.count }));
 }
 
-function BarChart({ points, label, unit, type, settings, simple = false }) {
+function BarChart({ points, label, unit, type, settings, period, simple = false }) {
   if (!points || points.length === 0) {
     return <p className="py-5 text-sm text-muted-foreground">No hay datos para este periodo.</p>;
   }
@@ -105,7 +105,7 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
   const gap = 2;
   const barWidth = simple
     ? Math.min(26, Math.max(4, chartWidth / points.length - gap))
-    : Math.max(4, chartWidth / points.length - gap);
+    : Math.min(period === 1 ? 44 : chartWidth / points.length - gap, Math.max(4, chartWidth / points.length - gap));
 
   return (
     <div className="overflow-x-auto">
@@ -169,9 +169,9 @@ export default function VitalCharts({ patientId, initialPeriod = 7, simple = fal
       </div>
       {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
       {!loaded || loaded.period !== period ? <p className="text-sm text-muted-foreground">Cargando…</p> : simple ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{SERIES.map((item) => { const current = loaded.summary[item.type]; const tone = current.latest == null ? null : valueTone(item.type, current.latest, settings); return <div key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><div className="flex items-start justify-between gap-2"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-1 font-mono text-2xl font-semibold tabular-nums">{current.latest ?? "–"}{current.latest != null && <span className="ml-1 text-xs font-medium text-muted-foreground">{item.unit}</span>}</p></div><StatusPill tone={tone === "green" ? "success" : tone === "orange" ? "warning" : tone === "red" ? "critical" : "neutral"}>{tone === "green" ? "Normal" : tone === "orange" ? "Atención" : tone === "red" ? "Alerta" : "Sin datos"}</StatusPill></div><p className="mt-1 text-xs text-muted-foreground">Medidas hoy: {current.todayCount}</p><div className="mt-2"><BarChart simple points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} unit={item.unit} /></div></div>; })}</div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{SERIES.map((item) => { const current = loaded.summary[item.type]; const tone = current.latest == null ? null : valueTone(item.type, current.latest, settings); return <div key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><div className="flex items-start justify-between gap-2"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-1 font-mono text-2xl font-semibold tabular-nums">{current.latest ?? "–"}{current.latest != null && <span className="ml-1 text-xs font-medium text-muted-foreground">{item.unit}</span>}</p></div><StatusPill tone={tone === "green" ? "success" : tone === "orange" ? "warning" : tone === "red" ? "critical" : "neutral"}>{tone === "green" ? "Normal" : tone === "orange" ? "Atención" : tone === "red" ? "Alerta" : "Sin datos"}</StatusPill></div><p className="mt-1 text-xs text-muted-foreground">Medidas hoy: {current.todayCount}</p><div className="mt-2"><BarChart simple points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} period={period} unit={item.unit} /></div></div>; })}</div>
       ) : (
-        <div><div className="mb-4 flex flex-wrap gap-4 text-xs font-medium text-muted-foreground"><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#8fbd9f]" />En rango</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e5b078]" />Cerca del límite</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e3a0a0]" />Fuera de rango</span></div><div className="space-y-4">{SERIES.map((item) => <section key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 className="mb-3 text-base font-semibold">{item.label}</h2><BarChart points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} unit={item.unit} /></section>)}</div></div>
+        <div><div className="mb-4 flex flex-wrap gap-4 text-xs font-medium text-muted-foreground"><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#8fbd9f]" />En rango</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e5b078]" />Cerca del límite</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e3a0a0]" />Fuera de rango</span></div><div className="space-y-4">{SERIES.map((item) => <section key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 className="mb-3 text-base font-semibold">{item.label}</h2><BarChart points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} period={period} unit={item.unit} /></section>)}</div></div>
       )}
     </div>
   );
