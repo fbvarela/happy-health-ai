@@ -96,8 +96,8 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
   const range = scaleMax - scaleMin || 1;
   const chartWidth = width - left - right;
   const chartHeight = height - top - bottom;
-  const gap = Math.min(8, chartWidth / Math.max(points.length, 1) * 0.2);
-  const barWidth = Math.min(18, Math.max(3, chartWidth / points.length - gap));
+  const gap = 2;
+  const barWidth = Math.min(36, Math.max(4, chartWidth / points.length - gap));
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img" aria-label={label}>
