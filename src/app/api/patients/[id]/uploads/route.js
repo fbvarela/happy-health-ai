@@ -42,7 +42,7 @@ export async function GET(request, { params }) {
 }
 
 /**
- * POST /api/patients/[id]/uploads/confirm
+ * POST /api/patients/[id]/uploads
  * Body: { key, kind, mime_type, size_bytes, caption }
  * Called AFTER the browser PUT the file to R2 — creates the DB row.
  */

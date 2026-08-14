@@ -1,113 +1,173 @@
-'use client'
+import { getCurrentUser } from "@/lib/auth/user";
+import sql from "@/lib/db";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Activity, ChevronRight, Droplets, HeartPulse, Thermometer, UserPlus } from "lucide-react";
+import { AppShell, EmptyState } from "@/components/app-shell";
+import { getDashboardData } from "@/lib/dashboard";
+import PooCounter from "@/components/dashboard/PooCounter";
+import MoodPicker from "@/components/dashboard/MoodPicker";
+import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
+import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import {
-  Activity,
-  Bell,
-  CalendarDays,
-  ChevronRight,
-  CirclePlus,
-  FileText,
-  MessageSquare,
-  MoreHorizontal,
-  Plus,
-  ShieldAlert,
-  SlidersHorizontal,
-  Users,
-  X,
-} from 'lucide-react'
-import { DashboardHeader } from '@/components/dashboard-header'
-import { PatientSummary } from '@/components/patient-summary'
-import { VitalCard } from '@/components/vital-card'
-import { BottomNav } from '@/components/bottom-nav'
+export const dynamic = "force-dynamic";
 
-const vitals = [
-  { label: 'Saturación de oxígeno', value: '95', unit: '%', detail: 'SpO₂ · Hoy 08:40', status: 'normal' as const, icon: Activity },
-  { label: 'Frecuencia cardíaca', value: '72', unit: 'ppm', detail: 'FC · Hoy 08:40', status: 'normal' as const, icon: Activity },
-  { label: 'Tensión arterial', value: '120/80', unit: 'mmHg', detail: 'TA · Hoy 08:40', status: 'normal' as const, icon: Activity },
-  { label: 'Temperatura', value: '36.5', unit: '°C', detail: 'Temp. · Hoy 08:40', status: 'normal' as const, icon: Activity },
-]
+const WARNING_DOT = <span className="size-2 shrink-0 rounded-full bg-warning" aria-hidden="true" />;
 
-const menuItems = [
-  { label: 'Pacientes', href: '/pacientes', icon: Users },
-  { label: 'Citas', href: '/citas', icon: CalendarDays },
-  { label: 'Incidentes', href: '/incidentes', icon: ShieldAlert },
-  { label: 'Configuración', href: '/settings', icon: SlidersHorizontal },
-]
-
-export default function Page() {
-  const [showMenu, setShowMenu] = useState(false)
-
+function SpO2Hero({ today, yesterday, count }) {
   return (
-    <main className="min-h-dvh bg-background text-foreground">
-      <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background shadow-[0_0_32px_rgba(30,50,80,0.08)]">
-        <DashboardHeader onMenu={() => setShowMenu(true)} />
-
-        <div className="flex-1 overflow-y-auto px-4 pb-28 pt-5">
-          <div className="mb-5 flex items-end justify-between gap-3">
-            <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Resumen del turno</p>
-              <h1 className="text-2xl font-semibold tracking-tight">Buenos días, Laura</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Última actualización hace 4 min</p>
-            </div>
-            <Link href="/patients" className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground shadow-sm transition-colors active:bg-accent" aria-label="Filtrar resumen">
-              <SlidersHorizontal className="size-5" />
-            </Link>
+    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="spo2-heading">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-success/10 text-success">
+            <Droplets className="size-5" />
+          </span>
+          <div>
+            <h2 id="spo2-heading" className="text-sm font-semibold">Saturación de oxígeno</h2>
+            <p className="text-xs text-muted-foreground">SpO₂ · medida principal</p>
           </div>
-
-          <Link href="/patients/09f7239c-935f-4e56-be31-927dd2ad8722" aria-label="Ver paciente">
-            <PatientSummary name="Suso Martínez" room="Habitación 204 · Seguimiento activo" initial="S" />
-          </Link>
-
-          <section className="mt-6" aria-labelledby="vitals-heading">
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <h2 id="vitals-heading" className="text-base font-semibold">Constantes vitales</h2>
-                <p className="text-xs text-muted-foreground">Valores registrados hoy</p>
-              </div>
-              <Link href="/patients/09f7239c-935f-4e56-be31-927dd2ad8722/history" className="flex min-h-11 items-center gap-1 text-sm font-semibold text-primary" aria-label="Ver historial de constantes">
-                Historial <ChevronRight className="size-4" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {vitals.map((vital) => <VitalCard key={vital.label} {...vital} footer={vital.detail} />)}
-            </div>
-          </section>
-
-          <section className="mt-6 grid grid-cols-2 gap-3" aria-label="Actividad del paciente">
-            <Link href="/patients/09f7239c-935f-4e56-be31-927dd2ad8722" className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-              <div className="mb-4 flex items-center justify-between"><span className="flex size-9 items-center justify-center rounded-xl bg-accent text-primary"><FileText className="size-5" /></span><span className="text-xs font-medium text-success">Estable</span></div>
-              <p className="font-mono text-2xl font-semibold tracking-tight">2 <span className="font-sans text-sm font-medium text-muted-foreground">hoy</span></p>
-              <p className="mt-1 text-xs text-muted-foreground">Deposiciones</p>
-            </Link>
-            <Link href="/incidentes" className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-              <div className="mb-4 flex items-center justify-between"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-muted-foreground"><ShieldAlert className="size-5" /></span><span className="text-xs font-medium text-success">Sin alertas</span></div>
-              <p className="font-mono text-2xl font-semibold tracking-tight">0</p>
-              <p className="mt-1 text-xs text-muted-foreground">Incidentes</p>
-            </Link>
-          </section>
-
-          <Link href="/citas" className="mt-6 block rounded-2xl border border-border bg-primary p-4 text-primary-foreground shadow-sm">
-            <div className="flex items-start justify-between gap-3">
-              <div><p className="text-sm font-semibold">Próxima cita</p><p className="mt-1 text-xs text-primary-foreground/75">Revisión de seguimiento</p></div>
-              <CalendarDays className="size-5 opacity-80" />
-            </div>
-            <div className="mt-5 flex items-end justify-between"><p className="font-mono text-2xl font-semibold">Hoy, 16:30</p><span className="flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold hover:bg-primary-foreground/10 active:bg-primary-foreground/15">Ver cita <ChevronRight className="size-4" /></span></div>
-          </Link>
         </div>
-
-        <BottomNav active="inicio" />
+        {today == null && <span title="Sin medición hoy">{WARNING_DOT}</span>}
       </div>
 
-      {showMenu && <div className="fixed inset-0 z-50 bg-foreground/30" role="presentation" onClick={() => setShowMenu(false)}>
-        <aside className="absolute right-0 top-0 flex h-full w-[min(88%,360px)] flex-col bg-card p-5 shadow-2xl" role="dialog" aria-label="Menú principal" onClick={(event) => event.stopPropagation()}>
-          <div className="flex items-center justify-between"><p className="text-lg font-semibold">Menú</p><button type="button" className="flex size-11 items-center justify-center rounded-xl text-muted-foreground active:bg-accent" onClick={() => setShowMenu(false)} aria-label="Cerrar menú"><X className="size-5" /></button></div>
-          <div className="mt-6 flex flex-col gap-2">
-            {menuItems.map(({ label, href, icon: Icon }) => <Link key={label} href={href} onClick={() => setShowMenu(false)} className="flex min-h-14 items-center gap-3 rounded-xl px-3 text-left font-medium transition-colors active:bg-accent"><Icon className="size-5 text-primary" /><span>{label}</span><ChevronRight className="ml-auto size-4 text-muted-foreground" /></Link>)}
+      <div className="mt-4 flex items-end gap-3">
+        <p className="font-mono text-5xl font-semibold tracking-tight tabular-nums">
+          {today ?? "–"}
+          <span className="ml-1 text-lg font-medium text-muted-foreground">%</span>
+        </p>
+        <p className="pb-1.5 text-sm text-muted-foreground">
+          Ayer <span className="font-semibold text-foreground">{yesterday != null ? `${yesterday}%` : "–"}</span>
+        </p>
+      </div>
+
+      <p className="mt-2 text-xs text-muted-foreground">{count} mediciones hoy</p>
+    </section>
+  );
+}
+
+function MeasureCard({ label, icon: Icon, today, yesterday, unit, count, accent = "text-primary" }) {
+  return (
+    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className={`flex size-8 items-center justify-center rounded-lg bg-accent ${accent}`}>
+            <Icon className="size-4" />
+          </span>
+          <p className="text-sm font-semibold">{label}</p>
+        </div>
+        {today == null && <span title="Sin medición hoy">{WARNING_DOT}</span>}
+      </div>
+
+      <p className="mt-3 font-mono text-3xl font-semibold tracking-tight tabular-nums">
+        {today ?? "–"}
+        {unit && today != null && <span className="text-sm font-medium text-muted-foreground"> {unit}</span>}
+      </p>
+      <p className="mt-0.5 text-xs text-muted-foreground">
+        Ayer {yesterday != null ? `${yesterday}${unit ?? ""}` : "–"}
+      </p>
+      <p className="mt-1 text-[11px] text-muted-foreground">{count} hoy</p>
+    </section>
+  );
+}
+
+export default async function DashboardPage({ searchParams }) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  const { patient: patientParam } = await searchParams;
+
+  const patients = await sql`
+    SELECT p.id, p.name, pm.role
+    FROM patients p
+    JOIN patient_members pm ON pm.patient_id = p.id
+    WHERE pm.user_id = ${user.id}
+    ORDER BY p.created_at DESC
+  `;
+
+  const active = patients.find((p) => p.id === patientParam) ?? patients[0] ?? null;
+
+  const data = active ? await getDashboardData(active.id) : null;
+  const today = data?.today ?? {};
+  const yesterday = data?.yesterday ?? {};
+  const counts = data?.todayCounts ?? {};
+
+  const spo2 = today.spo2?.value ?? null;
+  const spo2Yesterday = yesterday.spo2?.value ?? null;
+  const spo2Count = counts.spo2 ?? 0;
+
+  const hr = today.hr?.value ?? null;
+  const hrYesterday = yesterday.hr?.value ?? null;
+  const hrCount = counts.hr ?? 0;
+
+  const temp = today.temp?.value ?? null;
+  const tempYesterday = yesterday.temp?.value ?? null;
+  const tempCount = counts.temp ?? 0;
+
+  const bp = today.bp_systolic != null ? `${today.bp_systolic.value}/${today.bp_diastolic?.value ?? "–"}` : null;
+  const bpYesterday = yesterday.bp_systolic != null ? `${yesterday.bp_systolic.value}/${yesterday.bp_diastolic?.value ?? "–"}` : null;
+  const bpCount = Math.max(counts.bp_systolic ?? 0, counts.bp_diastolic ?? 0);
+
+  const nightToday = today.night_events ?? null;
+  const nightYesterday = yesterday.night_events ?? null;
+
+  const pooToday = today.poo ?? null;
+  const pooYesterday = yesterday.poo ?? null;
+  const pooCount = counts.poo ?? 0;
+
+  return (
+    <AppShell
+      title={active ? active.name : "Resumen del turno"}
+      eyebrow="Resumen del turno"
+      action={
+        active && (
+          <Link href={`/patients/${active.id}`} className="flex h-11 items-center justify-center gap-1 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-muted-foreground">
+            Ver ficha <ChevronRight className="size-4" />
+          </Link>
+        )
+      }
+    >
+      {patients.length === 0 ? (
+        <div className="space-y-4">
+          <EmptyState title="Aún no hay pacientes" detail="Crea el primer perfil para empezar a registrar constantes, notas y citas." />
+          <Link href="/patients" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground">
+            <UserPlus size={18} /> Crear paciente
+          </Link>
+        </div>
+      ) : (
+        <>
+          {patients.length > 1 && (
+            <div className="mb-5 flex flex-wrap gap-2">
+              {patients.map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/?patient=${p.id}`}
+                  className={`flex min-h-10 items-center rounded-full px-4 text-sm font-semibold ${p.id === active.id ? "bg-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground"}`}
+                >
+                  {p.name}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          <SpO2Hero today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
+            <NightEventsPicker patientId={active.id} today={nightToday} yesterday={nightYesterday} />
           </div>
-        </aside>
-      </div>}
-    </main>
-  )
+
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <MeasureCard label="Frec." icon={HeartPulse} today={hr} yesterday={hrYesterday} unit="ppm" count={hrCount} />
+            <MeasureCard label="Tensión" icon={Activity} today={bp} yesterday={bpYesterday} count={bpCount} />
+            <MeasureCard label="Temp." icon={Thermometer} today={temp} yesterday={tempYesterday} unit="°C" count={tempCount} />
+          </div>
+
+          <div className="mt-4">
+            <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
+          </div>
+
+          <MedicationChecklist patientId={active.id} />
+        </>
+      )}
+    </AppShell>
+  );
 }

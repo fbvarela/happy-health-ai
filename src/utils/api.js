@@ -31,6 +31,11 @@ export const api = {
     }),
   getPatients: () => request("/patients", { cache: "no-store" }),
   getPatient: (id) => request(`/patients/${id}`, { cache: "no-store" }),
+  getMedications: (id, date = "") => request(`/patients/${id}/medications${date ? `?date=${date}` : ""}`, { cache: "no-store" }),
+  createMedication: (id, data) => request(`/patients/${id}/medications`, { method: "POST", body: JSON.stringify(data) }),
+  deleteMedication: (id, medicationId) => request(`/patients/${id}/medications/${medicationId}`, { method: "DELETE" }),
+  markMedicationTaken: (id, medicationId, date) => request(`/patients/${id}/medications/${medicationId}/taken`, { method: "POST", body: JSON.stringify({ date }) }),
+  unmarkMedicationTaken: (id, medicationId, date) => request(`/patients/${id}/medications/${medicationId}/taken?date=${date}`, { method: "DELETE" }),
   createPatient: (data) =>
     request("/patients", { method: "POST", body: JSON.stringify(data) }),
   updatePatient: (id, data) =>
@@ -92,7 +97,7 @@ export const api = {
   deleteIncident: (id, incidentId) =>
     request(`/patients/${id}/incidents/${incidentId}`, { method: "DELETE" }),
   confirmUpload: (id, data) =>
-    request(`/patients/${id}/uploads/confirm`, { method: "POST", body: JSON.stringify(data) }),
+    request(`/patients/${id}/uploads`, { method: "POST", body: JSON.stringify(data) }),
   getUploads: (id) => request(`/patients/${id}/uploads`, { cache: "no-store" }),
   updateUpload: (id, uploadId, data) =>
     request(`/patients/${id}/uploads/${uploadId}`, { method: "PATCH", body: JSON.stringify(data) }),

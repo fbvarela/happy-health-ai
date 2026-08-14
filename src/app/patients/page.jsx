@@ -33,7 +33,7 @@ export default function PatientsPage() {
   const roleLabel = { owner: "Propietario", caregiver: "Cuidador", viewer: "Lector" };
 
   return (
-    <AppShell title="Pacientes" eyebrow="Las personas a las que cuidas" action={
+    <AppShell title="Pacientes" eyebrow="Las personas a las que cuidas" showBack action={
       <button type="button" onClick={() => setShowCreate(true)} className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-label="Añadir paciente">
         <Plus className="h-5 w-5" />
       </button>

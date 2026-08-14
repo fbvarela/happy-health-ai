@@ -115,21 +115,25 @@ export default function IncidentsListPage() {
     setError("");
     try {
       const inc = await api.createIncident(patientId, { title, notes, severity });
+      let photoError = false;
       for (const file of photoFiles) {
-        const { uploadUrl, key, kind } = await api.requestUploadUrl(patientId, {
-          filename: file.name,
-          mime_type: file.type || "application/octet-stream",
-          size_bytes: file.size,
-        });
-        const res = await fetch(uploadUrl, {
-          method: "PUT",
-          body: file,
-          headers: { "Content-Type": file.type || "application/octet-stream" },
-        });
-        if (res.ok) {
+        try {
+          const { uploadUrl, key, kind } = await api.requestUploadUrl(patientId, {
+            filename: file.name,
+            mime_type: file.type || "application/octet-stream",
+            size_bytes: file.size,
+          });
+          const res = await fetch(uploadUrl, {
+            method: "PUT",
+            body: file,
+            headers: { "Content-Type": file.type || "application/octet-stream" },
+          });
+          if (!res.ok) throw new Error("La subida de la foto falló");
           await api.confirmUpload(patientId, {
             key, kind, mime_type: file.type, size_bytes: file.size, incident_id: inc.id,
           });
+        } catch {
+          photoError = true;
         }
       }
       setTitle("");
@@ -139,6 +143,7 @@ export default function IncidentsListPage() {
       setShowForm(false);
       await openDetail(inc.id);
       await load();
+      if (photoError) setError("Incidente guardado, pero no se pudo subir una o más fotos.");
     } catch (err) {
       setError(err.message);
     } finally {

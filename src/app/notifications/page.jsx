@@ -60,6 +60,7 @@ export default function NotificationsPage() {
     <AppShell
       title="Notificaciones"
       eyebrow="Alertas de salud, citas e invitaciones"
+      showBack
       action={
         unread > 0 && (
           <button

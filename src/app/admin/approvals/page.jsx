@@ -98,7 +98,7 @@ export default function AdminApprovalsPage() {
   if (loading || currentUser?.role !== "admin") return null;
 
   return (
-    <AppShell title="Aprobaciones" eyebrow="Cuentas que esperan acceso a la aplicación">
+    <AppShell title="Aprobaciones" eyebrow="Cuentas que esperan acceso a la aplicación" showBack>
       <ApprovalsList adminEmail={currentUser?.email} />
     </AppShell>
   );

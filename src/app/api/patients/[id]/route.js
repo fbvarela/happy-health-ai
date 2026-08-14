@@ -54,40 +54,35 @@ export async function PATCH(request, { params }) {
     return Response.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const name = typeof body.name === "string" ? body.name.trim() : undefined;
-  if (name !== undefined && !name) {
+  const [existing] = await sql`
+    SELECT name, dob, gender, allergies, medications
+    FROM patients WHERE id = ${id}
+  `;
+  if (!existing) return Response.json({ error: "Paciente no encontrado" }, { status: 404 });
+
+  const name = typeof body.name === "string" ? body.name.trim() : existing.name;
+  if (!name) {
     return Response.json({ error: "El nombre es obligatorio" }, { status: 400 });
   }
 
-  const sets = [];
-  const values = [];
+  const dob = body.dob !== undefined ? (body.dob || null) : existing.dob;
+  const gender = body.gender !== undefined ? (body.gender || null) : existing.gender;
+  const allergies = body.allergies !== undefined
+    ? ((body.allergies ?? "").trim() || null)
+    : existing.allergies;
+  const medications = body.medications !== undefined
+    ? ((body.medications ?? "").trim() || null)
+    : existing.medications;
 
-  const fields = ["name", "dob", "gender", "allergies", "medications"];
-  for (const f of fields) {
-    if (body[f] !== undefined) {
-      values.push(f);
-      if (typeof body[f] === "string" && ["name", "allergies", "medications"].includes(f)) {
-        values.push((body[f] ?? "").trim() || null);
-      } else {
-        values.push(body[f] || null);
-      }
-      sets.push(`"${f}" = $${values.length}`);
-    }
-  }
-  if (sets.length === 0) {
-    return Response.json({ error: "Nada que actualizar" }, { status: 400 });
-  }
+  const rows = await sql`
+    UPDATE patients
+    SET name = ${name}, dob = ${dob}, gender = ${gender},
+        allergies = ${allergies}, medications = ${medications}, updated_at = now()
+    WHERE id = ${id}
+    RETURNING id, name, dob, gender, allergies, medications, updated_at
+  `;
 
-  sets.push(`updated_at = now()`);
-  values.push(id);
-
-  const rows = await sql.query(
-    `UPDATE patients SET ${sets.join(", ")} WHERE id = $${values.length}
-     RETURNING id, name, dob, gender, allergies, medications, updated_at`,
-    values
-  );
-
-  return Response.json(rows.rows[0]);
+  return Response.json(rows[0]);
 }
 
 export async function DELETE(request, { params }) {

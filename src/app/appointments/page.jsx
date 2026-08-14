@@ -167,6 +167,7 @@ export default function AppointmentsPage() {
     <AppShell
       title="Citas"
       eyebrow="Consultas médicas y calendario"
+      showBack
       action={
         patients.length > 0 && (
           <button

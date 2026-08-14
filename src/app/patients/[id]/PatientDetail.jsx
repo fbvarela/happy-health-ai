@@ -31,6 +31,8 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
   }, [patient.id, setActivePatientId]);
 
   const [editOpen, setEditOpen] = useState(false);
+  const [infoModal, setInfoModal] = useState(null); // "allergies" | "medications"
+  const [displayedPatient, setDisplayedPatient] = useState(patient);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("caregiver");
@@ -130,32 +132,41 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
     }
   };
 
-  const dobLabel = patient.dob
-    ? new Date(patient.dob).toLocaleDateString("es-ES", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
+  const dobLabel = displayedPatient.dob
+    ? (() => {
+        // dob is a DATE ("YYYY-MM-DD") — parse as local date, not UTC, to avoid
+        // the previous-day shift in negative-offset timezones.
+        const rawDob = displayedPatient.dob;
+        const [y, m, d] = rawDob instanceof Date
+          ? [rawDob.getFullYear(), rawDob.getMonth() + 1, rawDob.getDate()]
+          : String(rawDob).split("-").map(Number);
+        if (!y || !m || !d) return null;
+        return new Date(y, m - 1, d).toLocaleDateString("es-ES", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+      })()
     : null;
 
   return (
-    <AppShell title={patient.name} eyebrow="Paciente" showBack>
+    <AppShell title={displayedPatient.name} eyebrow="Paciente" showBack>
       <div className="flex flex-row items-center gap-4">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarUrl}
-            alt={patient.name}
+            alt={displayedPatient.name}
             className="h-20 w-20 shrink-0 rounded-full border-2 border-border object-cover"
           />
         ) : (
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary font-serif text-3xl text-primary-foreground">
-            {(patient.name ?? "?").charAt(0).toUpperCase()}
+            {(displayedPatient.name ?? "?").charAt(0).toUpperCase()}
           </div>
         )}
         <div className="min-w-0">
           <h1 className="font-serif text-[2.2rem] font-semibold leading-none text-foreground break-words">
-            {patient.name}
+            {displayedPatient.name}
           </h1>
           <p className="mt-2 text-muted-foreground">
             {dobLabel ? (
@@ -180,52 +191,66 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         )}
       </div>
 
-      {/* Pinned info (SPEC §4.2) — always visible */}
-      <div className="stats-row-grid" style={{ "--stats-cols": 2 }}>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      {/* Pinned info (SPEC §4.2) — always visible, tap for details */}
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => setInfoModal("allergies")}
+          className="rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"
+          aria-label="Ver alergias"
+        >
           <div className="text-base font-semibold">Alergias</div>
-          <p className="text-sm text-muted-foreground">{patient.allergies || "Sin alergias registradas"}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="mt-1 truncate text-sm text-muted-foreground">{displayedPatient.allergies || "Sin alergias registradas"}</p>
+          <p className="mt-2 text-xs font-semibold text-primary">Ver detalle</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => setInfoModal("medications")}
+          className="rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"
+          aria-label="Ver medicación"
+        >
           <div className="text-base font-semibold">Medicación actual</div>
-          <p className="text-sm text-muted-foreground">{patient.medications || "Sin medicación registrada"}</p>
-        </div>
+          <p className="mt-1 truncate text-sm text-muted-foreground">{displayedPatient.medications || "Sin medicación registrada"}</p>
+          <p className="mt-2 text-xs font-semibold text-primary">Ver detalle</p>
+        </button>
       </div>
 
       {/* Latest vitals — populated in Phase 3 */}
-      <div className="mt16 space-y-4">
+      <div className="mt-6 space-y-4">
         <QuickRecord patientId={patient.id} canEdit={canEdit} onSaved={() => setRefresh((r) => r + 1)} />
         <DayTimeline key={refresh} patientId={patient.id} canEdit={canEdit} />
       </div>
 
-      <Link
-        href={`/patients/${patient.id}/incidents`}
-        className="mt16 block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
-      >
-        <div className="flex flex-row items-center justify-between">
-          <div>
-            <div className="text-base font-semibold">Incidentes</div>
-            <p className="text-sm text-muted-foreground">Heridas, caídas y otros con fotos.</p>
+      <div className="mt-6 space-y-3">
+        <Link
+          href={`/patients/${patient.id}/incidents`}
+          className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
+        >
+          <div className="flex flex-row items-center justify-between">
+            <div>
+              <div className="text-base font-semibold">Incidentes</div>
+              <p className="text-sm text-muted-foreground">Heridas, caídas y otros con fotos.</p>
+            </div>
+            <span className="text-2xl">›</span>
           </div>
-          <span className="text-2xl">›</span>
-        </div>
-      </Link>
+        </Link>
 
-      <Link
-        href="/appointments"
-        className="mt16 block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
-      >
-        <div className="flex flex-row items-center justify-between">
-          <div>
-            <div className="text-base font-semibold">Citas</div>
-            <p className="text-sm text-muted-foreground">Consultas médicas y calendario.</p>
+        <Link
+          href="/appointments"
+          className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
+        >
+          <div className="flex flex-row items-center justify-between">
+            <div>
+              <div className="text-base font-semibold">Citas</div>
+              <p className="text-sm text-muted-foreground">Consultas médicas y calendario.</p>
+            </div>
+            <span className="text-2xl">›</span>
           </div>
-          <span className="text-2xl">›</span>
-        </div>
-      </Link>
+        </Link>
+      </div>
 
       {/* Members */}
-      <div className="mt16 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
         <div className="flex flex-row items-center justify-between">
           <div className="text-base font-semibold">Quién cuida</div>
           {isOwner && (
@@ -291,16 +316,16 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         )}
       </div>
 
-      <div className="mt16">
+      <div className="mt-6">
         <GallerySection patientId={patient.id} canEdit={canEdit} />
       </div>
 
-      <div className="mt16">
+      <div className="mt-6">
         <NotesSection patientId={patient.id} canEdit={canEdit} />
       </div>
 
       {isOwner && (
-        <div className="mt16">
+        <div className="mt-6">
           {confirmDelete ? (
             <div className="rounded-2xl border border-destructive/30 bg-card p-5">
               <p className="mb-3 font-semibold text-foreground">
@@ -325,9 +350,10 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar paciente">
         <PatientForm
-          patient={patient}
+          patient={displayedPatient}
           onCancel={() => setEditOpen(false)}
-          onSaved={() => {
+          onSaved={(saved) => {
+            setDisplayedPatient((current) => ({ ...current, ...saved }));
             setEditOpen(false);
             router.refresh();
           }}
@@ -400,6 +426,41 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
             </button>
           </div>
         </form>
+      </Modal>
+      <Modal
+        open={infoModal === "allergies"}
+        onClose={() => setInfoModal(null)}
+        title="Alergias"
+        sub={displayedPatient.name}
+      >
+        <p className="text-sm leading-6 text-muted-foreground">{displayedPatient.allergies || "Sin alergias registradas."}</p>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setInfoModal(null)}
+            className="flex min-h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted"
+          >
+            Cerrar
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        open={infoModal === "medications"}
+        onClose={() => setInfoModal(null)}
+        title="Medicación actual"
+        sub={displayedPatient.name}
+      >
+        <p className="text-sm leading-6 text-muted-foreground">{displayedPatient.medications || "Sin medicación registrada."}</p>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setInfoModal(null)}
+            className="flex min-h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted"
+          >
+            Cerrar
+          </button>
+        </div>
       </Modal>
     </AppShell>
   );

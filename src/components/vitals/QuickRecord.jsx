@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity, Droplets, HeartPulse, Thermometer, CircleDot, Save } from "lucide-react";
+import { Activity, Droplets, HeartPulse, Thermometer, CircleDot, Save, Smile, MoonStar } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
+import { MOOD_LEVELS } from "@/lib/metrics";
 
 const METRIC_BUTTONS = [
   { key: "spo2", label: "SpO₂", hint: "%", icon: Droplets },
+  { key: "mood", label: "Ánimo", hint: "verde/naranja/rojo", icon: Smile },
+  { key: "night_events", label: "Nocturno", hint: "nº", icon: MoonStar },
   { key: "hr", label: "Frecuencia", hint: "ppm", icon: HeartPulse },
   { key: "bp", label: "Tensión", hint: "mmHg", icon: Activity },
   { key: "temp", label: "Temperatura", hint: "°C", icon: Thermometer },
@@ -52,13 +55,12 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
     if (key === "bp") {
       prefill.systolic = lastValues.bp_systolic ?? "";
       prefill.diastolic = lastValues.bp_diastolic ?? "";
-    } else if (key === "poo") {
-      prefill.count = lastValues.poo ?? "1";
+    } else if (key === "poo" || key === "night_events") {
+      prefill.count = lastValues[key] ?? "1";
     } else {
       prefill.value = lastValues[key] ?? "";
     }
     prefill.measured_at = iso;
-    prefill.device = "";
     prefill.notes = "";
     setForm(prefill);
     setActive(key);
@@ -80,22 +82,43 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
     }
   };
 
-  const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Deposiciones" };
+  const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Deposiciones", mood: "Estado de ánimo", night_events: "Llamadas/levantadas nocturnas" };
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="text-base font-semibold">Registrar</div>
-      <div className="mt4 grid grid-cols-2 gap-3 sm:grid-cols-5">
-        {METRIC_BUTTONS.map((m) => {
+      <p className="mt-0.5 text-xs text-muted-foreground">Añade una medida para el día de hoy</p>
+
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={() => open("spo2")}
+          className="flex min-h-24 w-full flex-col justify-between rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-success/40 active:bg-accent/40"
+        >
+          <div className="flex items-center justify-between">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-success/10 text-success">
+              <Droplets className="size-5" />
+            </span>
+            <span className="inline-flex items-center rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">Principal</span>
+          </div>
+          <div className="mt-3">
+            <p className="text-sm font-semibold text-foreground">SpO₂ — saturación</p>
+            <p className="text-xs text-muted-foreground">%</p>
+          </div>
+        </button>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        {METRIC_BUTTONS.filter((m) => m.key !== "spo2").map((m) => {
           const Icon = m.icon;
           return (
             <button
               key={m.key}
               type="button"
-              className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-lg px-3 text-muted-foreground hover:bg-muted"
               onClick={() => open(m.key)}
+              className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"
             >
-              <Icon className="mb-1 text-foreground" size={26} />
+              <Icon className="mb-1 text-foreground" size={24} />
               <span className="font-semibold text-sm">{m.label}</span>
               <span className="text-xs text-muted-foreground">{m.hint}</span>
             </button>
@@ -118,10 +141,29 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
                 <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="decimal" value={form.diastolic ?? ""} onChange={set("diastolic")} placeholder="80" required />
               </div>
             </div>
-          ) : active === "poo" ? (
+          ) : active === "poo" || active === "night_events" ? (
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Número de deposiciones</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                {active === "poo" ? "Número de deposiciones" : "Nº de veces que llamó o se levantó"}
+              </label>
               <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="numeric" value={form.count ?? "1"} onChange={set("count")} placeholder="1" />
+            </div>
+          ) : active === "mood" ? (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Estado de ánimo</label>
+              <div className="grid grid-cols-3 gap-2">
+                {MOOD_LEVELS.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, value: m.value }))}
+                    className={`flex min-h-14 flex-col items-center justify-center gap-1.5 rounded-xl border px-1 text-center text-xs font-semibold ${String(form.value) === String(m.value) ? (m.tone === "green" ? "border-success bg-success/10 text-success" : m.tone === "orange" ? "border-warning bg-warning/15 text-warning" : "border-critical bg-critical/10 text-critical") : "border-border bg-background text-muted-foreground"}`}
+                  >
+                    <span className={`size-5 rounded-full ${m.tone === "green" ? "bg-success" : m.tone === "orange" ? "bg-warning" : "bg-critical"}`} aria-hidden="true" />
+                    <span className="leading-tight">{m.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <div>
@@ -133,11 +175,6 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">Fecha y hora</label>
             <input type="datetime-local" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.measured_at ?? ""} onChange={set("measured_at")} required />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Dispositivo (opcional)</label>
-            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.device ?? ""} onChange={set("device")} placeholder="Ej. pulsioxímetro" />
           </div>
 
           <div>

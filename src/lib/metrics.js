@@ -9,7 +9,19 @@ export const METRICS = {
   bp_diastolic: { label: "Tensión (diastólica)", unit: "mmHg", decimals: 0 },
   temp: { label: "Temperatura", unit: "°C", decimals: 1 },
   poo: { label: "Deposición", unit: "", decimals: 0 },
+  mood: { label: "Estado de ánimo", unit: "", decimals: 0 },
+  night_events: { label: "Llamadas/levantadas nocturnas", unit: "", decimals: 0 },
 };
+
+export const MOOD_LEVELS = [
+  { value: 3, label: "Bien", tone: "green" },
+  { value: 2, label: "Regular", tone: "orange" },
+  { value: 1, label: "Mal", tone: "red" },
+];
+
+export const moodLabel = (v) => MOOD_LEVELS.find((m) => m.value === Number(v))?.label ?? null;
+
+export const moodTone = (v) => MOOD_LEVELS.find((m) => m.value === Number(v))?.tone ?? null;
 
 export const DEFAULT_SETTINGS = {
   spo2_min: 92,

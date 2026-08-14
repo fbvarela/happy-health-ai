@@ -52,12 +52,11 @@ export async function PUT(request, { params }) {
   values.push(id);
   sets.push(`updated_at = now()`);
 
-  await sql.query(
-    `INSERT INTO patient_settings (patient_id) VALUES ($${values.length})
-     ON CONFLICT (patient_id) DO NOTHING`,
-    [id]
-  );
-  await sql.query(
+  await sql`
+    INSERT INTO patient_settings (patient_id) VALUES (${id})
+    ON CONFLICT (patient_id) DO NOTHING
+  `;
+  await sql(
     `UPDATE patient_settings SET ${sets.join(", ")} WHERE patient_id = $${values.length}`,
     values
   );

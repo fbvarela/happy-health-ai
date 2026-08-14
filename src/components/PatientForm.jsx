@@ -4,6 +4,18 @@ import { useState, useRef } from "react";
 import { Camera, Save } from "lucide-react";
 import api from "@/utils/api";
 
+function dateInputValue(value) {
+  if (!value) return "";
+  if (value instanceof Date) {
+    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+  }
+  const text = String(value);
+  if (/^\d{4}-\d{2}-\d{2}/.test(text)) return text.slice(0, 10);
+  const parsed = new Date(text);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`;
+}
+
 /**
  * PatientForm — create/edit a patient. Plain text inputs (SPEC §4.11):
  * big targets, one obvious action. Optional avatar photo.
@@ -12,7 +24,7 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
   const isEdit = Boolean(patient);
   const [form, setForm] = useState({
     name: patient?.name ?? "",
-    dob: patient?.dob ?? "",
+    dob: dateInputValue(patient?.dob),
     gender: patient?.gender ?? "",
     allergies: patient?.allergies ?? "",
     medications: patient?.medications ?? "",

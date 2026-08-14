@@ -51,12 +51,12 @@ export async function PATCH(request, { params }) {
   values.push(noteId);
   fields.push(`updated_at = now()`);
 
-  const rows = await sql.query(
+  const rows = await sql(
     `UPDATE notes SET ${fields.join(", ")} WHERE id = $${values.length}
      RETURNING id, category, content, pinned, created_at, updated_at`,
     values
   );
-  return Response.json(rows.rows[0]);
+  return Response.json(rows[0]);
 }
 
 export async function DELETE(request, { params }) {
