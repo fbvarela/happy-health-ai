@@ -8,12 +8,12 @@ import { MOOD_LEVELS } from "@/lib/metrics";
 
 const METRIC_BUTTONS = [
   { key: "spo2", label: "SpO₂", hint: "%", icon: Droplets },
+  { key: "mood", label: "Ánimo", hint: "verde/naranja/rojo", icon: Smile },
+  { key: "night_events", label: "Nocturno", hint: "nº", icon: MoonStar },
   { key: "hr", label: "Frecuencia", hint: "ppm", icon: HeartPulse },
   { key: "bp", label: "Tensión", hint: "mmHg", icon: Activity },
   { key: "temp", label: "Temperatura", hint: "°C", icon: Thermometer },
   { key: "poo", label: "Deposición", hint: "nº", icon: CircleDot },
-  { key: "mood", label: "Ánimo", hint: "verde/naranja/rojo", icon: Smile },
-  { key: "night_events", label: "Nocturno", hint: "nº", icon: MoonStar },
 ];
 
 /**
@@ -88,17 +88,38 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="text-base font-semibold">Registrar</div>
-      <div className="mt4 grid grid-cols-2 gap-3 sm:grid-cols-5">
-        {METRIC_BUTTONS.map((m) => {
+      <p className="mt-0.5 text-xs text-muted-foreground">Añade una medida para el día de hoy</p>
+
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={() => open("spo2")}
+          className="flex min-h-24 w-full flex-col justify-between rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-success/40 active:bg-accent/40"
+        >
+          <div className="flex items-center justify-between">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-success/10 text-success">
+              <Droplets className="size-5" />
+            </span>
+            <span className="inline-flex items-center rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">Principal</span>
+          </div>
+          <div className="mt-3">
+            <p className="text-sm font-semibold text-foreground">SpO₂ — saturación</p>
+            <p className="text-xs text-muted-foreground">%</p>
+          </div>
+        </button>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        {METRIC_BUTTONS.filter((m) => m.key !== "spo2").map((m) => {
           const Icon = m.icon;
           return (
             <button
               key={m.key}
               type="button"
-              className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-lg px-3 text-muted-foreground hover:bg-muted"
               onClick={() => open(m.key)}
+              className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"
             >
-              <Icon className="mb-1 text-foreground" size={26} />
+              <Icon className="mb-1 text-foreground" size={24} />
               <span className="font-semibold text-sm">{m.label}</span>
               <span className="text-xs text-muted-foreground">{m.hint}</span>
             </button>
