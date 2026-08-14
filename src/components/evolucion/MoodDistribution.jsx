@@ -6,7 +6,7 @@ import api from "@/utils/api";
 const MOODS = [
   { value: 3, label: "Bien", color: "#8fbd9f" },
   { value: 2, label: "Regular", color: "#e5b078" },
-  { value: 1, label: "Mal", color: "#e3a0a0" },
+  { value: 1, label: "Mal", color: "#d96f73" },
 ];
 
 export default function MoodDistribution({ patientId }) {
