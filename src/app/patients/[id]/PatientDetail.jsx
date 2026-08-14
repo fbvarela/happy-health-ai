@@ -136,7 +136,10 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
     ? (() => {
         // dob is a DATE ("YYYY-MM-DD") — parse as local date, not UTC, to avoid
         // the previous-day shift in negative-offset timezones.
-        const [y, m, d] = String(displayedPatient.dob).split("-").map(Number);
+        const rawDob = displayedPatient.dob;
+        const [y, m, d] = rawDob instanceof Date
+          ? [rawDob.getFullYear(), rawDob.getMonth() + 1, rawDob.getDate()]
+          : String(rawDob).split("-").map(Number);
         if (!y || !m || !d) return null;
         return new Date(y, m - 1, d).toLocaleDateString("es-ES", {
           day: "numeric",
