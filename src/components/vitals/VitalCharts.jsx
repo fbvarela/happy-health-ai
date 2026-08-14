@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
+import { StatusPill } from "@/components/app-shell";
 
 export const CHART_PERIODS = [
   { key: 1, label: "Día" },
@@ -136,12 +137,22 @@ export default function VitalCharts({ patientId, initialPeriod = 7, simple = fal
         if (cancelled) return;
         setSettings({ ...DEFAULT_SETTINGS, ...(patientSettings ?? {}) });
         const series = {};
+        const summary = {};
         for (const item of SERIES) series[item.type] = [];
         for (const vital of rows ?? []) {
           if (series[vital.type]) series[vital.type].push({ t: new Date(vital.measured_at).getTime(), v: Number(vital.value) });
         }
-        for (const item of SERIES) series[item.type] = aggregate(series[item.type], period);
-        setLoaded({ period, data: series });
+        for (const item of SERIES) {
+          const raw = series[item.type];
+          const today = new Date();
+          const todayCount = raw.filter((point) => {
+            const date = new Date(point.t);
+            return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
+          }).length;
+          summary[item.type] = { latest: raw[0]?.v ?? null, todayCount };
+          series[item.type] = aggregate(raw, period);
+        }
+        setLoaded({ period, data: series, summary });
       })
       .catch((err) => { if (!cancelled) setError(err.message); });
     return () => { cancelled = true; };
@@ -154,7 +165,7 @@ export default function VitalCharts({ patientId, initialPeriod = 7, simple = fal
       </div>
       {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
       {!loaded || loaded.period !== period ? <p className="text-sm text-muted-foreground">Cargando…</p> : simple ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{SERIES.map((item) => <div key={item.type} className="rounded-2xl border border-border bg-card p-3 shadow-sm"><p className="mb-1 text-xs font-semibold text-muted-foreground">{item.label}</p><BarChart simple points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} unit={item.unit} /></div>)}</div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{SERIES.map((item) => { const current = loaded.summary[item.type]; const tone = current.latest == null ? null : valueTone(item.type, current.latest, settings); return <div key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><div className="flex items-start justify-between gap-2"><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-1 font-mono text-2xl font-semibold tabular-nums">{current.latest ?? "–"}{current.latest != null && <span className="ml-1 text-xs font-medium text-muted-foreground">{item.unit}</span>}</p></div><StatusPill tone={tone === "green" ? "success" : tone === "orange" ? "warning" : tone === "red" ? "critical" : "neutral"}>{tone === "green" ? "Normal" : tone === "orange" ? "Atención" : tone === "red" ? "Alerta" : "Sin datos"}</StatusPill></div><p className="mt-1 text-xs text-muted-foreground">Medidas hoy: {current.todayCount}</p><div className="mt-2"><BarChart simple points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} unit={item.unit} /></div></div>; })}</div>
       ) : (
         <div><div className="mb-4 flex flex-wrap gap-4 text-xs font-medium text-muted-foreground"><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#8fbd9f]" />En rango</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e5b078]" />Cerca del límite</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e3a0a0]" />Fuera de rango</span></div><div className="space-y-4">{SERIES.map((item) => <section key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 className="mb-3 text-base font-semibold">{item.label}</h2><BarChart points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} unit={item.unit} /></section>)}</div></div>
       )}
