@@ -4,6 +4,10 @@ import { useState, useRef } from "react";
 import { Camera, Save } from "lucide-react";
 import api from "@/utils/api";
 
+function dateInputValue(value) {
+  return value ? String(value).slice(0, 10) : "";
+}
+
 /**
  * PatientForm — create/edit a patient. Plain text inputs (SPEC §4.11):
  * big targets, one obvious action. Optional avatar photo.
@@ -12,7 +16,7 @@ export default function PatientForm({ patient, onSaved, onCancel }) {
   const isEdit = Boolean(patient);
   const [form, setForm] = useState({
     name: patient?.name ?? "",
-    dob: patient?.dob ?? "",
+    dob: dateInputValue(patient?.dob),
     gender: patient?.gender ?? "",
     allergies: patient?.allergies ?? "",
     medications: patient?.medications ?? "",
