@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { ArrowLeft, BarChart3, Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, Pill, ShieldAlert, Users, X } from "lucide-react"
 import { useEffect, useState, type ReactNode } from "react"
+import ChatWidget from "@/components/chat/ChatWidget"
 
 const navItems = [
   { key: "inicio", label: "Inicio", href: "/", icon: Home },
@@ -98,6 +99,7 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
           })}
         </div>
       </nav>
+      <ChatWidget />
     </div>
   )
 }

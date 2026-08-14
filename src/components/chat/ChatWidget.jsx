@@ -49,20 +49,20 @@ export default function ChatWidget() {
 
   return (
     <>
-      {open && <div className="chat-widget-overlay" onClick={() => setOpen(false)} />}
+      {open && <div className="fixed inset-0 z-40 bg-foreground/30" onClick={() => setOpen(false)} />}
       {open && (
-        <div className="chat-widget-panel" role="dialog" aria-label="Asistente de salud">
-          <div className="chat-widget-header">
+        <div className="fixed bottom-24 right-4 z-50 flex h-[min(70vh,560px)] w-[min(calc(100vw-2rem),380px)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl" role="dialog" aria-label="Asistente de salud">
+          <div className="flex items-center justify-between border-b border-border bg-primary p-4 text-primary-foreground">
             <div className="flex flex-row items-center gap-2">
-              <div className="chat-widget-avatar">💬</div>
+              <div className="flex size-9 items-center justify-center rounded-xl bg-primary-foreground/15">AI</div>
               <div>
-                <p className="font-semibold text-bark text-sm">Asistente de salud</p>
-                <p className="text-xs text-muted">Información, nunca consejo médico</p>
+                 <p className="text-sm font-semibold">Asistente de salud</p>
+                 <p className="text-xs text-primary-foreground/75">Información, nunca consejo médico</p>
               </div>
             </div>
             <button
               type="button"
-              className="btn btn-sm btn-ghost"
+              className="flex size-10 items-center justify-center rounded-xl text-primary-foreground hover:bg-primary-foreground/10"
               aria-label="Cerrar chat"
               onClick={() => setOpen(false)}
             >
@@ -70,20 +70,20 @@ export default function ChatWidget() {
             </button>
           </div>
 
-          <div className="chat-widget-body">
+          <div className="min-h-0 flex-1 overflow-y-auto p-4">
             {messages.length === 0 ? (
-              <div className="chat-widget-empty">
+              <div>
                 {!activePatientId && (
-                  <p className="text-xs text-muted text-center mb-2">
+                    <p className="mb-2 text-center text-xs text-warning-foreground">
                     ⚠️ Selecciona un paciente para que el asistente use sus datos.
                   </p>
                 )}
-                <p className="text-muted text-sm text-center mb-4">
+                <p className="mb-4 text-center text-sm text-muted-foreground">
                   Pregunta sobre las constantes, notas y el estado de tus pacientes.
                 </p>
                 <div className="space-y-2">
                   {SUGGESTED.map((q) => (
-                    <button key={q} type="button" className="suggested-chip" onClick={() => send(q)}>
+                    <button key={q} type="button" className="block w-full rounded-xl border border-border bg-background p-3 text-left text-sm text-foreground hover:bg-muted" onClick={() => send(q)}>
                       {q}
                     </button>
                   ))}
@@ -94,7 +94,7 @@ export default function ChatWidget() {
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`chat-widget-msg ${m.role === "user" ? "chat-widget-msg--user" : "chat-widget-msg--ai"}`}
+                    className={`rounded-xl p-3 text-sm leading-6 ${m.role === "user" ? "ml-8 bg-primary text-primary-foreground" : "mr-8 bg-muted text-foreground"}`}
                   >
                     {m.role === "user" ? (
                       messageText(m)
@@ -106,22 +106,22 @@ export default function ChatWidget() {
                   </div>
                 ))}
                 {status === "streaming" && (
-                  <div className="chat-widget-msg chat-widget-msg--ai">Escribiendo…</div>
+                  <div className="mr-8 rounded-xl bg-muted p-3 text-sm text-muted-foreground">Escribiendo…</div>
                 )}
-                {error && <p className="text-red-600 text-xs">{error.message}</p>}
+                 {error && <p className="text-xs text-destructive">{error.message}</p>}
               </div>
             )}
           </div>
 
           <form
-            className="chat-widget-inputbar"
+            className="flex gap-2 border-t border-border p-3"
             onSubmit={(e) => {
               e.preventDefault();
               send();
             }}
           >
             <input
-              className="input"
+              className="h-11 min-w-0 flex-1 rounded-xl border border-input bg-background px-3 text-sm outline-none focus:border-ring"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder="Escribe tu pregunta…"
@@ -129,7 +129,7 @@ export default function ChatWidget() {
             />
             <button
               type="submit"
-              className="btn btn-primary shrink-0"
+              className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-50"
               aria-label="Enviar"
               disabled={status === "streaming" || !draft.trim()}
             >
@@ -141,7 +141,7 @@ export default function ChatWidget() {
 
       <button
         type="button"
-        className={`chat-widget-bubble ${open ? "chat-widget-bubble--open" : ""}`}
+        className={`fixed bottom-20 right-4 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ${open ? "rotate-90" : ""}`}
         aria-label="Abrir asistente"
         onClick={() => setOpen((v) => !v)}
       >

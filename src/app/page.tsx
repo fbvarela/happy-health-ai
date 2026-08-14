@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Activity, BarChart3, ChevronRight, HeartPulse, Thermometer, UserPlus } from "lucide-react";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
+import { computeHealthScore } from "@/lib/health-score";
 import PooCounter from "@/components/dashboard/PooCounter";
 import MoodPicker from "@/components/dashboard/MoodPicker";
 import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
@@ -57,6 +58,7 @@ export default async function DashboardPage({ searchParams }) {
   const active = patients.find((p) => p.id === patientParam) ?? patients[0] ?? null;
 
   const data = active ? await getDashboardData(active.id) : null;
+  const healthScore = active ? await computeHealthScore(active.id) : null;
   const today = data?.today ?? {};
   const yesterday = data?.yesterday ?? {};
   const counts = data?.todayCounts ?? {};
@@ -127,7 +129,7 @@ export default async function DashboardPage({ searchParams }) {
             </div>
           )}
 
-          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
+          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} healthScore={healthScore} />
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
