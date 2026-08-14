@@ -136,14 +136,22 @@ export default async function DashboardPage({ searchParams }) {
       ) : (
         <>
           {patients.length > 1 && (
-            <div className="mb-5 flex flex-wrap gap-2">
+            <div className="mb-5 grid grid-cols-2 gap-3">
               {patients.map((p) => (
                 <Link
                   key={p.id}
                   href={`/?patient=${p.id}`}
-                  className={`flex min-h-10 items-center rounded-full px-4 text-sm font-semibold ${p.id === active.id ? "bg-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground"}`}
+                  className={`rounded-2xl border p-3 shadow-sm transition-colors ${p.id === active.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary/40"}`}
                 >
-                  {p.name}
+                  <div className="flex items-center gap-3">
+                    <span className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${p.id === active.id ? "bg-primary-foreground/15" : "bg-accent text-primary"}`}>
+                      {(p.name ?? "?").charAt(0).toUpperCase()}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold">{p.name}</span>
+                      <span className={`block text-xs ${p.id === active.id ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{p.id === active.id ? "Paciente activo" : "Cambiar"}</span>
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>
