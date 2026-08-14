@@ -56,7 +56,7 @@ export default function Page() {
             </Link>
           </div>
 
-          <Link href="/pacientes" aria-label="Ver paciente">
+          <Link href="/patients/09f7239c-935f-4e56-be31-927dd2ad8722" aria-label="Ver paciente">
             <PatientSummary name="Suso Martínez" room="Habitación 204 · Seguimiento activo" initial="S" />
           </Link>
 
@@ -76,7 +76,7 @@ export default function Page() {
           </section>
 
           <section className="mt-6 grid grid-cols-2 gap-3" aria-label="Actividad del paciente">
-            <Link href="/pacientes" className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <Link href="/patients/09f7239c-935f-4e56-be31-927dd2ad8722" className="rounded-2xl border border-border bg-card p-4 shadow-sm">
               <div className="mb-4 flex items-center justify-between"><span className="flex size-9 items-center justify-center rounded-xl bg-accent text-primary"><FileText className="size-5" /></span><span className="text-xs font-medium text-success">Estable</span></div>
               <p className="font-mono text-2xl font-semibold tracking-tight">2 <span className="font-sans text-sm font-medium text-muted-foreground">hoy</span></p>
               <p className="mt-1 text-xs text-muted-foreground">Deposiciones</p>
