@@ -14,6 +14,8 @@ import SpO2Recorder from "@/components/dashboard/SpO2Recorder";
 
 export const dynamic = "force-dynamic";
 
+const WARNING_DOT = <span className="size-2 shrink-0 rounded-full bg-warning" aria-hidden="true" />;
+
 function MeasureCard({ label, icon: Icon, today, yesterday, unit, count, accent = "text-primary" }) {
   return (
     <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
