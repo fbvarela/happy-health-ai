@@ -12,7 +12,7 @@ const METRIC_BUTTONS = [
   { key: "bp", label: "Tensión", hint: "mmHg", icon: Activity },
   { key: "temp", label: "Temperatura", hint: "°C", icon: Thermometer },
   { key: "poo", label: "Deposición", hint: "nº", icon: CircleDot },
-  { key: "mood", label: "Ánimo", hint: "1–5", icon: Smile },
+  { key: "mood", label: "Ánimo", hint: "verde/naranja/rojo", icon: Smile },
   { key: "night_events", label: "Nocturno", hint: "nº", icon: MoonStar },
 ];
 
@@ -131,15 +131,15 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
           ) : active === "mood" ? (
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">Estado de ánimo</label>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {MOOD_LEVELS.map((m) => (
                   <button
                     key={m.value}
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, value: m.value }))}
-                    className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl border px-1 text-center text-xs font-semibold ${String(form.value) === String(m.value) ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"}`}
+                    className={`flex min-h-14 flex-col items-center justify-center gap-1.5 rounded-xl border px-1 text-center text-xs font-semibold ${String(form.value) === String(m.value) ? (m.tone === "green" ? "border-success bg-success/10 text-success" : m.tone === "orange" ? "border-warning bg-warning/15 text-warning" : "border-critical bg-critical/10 text-critical") : "border-border bg-background text-muted-foreground"}`}
                   >
-                    <span className="text-lg leading-none">{m.value}</span>
+                    <span className={`size-5 rounded-full ${m.tone === "green" ? "bg-success" : m.tone === "orange" ? "bg-warning" : "bg-critical"}`} aria-hidden="true" />
                     <span className="leading-tight">{m.label}</span>
                   </button>
                 ))}

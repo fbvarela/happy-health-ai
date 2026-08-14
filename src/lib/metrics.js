@@ -14,14 +14,14 @@ export const METRICS = {
 };
 
 export const MOOD_LEVELS = [
-  { value: 1, label: "Muy mal" },
-  { value: 2, label: "Mal" },
-  { value: 3, label: "Regular" },
-  { value: 4, label: "Bien" },
-  { value: 5, label: "Muy bien" },
+  { value: 3, label: "Bien", tone: "green" },
+  { value: 2, label: "Regular", tone: "orange" },
+  { value: 1, label: "Mal", tone: "red" },
 ];
 
 export const moodLabel = (v) => MOOD_LEVELS.find((m) => m.value === Number(v))?.label ?? null;
+
+export const moodTone = (v) => MOOD_LEVELS.find((m) => m.value === Number(v))?.tone ?? null;
 
 export const DEFAULT_SETTINGS = {
   spo2_min: 92,

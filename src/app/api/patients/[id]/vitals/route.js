@@ -80,8 +80,8 @@ export async function POST(request, { params }) {
       inputs.push({ type, value: count, unit: "", count });
     } else if (type === "mood") {
       const value = Number(body.value);
-      if (!value || value < 1 || value > 5) {
-        return Response.json({ error: "Elige un estado de ánimo (1–5)" }, { status: 400 });
+      if (!value || value < 1 || value > 3) {
+        return Response.json({ error: "Elige un estado de ánimo (1–3)" }, { status: 400 });
       }
       inputs.push({ type, value, unit: "", count: null });
     } else {

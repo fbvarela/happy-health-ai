@@ -2,11 +2,12 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, ChevronRight, Droplets, HeartPulse, MoonStar, Thermometer, UserPlus } from "lucide-react";
+import { Activity, ChevronRight, Droplets, HeartPulse, Thermometer, UserPlus } from "lucide-react";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
 import PooCounter from "@/components/dashboard/PooCounter";
 import MoodPicker from "@/components/dashboard/MoodPicker";
+import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -106,7 +107,6 @@ export default async function DashboardPage({ searchParams }) {
 
   const nightToday = today.night_events ?? null;
   const nightYesterday = yesterday.night_events ?? null;
-  const nightCount = counts.night_events ?? 0;
 
   const pooToday = today.poo ?? null;
   const pooYesterday = yesterday.poo ?? null;
@@ -151,7 +151,7 @@ export default async function DashboardPage({ searchParams }) {
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
-            <MeasureCard label="Nocturno" icon={MoonStar} today={nightToday} yesterday={nightYesterday} count={nightCount} accent="text-warning" />
+            <NightEventsPicker patientId={active.id} today={nightToday} yesterday={nightYesterday} />
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-3">
