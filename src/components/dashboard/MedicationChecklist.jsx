@@ -16,7 +16,7 @@ function todayString() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
-export default function MedicationChecklist({ patientId }) {
+export default function MedicationChecklist({ patientId, className = "mt-4" }) {
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -41,7 +41,7 @@ export default function MedicationChecklist({ patientId }) {
   if (loading) return <section className="mt-4 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">Cargando medicación…</section>;
   const completed = medications.filter((medication) => medication.taken).length;
   return (
-    <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="medication-heading">
+    <section className={`${className} rounded-2xl border border-border bg-card p-4 shadow-sm`} aria-labelledby="medication-heading">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary"><Pill className="size-5" /></span><div><h2 id="medication-heading" className="text-base font-semibold">Medicación de hoy</h2><p className="text-xs text-muted-foreground">{completed} de {medications.length} tomadas</p></div></div>
         <Link href="/medications" className="text-xs font-semibold text-primary">Gestionar</Link>

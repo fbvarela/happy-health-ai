@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Activity, Droplets, HeartPulse, Thermometer, CircleDot, Save, Smile, MoonStar } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 import { MOOD_LEVELS } from "@/lib/metrics";
+import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
+import WalkCheck from "@/components/dashboard/WalkCheck";
 
 const METRIC_BUTTONS = [
   { key: "spo2", label: "SpO₂", hint: "%", icon: Droplets },
@@ -84,6 +87,11 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
 
   const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Deposiciones", mood: "Estado de ánimo", night_events: "Llamadas/levantadas nocturnas" };
 
+  const renderMetric = (m) => {
+    const Icon = m.icon;
+    return <button key={m.key} type="button" onClick={() => open(m.key)} className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"><Icon className="mb-1 text-foreground" size={24} /><span className="font-semibold text-sm">{m.label}</span><span className="text-xs text-muted-foreground">{m.hint}</span></button>;
+  };
+
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="text-base font-semibold">Registrar</div>
@@ -108,23 +116,16 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
         </button>
       </div>
 
+      <div className="mt-3 grid grid-cols-3 gap-3">{METRIC_BUTTONS.filter((m) => ["mood", "night_events", "poo"].includes(m.key)).map(renderMetric)}</div>
+
       <div className="mt-3 grid grid-cols-2 gap-3">
-        {METRIC_BUTTONS.filter((m) => m.key !== "spo2").map((m) => {
-          const Icon = m.icon;
-          return (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => open(m.key)}
-              className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"
-            >
-              <Icon className="mb-1 text-foreground" size={24} />
-              <span className="font-semibold text-sm">{m.label}</span>
-              <span className="text-xs text-muted-foreground">{m.hint}</span>
-            </button>
-          );
-        })}
+        <MedicationChecklist patientId={patientId} className="mt-0" />
+        <WalkCheck patientId={patientId} className="mt-0" />
       </div>
+
+      <div className="mt-3 grid grid-cols-3 gap-3">{METRIC_BUTTONS.filter((m) => ["hr", "bp", "temp"].includes(m.key)).map(renderMetric)}</div>
+
+      <Link href={`/patients/${patientId}/history`} className="mt-3 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold text-primary shadow-sm">Ver evolución</Link>
 
       <Modal open={Boolean(active)} onClose={() => setActive(null)} title={`Registrar ${labels[active] ?? ""}`}>
         <form onSubmit={handleSave} className="space-y-4">

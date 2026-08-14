@@ -151,9 +151,15 @@ export default async function DashboardPage({ searchParams }) {
 
           <SpO2Hero today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-4 grid grid-cols-3 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
             <NightEventsPicker patientId={active.id} today={nightToday} yesterday={nightYesterday} />
+            <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <MedicationChecklist patientId={active.id} className="mt-0" />
+            <WalkCheck patientId={active.id} className="mt-0" />
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-3">
@@ -162,17 +168,10 @@ export default async function DashboardPage({ searchParams }) {
             <MeasureCard label="Temp." icon={Thermometer} today={temp} yesterday={tempYesterday} unit="°C" count={tempCount} />
           </div>
 
-          <div className="mt-4">
-            <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
-          </div>
-
           <Link href={`/patients/${active.id}/history`} className="mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold text-primary shadow-sm">
             <BarChart3 className="size-5" /> Ver evolución
             <ChevronRight className="size-4" />
           </Link>
-
-          <MedicationChecklist patientId={active.id} />
-          <WalkCheck patientId={active.id} />
         </>
       )}
     </AppShell>
