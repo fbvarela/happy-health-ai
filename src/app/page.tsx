@@ -11,6 +11,7 @@ import MoodPicker from "@/components/dashboard/MoodPicker";
 import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
 import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
 import WalkCheck from "@/components/dashboard/WalkCheck";
+import MealQualityPicker from "@/components/dashboard/MealQualityPicker";
 import SpO2Recorder from "@/components/dashboard/SpO2Recorder";
 
 export const dynamic = "force-dynamic";
@@ -92,6 +93,8 @@ export default async function DashboardPage({ searchParams }) {
   const pooToday = today.poo ?? null;
   const pooYesterday = yesterday.poo ?? null;
   const pooCount = counts.poo ?? 0;
+  const mealToday = today.meal_quality?.value ?? null;
+  const mealYesterday = yesterday.meal_quality?.value ?? null;
 
   return (
     <AppShell
@@ -145,8 +148,10 @@ export default async function DashboardPage({ searchParams }) {
             <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
           </div>
 
+          <MedicationChecklist patientId={active.id} />
+
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <MedicationChecklist patientId={active.id} className="mt-0" />
+            <MealQualityPicker patientId={active.id} today={mealToday} yesterday={mealYesterday} />
             <WalkCheck patientId={active.id} className="mt-0" />
           </div>
 
