@@ -10,7 +10,7 @@ function localDateTime() {
   return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 }
 
-export default function SpO2Recorder({ patientId, today, yesterday, count, healthScore }) {
+export default function SpO2Recorder({ patientId, today, yesterday, count }) {
   const [value, setValue] = useState(today ?? null);
   const [todayCount, setTodayCount] = useState(count ?? 0);
   const [open, setOpen] = useState(false);
@@ -58,7 +58,6 @@ export default function SpO2Recorder({ patientId, today, yesterday, count, healt
       </div>
       <div className="mt-4 flex items-end gap-3"><p className="font-mono text-5xl font-semibold tracking-tight tabular-nums">{value ?? "–"}<span className="ml-1 text-lg font-medium text-muted-foreground">%</span></p><p className="pb-1.5 text-sm text-muted-foreground">Ayer <span className="font-semibold text-foreground">{yesterday != null ? `${yesterday}%` : "–"}</span></p></div>
       <p className="mt-2 text-xs text-muted-foreground">{todayCount} mediciones hoy</p>
-      {healthScore && <div className="mt-3 flex items-center justify-between rounded-xl bg-muted px-3 py-2"><span className="text-xs font-medium text-muted-foreground">Puntuación orientativa</span><span className={`text-sm font-bold ${healthScore.color === "verde" ? "text-success" : healthScore.color === "amarillo" ? "text-warning-foreground" : "text-critical"}`}>{healthScore.score}/100</span></div>}
       <button type="button" onClick={openForm} className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-primary"><Droplets size={18} /> Registrar SpO₂</button>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Registrar SpO₂" sub="Saturación de oxígeno">

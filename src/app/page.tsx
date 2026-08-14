@@ -42,6 +42,13 @@ function MeasureCard({ label, icon: Icon, today, yesterday, unit, count, accent 
   );
 }
 
+function HealthScoreCard({ score }) {
+  if (!score) return null;
+  const tone = score.color === "verde" ? "success" : score.color === "naranja" ? "warning" : "critical";
+  const toneClass = tone === "success" ? "text-success bg-success/10" : tone === "warning" ? "text-warning-foreground bg-warning/15" : "text-critical bg-critical/10";
+  return <section className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"><span className={`flex size-11 items-center justify-center rounded-xl text-sm font-bold ${toneClass}`}>{score.score}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">Puntuación de salud</p><p className="mt-0.5 text-xs text-muted-foreground">Orientativa, basada en SpO₂, ánimo, nocturno y paseo.</p></div><span className={`text-xs font-semibold ${toneClass.split(" ")[0]}`}>{score.color}</span></section>;
+}
+
 export default async function DashboardPage({ searchParams }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
@@ -129,7 +136,8 @@ export default async function DashboardPage({ searchParams }) {
             </div>
           )}
 
-          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} healthScore={healthScore} />
+          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
+          <HealthScoreCard score={healthScore} />
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
