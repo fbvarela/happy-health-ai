@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ArrowLeft, Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, ShieldAlert, Users, X } from "lucide-react"
+import { ArrowLeft, Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, Pill, ShieldAlert, Users, X } from "lucide-react"
 import { useEffect, useState, type ReactNode } from "react"
 
 const navItems = [
@@ -11,6 +11,10 @@ const navItems = [
   { key: "incidentes", label: "Incidentes", href: "/incidentes", icon: ShieldAlert },
   { key: "citas", label: "Citas", href: "/citas", icon: CalendarDays },
   { key: "mas", label: "Más", href: "/mas", icon: MoreHorizontal },
+]
+
+const menuItems = [
+  { key: "medications", label: "Medicación", href: "/medications", icon: Pill },
 ]
 
 export function AppShell({ children, title, eyebrow, action, showBack = false }: { children: ReactNode; title: string; eyebrow?: string; action?: ReactNode; showBack?: boolean }) {
@@ -60,7 +64,7 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
           <aside className="absolute right-0 top-0 flex h-full w-[min(88%,360px)] flex-col bg-card p-5 shadow-2xl" role="dialog" aria-label="Menú principal" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between"><p className="text-lg font-semibold">Menú</p><button type="button" onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground active:bg-accent"><X className="h-5 w-5" /></button></div>
             <div className="mt-6 flex flex-col gap-2">
-              {navItems.map(({ key, label, href, icon: Icon }) => (
+              {[...navItems, ...menuItems].map(({ key, label, href, icon: Icon }) => (
                 <Link key={key} href={href} onClick={() => setMenuOpen(false)} className={`flex min-h-14 items-center gap-3 rounded-xl px-3 text-left font-medium transition-colors active:bg-accent ${activeKey === key ? "bg-accent" : ""}`}>
                   <Icon className="size-5 text-primary" /><span>{label}</span><ChevronRight className="ml-auto size-4 text-muted-foreground" />
                 </Link>

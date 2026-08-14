@@ -92,6 +92,10 @@ The app is a **journal log**: every record (vital, note, appointment, photo) is 
 - **Easy to use:** plain **text input** for values and notes everywhere — no complex widgets, sliders or multi-step forms. A reading is "type a number → save".
 - **Moderate/big elements:** large buttons and readable font sizes (tap targets ≥ 44px, inputs ≥ 48px), generous spacing — users are often older, in a hurry, or on a small phone.
 - **Clear and organized:** one obvious action per screen, visible labels, consistent hierarchy; the dashboard answers "how is she today?" in one glance without reading anything extra.
+
+### 4.12 Medication
+- Should have a menu option and might allow the users to include name, quantity, and group by breakfast, lunch and supper.
+- the dasboard should show an element to check if the medication has been taking by these three groups).
 ---
 
 ## 5. Proposed Data Model (Neon / Postgres — draft)

@@ -32,6 +32,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
   const [editOpen, setEditOpen] = useState(false);
   const [infoModal, setInfoModal] = useState(null); // "allergies" | "medications"
+  const [displayedPatient, setDisplayedPatient] = useState(patient);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("caregiver");
@@ -131,11 +132,11 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
     }
   };
 
-  const dobLabel = patient.dob
+  const dobLabel = displayedPatient.dob
     ? (() => {
         // dob is a DATE ("YYYY-MM-DD") — parse as local date, not UTC, to avoid
         // the previous-day shift in negative-offset timezones.
-        const [y, m, d] = String(patient.dob).split("-").map(Number);
+        const [y, m, d] = String(displayedPatient.dob).split("-").map(Number);
         if (!y || !m || !d) return null;
         return new Date(y, m - 1, d).toLocaleDateString("es-ES", {
           day: "numeric",
@@ -146,23 +147,23 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
     : null;
 
   return (
-    <AppShell title={patient.name} eyebrow="Paciente" showBack>
+    <AppShell title={displayedPatient.name} eyebrow="Paciente" showBack>
       <div className="flex flex-row items-center gap-4">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarUrl}
-            alt={patient.name}
+            alt={displayedPatient.name}
             className="h-20 w-20 shrink-0 rounded-full border-2 border-border object-cover"
           />
         ) : (
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary font-serif text-3xl text-primary-foreground">
-            {(patient.name ?? "?").charAt(0).toUpperCase()}
+            {(displayedPatient.name ?? "?").charAt(0).toUpperCase()}
           </div>
         )}
         <div className="min-w-0">
           <h1 className="font-serif text-[2.2rem] font-semibold leading-none text-foreground break-words">
-            {patient.name}
+            {displayedPatient.name}
           </h1>
           <p className="mt-2 text-muted-foreground">
             {dobLabel ? (
@@ -196,7 +197,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
           aria-label="Ver alergias"
         >
           <div className="text-base font-semibold">Alergias</div>
-          <p className="mt-1 truncate text-sm text-muted-foreground">{patient.allergies || "Sin alergias registradas"}</p>
+          <p className="mt-1 truncate text-sm text-muted-foreground">{displayedPatient.allergies || "Sin alergias registradas"}</p>
           <p className="mt-2 text-xs font-semibold text-primary">Ver detalle</p>
         </button>
         <button
@@ -206,7 +207,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
           aria-label="Ver medicación"
         >
           <div className="text-base font-semibold">Medicación actual</div>
-          <p className="mt-1 truncate text-sm text-muted-foreground">{patient.medications || "Sin medicación registrada"}</p>
+          <p className="mt-1 truncate text-sm text-muted-foreground">{displayedPatient.medications || "Sin medicación registrada"}</p>
           <p className="mt-2 text-xs font-semibold text-primary">Ver detalle</p>
         </button>
       </div>
@@ -344,9 +345,10 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar paciente">
         <PatientForm
-          patient={patient}
+          patient={displayedPatient}
           onCancel={() => setEditOpen(false)}
-          onSaved={() => {
+          onSaved={(saved) => {
+            setDisplayedPatient((current) => ({ ...current, ...saved }));
             setEditOpen(false);
             router.refresh();
           }}
@@ -424,9 +426,9 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         open={infoModal === "allergies"}
         onClose={() => setInfoModal(null)}
         title="Alergias"
-        sub={patient.name}
+        sub={displayedPatient.name}
       >
-        <p className="text-sm leading-6 text-muted-foreground">{patient.allergies || "Sin alergias registradas."}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{displayedPatient.allergies || "Sin alergias registradas."}</p>
         <div className="mt-4 flex justify-end">
           <button
             type="button"
@@ -442,9 +444,9 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         open={infoModal === "medications"}
         onClose={() => setInfoModal(null)}
         title="Medicación actual"
-        sub={patient.name}
+        sub={displayedPatient.name}
       >
-        <p className="text-sm leading-6 text-muted-foreground">{patient.medications || "Sin medicación registrada."}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{displayedPatient.medications || "Sin medicación registrada."}</p>
         <div className="mt-4 flex justify-end">
           <button
             type="button"

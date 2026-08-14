@@ -8,6 +8,7 @@ import { getDashboardData } from "@/lib/dashboard";
 import PooCounter from "@/components/dashboard/PooCounter";
 import MoodPicker from "@/components/dashboard/MoodPicker";
 import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
+import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
 
 export const dynamic = "force-dynamic";
 
@@ -163,6 +164,8 @@ export default async function DashboardPage({ searchParams }) {
           <div className="mt-4">
             <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
           </div>
+
+          <MedicationChecklist patientId={active.id} />
         </>
       )}
     </AppShell>
