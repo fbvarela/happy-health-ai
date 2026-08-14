@@ -1,3 +1,5 @@
+import { AppShell } from "@/components/app-shell";
+
 export const metadata = { title: "Aviso legal — Happy Health AI" };
 
 /**
@@ -6,8 +8,8 @@ export const metadata = { title: "Aviso legal — Happy Health AI" };
  */
 export default function DisclaimerPage() {
   return (
-    <main className="min-h-screen bg-bg py-10 px-5">
-      <div className="max-w-2xl mx-auto bg-surface rounded-[14px] border-[1.5px] border-line p-8">
+    <AppShell title="Ayuda y soporte" eyebrow="Información importante" showBack>
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <h1 className="font-serif text-[1.8rem] text-bark mb-4">Aviso legal y exención de responsabilidad</h1>
         <div className="space-y-4 text-sm text-bark leading-relaxed">
           <p>
@@ -31,6 +33,6 @@ export default function DisclaimerPage() {
           <p className="text-muted text-xs pt-2">Última actualización: 2026.</p>
         </div>
       </div>
-    </main>
+    </AppShell>
   );
 }
