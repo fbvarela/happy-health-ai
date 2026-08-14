@@ -31,6 +31,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
   }, [patient.id, setActivePatientId]);
 
   const [editOpen, setEditOpen] = useState(false);
+  const [infoModal, setInfoModal] = useState(null); // "allergies" | "medications"
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("caregiver");
@@ -180,20 +181,32 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         )}
       </div>
 
-      {/* Pinned info (SPEC §4.2) — always visible */}
-      <div className="stats-row-grid" style={{ "--stats-cols": 2 }}>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      {/* Pinned info (SPEC §4.2) — always visible, tap for details */}
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => setInfoModal("allergies")}
+          className="rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"
+          aria-label="Ver alergias"
+        >
           <div className="text-base font-semibold">Alergias</div>
-          <p className="text-sm text-muted-foreground">{patient.allergies || "Sin alergias registradas"}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <p className="mt-1 truncate text-sm text-muted-foreground">{patient.allergies || "Sin alergias registradas"}</p>
+          <p className="mt-2 text-xs font-semibold text-primary">Ver detalle</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => setInfoModal("medications")}
+          className="rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"
+          aria-label="Ver medicación"
+        >
           <div className="text-base font-semibold">Medicación actual</div>
-          <p className="text-sm text-muted-foreground">{patient.medications || "Sin medicación registrada"}</p>
-        </div>
+          <p className="mt-1 truncate text-sm text-muted-foreground">{patient.medications || "Sin medicación registrada"}</p>
+          <p className="mt-2 text-xs font-semibold text-primary">Ver detalle</p>
+        </button>
       </div>
 
       {/* Latest vitals — populated in Phase 3 */}
-      <div className="mt16 space-y-4">
+      <div className="mt-6 space-y-4">
         <QuickRecord patientId={patient.id} canEdit={canEdit} onSaved={() => setRefresh((r) => r + 1)} />
         <DayTimeline key={refresh} patientId={patient.id} canEdit={canEdit} />
       </div>
@@ -400,6 +413,41 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
             </button>
           </div>
         </form>
+      </Modal>
+      <Modal
+        open={infoModal === "allergies"}
+        onClose={() => setInfoModal(null)}
+        title="Alergias"
+        sub={patient.name}
+      >
+        <p className="text-sm leading-6 text-muted-foreground">{patient.allergies || "Sin alergias registradas."}</p>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setInfoModal(null)}
+            className="flex min-h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted"
+          >
+            Cerrar
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        open={infoModal === "medications"}
+        onClose={() => setInfoModal(null)}
+        title="Medicación actual"
+        sub={patient.name}
+      >
+        <p className="text-sm leading-6 text-muted-foreground">{patient.medications || "Sin medicación registrada."}</p>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setInfoModal(null)}
+            className="flex min-h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted"
+          >
+            Cerrar
+          </button>
+        </div>
       </Modal>
     </AppShell>
   );
