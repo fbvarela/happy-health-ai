@@ -3,6 +3,33 @@
    tokens so legacy backend pages keep a styled look after the v0 theme
    swap. Pure additive CSS — does not alter the shadcn theme above.        */
 
+/* Legacy color-token aliases → shadcn values (light theme).
+   Old pages use --bg/--surface/--line/--bark/--muted which no longer exist. */
+:root {
+  --bg: var(--background);
+  --surface: var(--card);
+  --line: var(--border);
+  --bark: var(--foreground);
+  --bark-light: var(--muted-foreground);
+  --text-muted: var(--muted-foreground);
+  --sun: var(--primary);
+  --text: var(--foreground);
+}
+
+/* Register legacy color names as Tailwind utilities (bg-bg, bg-surface,
+   text-bark, border-line, bg-[var(--sun)] …) so those class names exist. */
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-bark: var(--bark);
+  --color-sun: var(--sun);
+}
+
+/* text-muted: old pages meant "muted text", not the muted surface color.
+   Map to muted-foreground (readable) instead of --muted (a pale chip color). */
+.text-muted { color: var(--muted-foreground) !important; }
+
 .card {
   border-radius: var(--radius-xl);
   border: 1px solid var(--border);

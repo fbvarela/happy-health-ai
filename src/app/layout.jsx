@@ -37,7 +37,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
+    <html lang="es" className={`light ${geistSans.variable} ${geistMono.variable} bg-background`}>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
       </body>
