@@ -11,7 +11,7 @@ export default async function PatientHistoryPage({ params }) {
       showBack
     >
       <MoodDistribution patientId={id} />
-      <VitalCharts patientId={id} />
+      <div className="mt-8"><VitalCharts patientId={id} /></div>
     </AppShell>
   );
 }
