@@ -10,12 +10,45 @@ export const CHART_PERIODS = [
 ];
 
 const SERIES = [
-  { type: "spo2", label: "SpO₂", unit: "%", color: "#8fbd9f" },
-  { type: "hr", label: "Frecuencia cardíaca", unit: "ppm", color: "#e5b078" },
-  { type: "temp", label: "Temperatura", unit: "°C", color: "#e3a0a0" },
-  { type: "bp_systolic", label: "Tensión sistólica", unit: "mmHg", color: "#e5b078" },
-  { type: "bp_diastolic", label: "Tensión diastólica", unit: "mmHg", color: "#8fbd9f" },
+  { type: "spo2", label: "SpO₂", unit: "%" },
+  { type: "hr", label: "Frecuencia cardíaca", unit: "ppm" },
+  { type: "temp", label: "Temperatura", unit: "°C" },
+  { type: "bp_systolic", label: "Tensión sistólica", unit: "mmHg" },
+  { type: "bp_diastolic", label: "Tensión diastólica", unit: "mmHg" },
 ];
+
+const SOFT_COLORS = {
+  green: "#8fbd9f",
+  orange: "#e5b078",
+  red: "#e3a0a0",
+};
+
+const DEFAULT_SETTINGS = {
+  spo2_min: 92,
+  hr_min: 50,
+  hr_max: 120,
+  temp_min: 36,
+  temp_max: 37.5,
+  bp_sys_max: 140,
+  bp_dia_max: 90,
+};
+
+function valueTone(type, value, settings) {
+  const v = Number(value);
+  const s = { ...DEFAULT_SETTINGS, ...(settings ?? {}) };
+  if (type === "spo2") return v >= Number(s.spo2_min) ? "green" : v >= Number(s.spo2_min) - 3 ? "orange" : "red";
+  if (type === "hr") {
+    if (v >= Number(s.hr_min) && v <= Number(s.hr_max)) return "green";
+    return v >= Number(s.hr_min) - 10 && v <= Number(s.hr_max) + 10 ? "orange" : "red";
+  }
+  if (type === "temp") {
+    if (v >= Number(s.temp_min) && v <= Number(s.temp_max)) return "green";
+    return v >= Number(s.temp_min) - 0.5 && v <= Number(s.temp_max) + 0.5 ? "orange" : "red";
+  }
+  if (type === "bp_systolic") return v <= Number(s.bp_sys_max) ? "green" : v <= Number(s.bp_sys_max) + 10 ? "orange" : "red";
+  if (type === "bp_diastolic") return v <= Number(s.bp_dia_max) ? "green" : v <= Number(s.bp_dia_max) + 5 ? "orange" : "red";
+  return "green";
+}
 
 function bucketLabel(timestamp, period) {
   const date = new Date(timestamp);
@@ -35,7 +68,7 @@ function aggregate(rows, period) {
   return [...buckets.values()].map((bucket) => ({ ...bucket, v: bucket.total / bucket.count }));
 }
 
-function BarChart({ points, label, color, unit, simple = false }) {
+function BarChart({ points, label, unit, type, settings, simple = false }) {
   if (!points || points.length === 0) {
     return <p className="py-5 text-sm text-muted-foreground">No hay datos para este periodo.</p>;
   }
@@ -67,7 +100,8 @@ function BarChart({ points, label, color, unit, simple = false }) {
         const barHeight = Math.max(3, ((point.v - min) / range) * chartHeight);
         const x = left + index * (chartWidth / points.length) + gap / 2;
         const y = height - bottom - barHeight;
-        return <g key={`${point.label}-${index}`}><rect x={x} y={y} width={barWidth} height={barHeight} rx="3" fill={color} opacity="0.85"><title>{`${point.label}: ${point.v.toFixed(1)}${unit}`}</title></rect>{!simple && (points.length <= 12 || index % Math.ceil(points.length / 10) === 0) && <text x={x + barWidth / 2} y={height - 10} textAnchor="middle" fontSize="10" fill="currentColor" className="text-muted-foreground">{point.label}</text>}</g>;
+        const tone = valueTone(type, point.v, settings);
+        return <g key={`${point.label}-${index}`}><rect x={x} y={y} width={barWidth} height={barHeight} rx="3" fill={SOFT_COLORS[tone]} opacity="0.9"><title>{`${point.label}: ${point.v.toFixed(1)}${unit} (${tone})`}</title></rect>{!simple && (points.length <= 12 || index % Math.ceil(points.length / 10) === 0) && <text x={x + barWidth / 2} y={height - 10} textAnchor="middle" fontSize="10" fill="currentColor" className="text-muted-foreground">{point.label}</text>}</g>;
       })}
     </svg>
   );
@@ -77,12 +111,14 @@ export default function VitalCharts({ patientId, initialPeriod = 7, simple = fal
   const [period, setPeriod] = useState(initialPeriod);
   const [loaded, setLoaded] = useState(null);
   const [error, setError] = useState("");
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
   useEffect(() => {
     let cancelled = false;
-    api.getVitals(patientId, `?days=${period}`)
-      .then((rows) => {
+    Promise.all([api.getVitals(patientId, `?days=${period}`), api.getSettings(patientId)])
+      .then(([rows, patientSettings]) => {
         if (cancelled) return;
+        setSettings({ ...DEFAULT_SETTINGS, ...(patientSettings ?? {}) });
         const series = {};
         for (const item of SERIES) series[item.type] = [];
         for (const vital of rows ?? []) {
@@ -102,9 +138,9 @@ export default function VitalCharts({ patientId, initialPeriod = 7, simple = fal
       </div>
       {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
       {!loaded || loaded.period !== period ? <p className="text-sm text-muted-foreground">Cargando…</p> : simple ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{SERIES.map((item) => <div key={item.type} className="rounded-2xl border border-border bg-card p-3 shadow-sm"><p className="mb-1 text-xs font-semibold text-muted-foreground">{item.label}</p><BarChart simple points={loaded.data[item.type]} label={item.label} color={item.color} unit={item.unit} /></div>)}</div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{SERIES.map((item) => <div key={item.type} className="rounded-2xl border border-border bg-card p-3 shadow-sm"><p className="mb-1 text-xs font-semibold text-muted-foreground">{item.label}</p><BarChart simple points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} unit={item.unit} /></div>)}</div>
       ) : (
-        <div className="space-y-4">{SERIES.map((item) => <section key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 className="mb-3 text-base font-semibold">{item.label}</h2><BarChart points={loaded.data[item.type]} label={item.label} color={item.color} unit={item.unit} /></section>)}</div>
+        <div><div className="mb-4 flex flex-wrap gap-4 text-xs font-medium text-muted-foreground"><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#8fbd9f]" />En rango</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e5b078]" />Cerca del límite</span><span className="inline-flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#e3a0a0]" />Fuera de rango</span></div><div className="space-y-4">{SERIES.map((item) => <section key={item.type} className="rounded-2xl border border-border bg-card p-4 shadow-sm"><h2 className="mb-3 text-base font-semibold">{item.label}</h2><BarChart points={loaded.data[item.type]} label={item.label} type={item.type} settings={settings} unit={item.unit} /></section>)}</div></div>
       )}
     </div>
   );
