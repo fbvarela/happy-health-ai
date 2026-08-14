@@ -19,10 +19,11 @@ function todayString() {
 export default function MedicationChecklist({ patientId }) {
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [saving, setSaving] = useState(null);
 
   useEffect(() => {
-    api.getMedications(patientId, todayString()).then((rows) => setMedications(rows ?? [])).catch(() => {}).finally(() => setLoading(false));
+    api.getMedications(patientId, todayString()).then((rows) => setMedications(rows ?? [])).catch(() => setError(true)).finally(() => setLoading(false));
   }, [patientId]);
 
   const toggle = async (medication) => {
@@ -38,8 +39,6 @@ export default function MedicationChecklist({ patientId }) {
   };
 
   if (loading) return <section className="mt-4 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">Cargando medicación…</section>;
-  if (medications.length === 0) return null;
-
   const completed = medications.filter((medication) => medication.taken).length;
   return (
     <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="medication-heading">
@@ -47,13 +46,13 @@ export default function MedicationChecklist({ patientId }) {
         <div className="flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary"><Pill className="size-5" /></span><div><h2 id="medication-heading" className="text-base font-semibold">Medicación de hoy</h2><p className="text-xs text-muted-foreground">{completed} de {medications.length} tomadas</p></div></div>
         <Link href="/medications" className="text-xs font-semibold text-primary">Gestionar</Link>
       </div>
-      <div className="mt-4 space-y-3">
+      {error ? <div className="mt-4 rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-muted-foreground">No se pudo cargar la medicación. Comprueba que la migración de medicación está aplicada.</div> : medications.length === 0 ? <div className="mt-4 rounded-xl border border-dashed border-border p-3 text-sm text-muted-foreground">No hay medicación configurada. <Link href="/medications" className="font-semibold text-primary">Configurar medicación</Link></div> : <div className="mt-4 space-y-3">
         {GROUPS.map((group) => {
           const entries = medications.filter((medication) => medication.meal_group === group.key);
           if (entries.length === 0) return null;
           return <div key={group.key}><p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{group.label}</p><div className="space-y-2">{entries.map((medication) => <button key={medication.id} type="button" disabled={saving === medication.id} onClick={() => toggle(medication)} className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-border bg-background px-3 text-left disabled:opacity-50"><span className={`flex size-7 items-center justify-center rounded-lg border ${medication.taken ? "border-success bg-success text-success-foreground" : "border-input bg-card"}`}>{medication.taken && <Check className="size-4" />}</span><span className="min-w-0 flex-1"><span className={`block text-sm font-semibold ${medication.taken ? "text-muted-foreground line-through" : "text-foreground"}`}>{medication.name}</span><span className="block text-xs text-muted-foreground">{medication.quantity}</span></span></button>)}</div></div>;
         })}
-      </div>
+      </div>}
     </section>
   );
 }
