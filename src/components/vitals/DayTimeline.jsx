@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import api from "@/utils/api";
-import { METRICS } from "@/lib/metrics";
+import { METRICS, moodLabel } from "@/lib/metrics";
 import Modal from "@/components/ui/Modal";
 
 const TYPE_LABELS = {
@@ -14,6 +14,8 @@ const TYPE_LABELS = {
   bp_diastolic: "Tensión",
   temp: "Temperatura",
   poo: "Deposición",
+  mood: "Ánimo",
+  night_events: "Nocturno",
 };
 
 /**
@@ -71,7 +73,8 @@ export default function DayTimeline({ patientId, canEdit }) {
     new Date(iso).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
 
   const display = (v) => {
-    if (v.type === "poo") return `${v.count ?? v.value}×`;
+    if (v.type === "poo" || v.type === "night_events") return `${v.count ?? v.value}×`;
+    if (v.type === "mood") return `${v.value} (${moodLabel(v.value) ?? ""})`;
     if (v.type === "bp_systolic") return `${v.value}/–`;
     if (v.type === "bp_diastolic") return `–/${v.value}`;
     return `${v.value}${METRICS[v.type]?.unit ?? ""}`;
@@ -81,7 +84,7 @@ export default function DayTimeline({ patientId, canEdit }) {
     // Group by metric type, show min–max where multiple readings exist
     const byType = {};
     for (const v of group) {
-      if (v.type === "poo" || v.type === "bp_diastolic") continue;
+      if (v.type === "poo" || v.type === "bp_diastolic" || v.type === "mood" || v.type === "night_events") continue;
       const key = v.type === "bp_systolic" ? "Tensión (sys)" : TYPE_LABELS[v.type];
       (byType[key] ??= []).push(Number(v.value));
     }

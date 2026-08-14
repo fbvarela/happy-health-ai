@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity, Droplets, HeartPulse, Thermometer, CircleDot, Save } from "lucide-react";
+import { Activity, Droplets, HeartPulse, Thermometer, CircleDot, Save, Smile, MoonStar } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
+import { MOOD_LEVELS } from "@/lib/metrics";
 
 const METRIC_BUTTONS = [
   { key: "spo2", label: "SpO₂", hint: "%", icon: Droplets },
@@ -11,6 +12,8 @@ const METRIC_BUTTONS = [
   { key: "bp", label: "Tensión", hint: "mmHg", icon: Activity },
   { key: "temp", label: "Temperatura", hint: "°C", icon: Thermometer },
   { key: "poo", label: "Deposición", hint: "nº", icon: CircleDot },
+  { key: "mood", label: "Ánimo", hint: "1–5", icon: Smile },
+  { key: "night_events", label: "Nocturno", hint: "nº", icon: MoonStar },
 ];
 
 /**
@@ -52,8 +55,8 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
     if (key === "bp") {
       prefill.systolic = lastValues.bp_systolic ?? "";
       prefill.diastolic = lastValues.bp_diastolic ?? "";
-    } else if (key === "poo") {
-      prefill.count = lastValues.poo ?? "1";
+    } else if (key === "poo" || key === "night_events") {
+      prefill.count = lastValues[key] ?? "1";
     } else {
       prefill.value = lastValues[key] ?? "";
     }
@@ -80,7 +83,7 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
     }
   };
 
-  const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Deposiciones" };
+  const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Deposiciones", mood: "Estado de ánimo", night_events: "Llamadas/levantadas nocturnas" };
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
@@ -118,10 +121,29 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
                 <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="decimal" value={form.diastolic ?? ""} onChange={set("diastolic")} placeholder="80" required />
               </div>
             </div>
-          ) : active === "poo" ? (
+          ) : active === "poo" || active === "night_events" ? (
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Número de deposiciones</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                {active === "poo" ? "Número de deposiciones" : "Nº de veces que llamó o se levantó"}
+              </label>
               <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" inputMode="numeric" value={form.count ?? "1"} onChange={set("count")} placeholder="1" />
+            </div>
+          ) : active === "mood" ? (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Estado de ánimo</label>
+              <div className="grid grid-cols-5 gap-2">
+                {MOOD_LEVELS.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, value: m.value }))}
+                    className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl border px-1 text-center text-xs font-semibold ${String(form.value) === String(m.value) ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"}`}
+                  >
+                    <span className="text-lg leading-none">{m.value}</span>
+                    <span className="leading-tight">{m.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <div>

@@ -3,7 +3,7 @@ import sql from "@/lib/db";
 import { requirePatientAccess } from "@/lib/patients";
 import { checkVitalAlert } from "@/lib/vitals";
 
-const VALID_TYPES = ["spo2", "hr", "bp_systolic", "bp_diastolic", "temp", "poo"];
+const VALID_TYPES = ["spo2", "hr", "bp_systolic", "bp_diastolic", "temp", "poo", "mood", "night_events"];
 
 /**
  * GET /api/patients/[id]/vitals?from=&to= — vitals in range (caregiver+).
@@ -75,9 +75,15 @@ export async function POST(request, { params }) {
     if (!VALID_TYPES.includes(type)) {
       return Response.json({ error: "Tipo de constante no válido" }, { status: 400 });
     }
-    if (type === "poo") {
+    if (type === "poo" || type === "night_events") {
       const count = Number(body.count) > 0 ? Number(body.count) : 1;
       inputs.push({ type, value: count, unit: "", count });
+    } else if (type === "mood") {
+      const value = Number(body.value);
+      if (!value || value < 1 || value > 5) {
+        return Response.json({ error: "Elige un estado de ánimo (1–5)" }, { status: 400 });
+      }
+      inputs.push({ type, value, unit: "", count: null });
     } else {
       const value = Number(body.value);
       if (!value || value <= 0) {
