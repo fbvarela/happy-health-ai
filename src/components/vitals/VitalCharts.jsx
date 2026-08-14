@@ -103,7 +103,9 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
   const chartWidth = width - left - right;
   const chartHeight = height - top - bottom;
   const gap = 2;
-  const barWidth = Math.min(simple ? 26 : 36, Math.max(4, chartWidth / points.length - gap));
+  const barWidth = simple
+    ? Math.min(26, Math.max(4, chartWidth / points.length - gap))
+    : Math.max(4, chartWidth / points.length - gap);
 
   return (
     <div className="overflow-x-auto">
