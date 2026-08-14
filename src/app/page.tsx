@@ -2,11 +2,11 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, ChevronRight, Droplets, HeartPulse, MoonStar, Smile, Thermometer, UserPlus } from "lucide-react";
+import { Activity, ChevronRight, Droplets, HeartPulse, MoonStar, Thermometer, UserPlus } from "lucide-react";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
-import { moodLabel } from "@/lib/metrics";
 import PooCounter from "@/components/dashboard/PooCounter";
+import MoodPicker from "@/components/dashboard/MoodPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -104,10 +104,6 @@ export default async function DashboardPage({ searchParams }) {
   const bpYesterday = yesterday.bp_systolic != null ? `${yesterday.bp_systolic.value}/${yesterday.bp_diastolic?.value ?? "–"}` : null;
   const bpCount = Math.max(counts.bp_systolic ?? 0, counts.bp_diastolic ?? 0);
 
-  const moodToday = today.mood?.value != null ? moodLabel(today.mood.value) : null;
-  const moodYesterday = yesterday.mood?.value != null ? moodLabel(yesterday.mood.value) : null;
-  const moodCount = counts.mood ?? 0;
-
   const nightToday = today.night_events ?? null;
   const nightYesterday = yesterday.night_events ?? null;
   const nightCount = counts.night_events ?? 0;
@@ -154,7 +150,7 @@ export default async function DashboardPage({ searchParams }) {
           <SpO2Hero today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <MeasureCard label="Ánimo" icon={Smile} today={moodToday} yesterday={moodYesterday} count={moodCount} accent="text-warning" />
+            <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
             <MeasureCard label="Nocturno" icon={MoonStar} today={nightToday} yesterday={nightYesterday} count={nightCount} accent="text-warning" />
           </div>
 
