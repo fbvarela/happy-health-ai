@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { ArrowLeft, Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, ShieldAlert, Users, X } from "lucide-react"
-import { useState, type ReactNode } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 
 const navItems = [
   { key: "inicio", label: "Inicio", href: "/", icon: Home },
@@ -17,7 +17,17 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
   const pathname = usePathname()
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [unread, setUnread] = useState(0)
   const activeKey = pathname === "/" ? "inicio" : pathname.split("/")[1]
+
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/notifications/unread-count", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => { if (!cancelled) setUnread(Number(data?.count) || 0) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [pathname])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -36,7 +46,7 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
             {action}
             <Link href="/notifications" className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground" aria-label="Notificaciones">
               <Bell className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-critical px-1 text-[10px] font-bold text-critical-foreground">2</span>
+              {unread > 0 && <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-critical px-1 text-[10px] font-bold text-critical-foreground">{unread}</span>}
             </Link>
             <button type="button" onClick={() => setMenuOpen(true)} className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-label="Abrir menú">
               <Menu className="h-5 w-5" />

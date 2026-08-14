@@ -65,7 +65,6 @@ export async function PATCH(request, { params }) {
   const fields = ["name", "dob", "gender", "allergies", "medications"];
   for (const f of fields) {
     if (body[f] !== undefined) {
-      values.push(f);
       if (typeof body[f] === "string" && ["name", "allergies", "medications"].includes(f)) {
         values.push((body[f] ?? "").trim() || null);
       } else {
