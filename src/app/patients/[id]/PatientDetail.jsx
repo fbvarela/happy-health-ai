@@ -221,34 +221,36 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         <DayTimeline key={refresh} patientId={patient.id} canEdit={canEdit} />
       </div>
 
-      <Link
-        href={`/patients/${patient.id}/incidents`}
-        className="mt16 block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
-      >
-        <div className="flex flex-row items-center justify-between">
-          <div>
-            <div className="text-base font-semibold">Incidentes</div>
-            <p className="text-sm text-muted-foreground">Heridas, caídas y otros con fotos.</p>
+      <div className="mt-6 space-y-3">
+        <Link
+          href={`/patients/${patient.id}/incidents`}
+          className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
+        >
+          <div className="flex flex-row items-center justify-between">
+            <div>
+              <div className="text-base font-semibold">Incidentes</div>
+              <p className="text-sm text-muted-foreground">Heridas, caídas y otros con fotos.</p>
+            </div>
+            <span className="text-2xl">›</span>
           </div>
-          <span className="text-2xl">›</span>
-        </div>
-      </Link>
+        </Link>
 
-      <Link
-        href="/appointments"
-        className="mt16 block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
-      >
-        <div className="flex flex-row items-center justify-between">
-          <div>
-            <div className="text-base font-semibold">Citas</div>
-            <p className="text-sm text-muted-foreground">Consultas médicas y calendario.</p>
+        <Link
+          href="/appointments"
+          className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary"
+        >
+          <div className="flex flex-row items-center justify-between">
+            <div>
+              <div className="text-base font-semibold">Citas</div>
+              <p className="text-sm text-muted-foreground">Consultas médicas y calendario.</p>
+            </div>
+            <span className="text-2xl">›</span>
           </div>
-          <span className="text-2xl">›</span>
-        </div>
-      </Link>
+        </Link>
+      </div>
 
       {/* Members */}
-      <div className="mt16 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
         <div className="flex flex-row items-center justify-between">
           <div className="text-base font-semibold">Quién cuida</div>
           {isOwner && (
@@ -314,16 +316,16 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
         )}
       </div>
 
-      <div className="mt16">
+      <div className="mt-6">
         <GallerySection patientId={patient.id} canEdit={canEdit} />
       </div>
 
-      <div className="mt16">
+      <div className="mt-6">
         <NotesSection patientId={patient.id} canEdit={canEdit} />
       </div>
 
       {isOwner && (
-        <div className="mt16">
+        <div className="mt-6">
           {confirmDelete ? (
             <div className="rounded-2xl border border-destructive/30 bg-card p-5">
               <p className="mb-3 font-semibold text-foreground">
