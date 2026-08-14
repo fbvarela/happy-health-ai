@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Save, ShieldAlert, Trash2, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Pencil, Save, Trash2 } from "lucide-react";
+import { AppShell, EmptyState } from "@/components/app-shell";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
-import BackButton from "@/components/BackButton";
 
 const SEVERITY = {
   green: { label: "Leve", color: "#2e7d4f" },
@@ -93,51 +93,46 @@ export default function IncidentsList({ incidents, showAll = false }) {
   const current = photos[viewerIdx];
 
   return (
-    <div className="page">
-      <BackButton fallback="/dashboard" label="Volver" />
-      <div className="flex flex-row items-center justify-between">
-        <div>
-          <h1 className="page-title">Incidentes</h1>
-          <p className="page-sub">{showAll ? "Todos los incidentes." : "Incidentes activos."}</p>
-        </div>
-        <Link href={showAll ? "/incidents" : "/incidents?all=1"} className="btn btn-sm btn-ghost">
+    <AppShell
+      title="Incidentes"
+      eyebrow={showAll ? "Todos los incidentes" : "Incidentes activos"}
+      showBack
+      action={
+        <Link href={showAll ? "/incidents" : "/incidents?all=1"} className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-muted-foreground">
           {showAll ? "Solo activos" : "Ver resueltos"}
         </Link>
-      </div>
-
-      {error && <p className="text-red-600 text-sm mt4">{error}</p>}
+      }
+    >
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {incidents.length === 0 ? (
-        <div className="card mt16">
-          <div className="empty-state">
-            <div className="empty-icon"><ShieldAlert size={28} /></div>
-            <p>No hay incidentes {showAll ? "" : "activos"}.</p>
-          </div>
+        <div className="mt-2">
+          <EmptyState title={showAll ? "No hay incidentes." : "No hay incidentes activos."} detail="Cuando registres un incidente lo verás aquí." />
         </div>
       ) : (
-        <ul className="mt16 space-y-2">
+        <ul className="mt-2 space-y-2">
           {incidents.map((inc) => {
             const sev = SEVERITY[inc.severity] ?? SEVERITY.green;
             return (
               <li key={inc.id}>
                 <button
                   type="button"
-                  className="w-full text-left bg-surface rounded-[14px] border-[1.5px] border-line p-4 hover:border-sun transition-colors"
+                  className="w-full rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary"
                   onClick={() => openDetail(inc.patient_id, inc.id)}
                 >
                   <div className="flex flex-row items-center gap-3">
-                    <span className="w-3 h-3 rounded-full shrink-0" style={{ background: sev.color }} />
+                    <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: sev.color }} />
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-bark truncate">
+                      <p className="truncate font-semibold text-foreground">
                         {inc.title}
-                        {!inc.active && <span className="text-xs text-muted font-normal ml-2">· resuelto</span>}
+                        {!inc.active && <span className="ml-2 text-xs font-normal text-muted-foreground">· resuelto</span>}
                       </p>
-                      <p className="text-xs text-muted">
+                      <p className="text-xs text-muted-foreground">
                         {inc.patient_name} ·{" "}
                         {new Date(inc.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
                     </div>
-                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${sev.color}20`, color: sev.color }}>
+                    <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: `${sev.color}20`, color: sev.color }}>
                       {sev.label}
                     </span>
                   </div>
@@ -153,29 +148,29 @@ export default function IncidentsList({ incidents, showAll = false }) {
         {openIncident && (
           <div>
             {openIncident.severity && (
-              <span className="inline-block text-xs px-2 py-0.5 rounded-full mb-2"
+              <span className="mb-2 inline-block rounded-full px-2 py-0.5 text-xs"
                 style={{ background: `${SEVERITY[openIncident.severity].color}20`, color: SEVERITY[openIncident.severity].color }}>
                 Gravedad: {SEVERITY[openIncident.severity].label}
               </span>
             )}
 
             {/* Active toggle */}
-            <label className="flex flex-row items-center gap-2 text-sm mb-2">
-              <input type="checkbox" checked={Boolean(openIncident.active)} onChange={toggleActive} disabled={busyActive} className="w-5 h-5" />
+            <label className="mb-2 flex flex-row items-center gap-2 text-sm">
+              <input type="checkbox" checked={Boolean(openIncident.active)} onChange={toggleActive} disabled={busyActive} className="h-5 w-5" />
               Activo
             </label>
 
-            {openIncident.notes && <p className="text-muted text-sm mb-3">{openIncident.notes}</p>}
+            {openIncident.notes && <p className="mb-3 text-sm text-muted-foreground">{openIncident.notes}</p>}
             <Link
               href={`/patients/${openIncident.patientId}`}
               aria-label="Ver paciente"
-              className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] rounded-full bg-[var(--surface)] border-2 border-line text-bark hover:border-[var(--bark)] transition-colors mb-3"
+              className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm transition-colors hover:border-primary"
             >
               <ArrowLeft size={20} />
             </Link>
 
             {photos.length === 0 ? (
-              <p className="text-muted text-sm mb-3">Sin fotos todavía.</p>
+              <p className="mb-3 text-sm text-muted-foreground">Sin fotos todavía.</p>
             ) : (
               <div>
                 {current.kind === "video" ? (
@@ -184,15 +179,15 @@ export default function IncidentsList({ incidents, showAll = false }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={current.url} alt={current.caption || "foto"} className="w-full rounded-[10px]" />
                 )}
-                <div className="flex flex-row items-center justify-between mt3">
-                  <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === 0}
+                <div className="mt-3 flex flex-row items-center justify-between">
+                  <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted disabled:opacity-50" disabled={viewerIdx === 0}
                     onClick={() => setViewerIdx((i) => Math.max(0, i - 1))} aria-label="Anterior">
                     <ChevronLeft size={20} />
                   </button>
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-muted-foreground">
                     {viewerIdx + 1} / {photos.length}
                   </p>
-                  <button type="button" className="btn btn-sm btn-ghost" disabled={viewerIdx === photos.length - 1}
+                  <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted disabled:opacity-50" disabled={viewerIdx === photos.length - 1}
                     onClick={() => setViewerIdx((i) => Math.min(photos.length - 1, i + 1))} aria-label="Siguiente">
                     <ChevronRight size={20} />
                   </button>
@@ -200,40 +195,40 @@ export default function IncidentsList({ incidents, showAll = false }) {
 
                 {/* Photo note */}
                 {editingCaption ? (
-                  <div className="mt3">
+                  <div className="mt-3">
                     <textarea
-                      className="input min-h-[70px]"
+                      className="min-h-[70px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring"
                       value={captionDraft}
                       onChange={(e) => setCaptionDraft(e.target.value)}
                       placeholder="Nota de esta foto (evolución, observaciones…)"
                     />
-                    <div className="flex flex-row gap-2 mt2">
-                      <button type="button" className="btn btn-sm btn-primary" onClick={saveCaption} disabled={savingCaption}>
-                        <Save size={14} className="mr-1" /> {savingCaption ? "Guardando…" : "Guardar"}
+                    <div className="mt-2 flex flex-row gap-2">
+                      <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground disabled:opacity-50" onClick={saveCaption} disabled={savingCaption}>
+                        <Save size={14} /> {savingCaption ? "Guardando…" : "Guardar"}
                       </button>
-                      <button type="button" className="btn btn-sm btn-ghost" onClick={() => setEditingCaption(false)}>
+                      <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted" onClick={() => setEditingCaption(false)}>
                         Cancelar
                       </button>
                     </div>
                   </div>
                 ) : (
                   current.caption && (
-                    <p className="text-sm text-bark mt3 whitespace-pre-wrap bg-[var(--bg)] border border-line rounded-[10px] p-3">
+                    <p className="mt-3 whitespace-pre-wrap rounded-lg border border-border bg-muted p-3 text-sm text-foreground">
                       {current.caption}
                     </p>
                   )
                 )}
 
-                <div className="flex flex-row items-center gap-2 mt2">
+                <div className="mt-2 flex flex-row items-center gap-2">
                   <button
                     type="button"
-                    className="btn btn-sm btn-ghost"
+                    className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted"
                     onClick={() => { setCaptionDraft(current.caption ?? ""); setEditingCaption(true); }}
                     aria-label={current.caption ? "Editar nota" : "Añadir nota"}
                   >
                     <Pencil size={14} />
                   </button>
-                  <button type="button" className="btn btn-sm btn-danger" onClick={removePhoto} aria-label="Quitar foto">
+                  <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-destructive hover:bg-muted" onClick={removePhoto} aria-label="Quitar foto">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -244,16 +239,16 @@ export default function IncidentsList({ incidents, showAll = false }) {
       </Modal>
 
       <Modal open={Boolean(confirmDelete)} onClose={() => setConfirmDelete(null)} title="Eliminar incidente">
-        <p className="text-muted mb-4">¿Seguro que quieres eliminar este incidente y sus fotos?</p>
+        <p className="mb-4 text-muted-foreground">¿Seguro que quieres eliminar este incidente y sus fotos?</p>
         <div className="flex gap-3">
-          <button type="button" className="btn btn-danger" onClick={handleDelete}>
+          <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 text-sm font-semibold text-destructive" onClick={handleDelete}>
             Eliminar
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>
+          <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setConfirmDelete(null)}>
             Cancelar
           </button>
         </div>
       </Modal>
-    </div>
+    </AppShell>
   );
 }
