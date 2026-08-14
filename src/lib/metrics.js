@@ -11,6 +11,7 @@ export const METRICS = {
   poo: { label: "Deposición", unit: "", decimals: 0 },
   mood: { label: "Estado de ánimo", unit: "", decimals: 0 },
   night_events: { label: "Llamadas/levantadas nocturnas", unit: "", decimals: 0 },
+  walk: { label: "Paseo", unit: "", decimals: 0 },
 };
 
 export const MOOD_LEVELS = [
