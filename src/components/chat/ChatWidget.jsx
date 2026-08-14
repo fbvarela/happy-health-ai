@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MessageSquareText, Send, X } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import ReactMarkdown from "react-markdown";
@@ -33,6 +33,9 @@ function messageText(m) {
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
+  const [position, setPosition] = useState(null);
+  const dragRef = useRef(null);
+  const movedRef = useRef(false);
   const { activePatientId } = useApp();
 
   const { messages, sendMessage, status, error } = useChat({
@@ -141,9 +144,30 @@ export default function ChatWidget() {
 
       <button
         type="button"
-        className={`fixed bottom-20 right-4 z-30 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ${open ? "rotate-90" : ""}`}
+        className={`fixed z-30 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ${open ? "rotate-90" : ""} ${position ? "" : "bottom-20 right-4"}`}
+        style={position ? { left: position.left, top: position.top, touchAction: "none" } : { touchAction: "none" }}
         aria-label="Abrir asistente"
-        onClick={() => setOpen((v) => !v)}
+        onPointerDown={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect();
+          dragRef.current = { offsetX: event.clientX - rect.left, offsetY: event.clientY - rect.top, startX: event.clientX, startY: event.clientY };
+          movedRef.current = false;
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (!dragRef.current) return;
+          const left = Math.max(8, Math.min(window.innerWidth - 64, event.clientX - dragRef.current.offsetX));
+          const top = Math.max(8, Math.min(window.innerHeight - 64, event.clientY - dragRef.current.offsetY));
+          if (Math.abs(event.clientX - dragRef.current.startX) > 3 || Math.abs(event.clientY - dragRef.current.startY) > 3) movedRef.current = true;
+          setPosition({ left, top });
+        }}
+        onPointerUp={(event) => {
+          dragRef.current = null;
+          event.currentTarget.releasePointerCapture?.(event.pointerId);
+        }}
+        onClick={() => {
+          if (movedRef.current) { movedRef.current = false; return; }
+          setOpen((v) => !v);
+        }}
       >
         {open ? <X size={26} /> : <MessageSquareText size={26} />}
       </button>
