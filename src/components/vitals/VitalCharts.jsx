@@ -103,7 +103,8 @@ function BarChart({ points, label, unit, type, settings, period, simple = false 
   const chartWidth = width - left - right;
   const chartHeight = height - top - bottom;
   const gap = 0;
-  const barWidth = Math.max(4, chartWidth / points.length);
+  const slotWidth = chartWidth / points.length;
+  const barWidth = period === 1 ? Math.min(44, Math.max(4, slotWidth)) : Math.max(4, slotWidth);
 
   return (
     <div className="overflow-x-auto">
@@ -116,7 +117,7 @@ function BarChart({ points, label, unit, type, settings, period, simple = false 
       </>}
       {points.map((point, index) => {
         const barHeight = Math.max(3, ((point.v - scaleMin) / range) * chartHeight);
-        const x = left + index * (chartWidth / points.length) + (chartWidth / points.length - barWidth) / 2;
+        const x = left + index * slotWidth + (slotWidth - barWidth) / 2;
         const y = height - bottom - barHeight;
         const tone = valueTone(type, point.v, settings);
         return <g key={`${point.label}-${index}`}><rect x={x} y={y} width={barWidth} height={barHeight} rx="3" fill={SOFT_COLORS[tone]} opacity="0.9"><title>{`${point.label}: ${point.v.toFixed(1)}${unit} (${tone})`}</title></rect>{!simple && (points.length <= 12 || index % Math.ceil(points.length / 10) === 0) && <text x={x + barWidth / 2} y={height - 10} textAnchor="middle" fontSize="10" fill="currentColor" className="text-muted-foreground">{point.label}</text>}</g>;
