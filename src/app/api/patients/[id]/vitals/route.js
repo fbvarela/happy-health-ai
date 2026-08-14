@@ -3,7 +3,7 @@ import sql from "@/lib/db";
 import { requirePatientAccess } from "@/lib/patients";
 import { checkVitalAlert } from "@/lib/vitals";
 
-const VALID_TYPES = ["spo2", "hr", "bp_systolic", "bp_diastolic", "temp", "poo", "mood", "night_events"];
+const VALID_TYPES = ["spo2", "hr", "bp_systolic", "bp_diastolic", "temp", "poo", "mood", "night_events", "walk"];
 
 /**
  * GET /api/patients/[id]/vitals?from=&to= — vitals in range (caregiver+).
@@ -90,7 +90,7 @@ export async function POST(request, { params }) {
         return Response.json({ error: "Introduce un valor" }, { status: 400 });
       }
       const unit =
-        type === "temp" ? "°C" : type === "spo2" ? "%" : type === "hr" ? "ppm" : "mmHg";
+        type === "temp" ? "°C" : type === "spo2" ? "%" : type === "hr" ? "ppm" : type === "mood" || type === "walk" ? "" : "mmHg";
       inputs.push({ type, value, unit, count: null });
     }
   }

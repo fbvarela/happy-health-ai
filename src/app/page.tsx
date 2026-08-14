@@ -9,6 +9,7 @@ import PooCounter from "@/components/dashboard/PooCounter";
 import MoodPicker from "@/components/dashboard/MoodPicker";
 import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
 import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
+import WalkCheck from "@/components/dashboard/WalkCheck";
 
 export const dynamic = "force-dynamic";
 
@@ -171,6 +172,7 @@ export default async function DashboardPage({ searchParams }) {
           </Link>
 
           <MedicationChecklist patientId={active.id} />
+          <WalkCheck patientId={active.id} />
         </>
       )}
     </AppShell>

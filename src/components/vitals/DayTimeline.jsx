@@ -16,6 +16,7 @@ const TYPE_LABELS = {
   poo: "Deposición",
   mood: "Ánimo",
   night_events: "Nocturno",
+  walk: "Paseo",
 };
 
 /**
@@ -74,6 +75,7 @@ export default function DayTimeline({ patientId, canEdit }) {
 
   const display = (v) => {
     if (v.type === "poo" || v.type === "night_events") return `${v.count ?? v.value}×`;
+    if (v.type === "walk") return "Sí";
     if (v.type === "mood") return `${v.value} (${moodLabel(v.value) ?? ""})`;
     if (v.type === "bp_systolic") return `${v.value}/–`;
     if (v.type === "bp_diastolic") return `–/${v.value}`;
@@ -84,7 +86,7 @@ export default function DayTimeline({ patientId, canEdit }) {
     // Group by metric type, show min–max where multiple readings exist
     const byType = {};
     for (const v of group) {
-      if (v.type === "poo" || v.type === "bp_diastolic" || v.type === "mood" || v.type === "night_events") continue;
+      if (v.type === "poo" || v.type === "bp_diastolic" || v.type === "mood" || v.type === "night_events" || v.type === "walk") continue;
       const key = v.type === "bp_systolic" ? "Tensión (sys)" : TYPE_LABELS[v.type];
       (byType[key] ??= []).push(Number(v.value));
     }
