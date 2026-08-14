@@ -48,7 +48,7 @@ export default function SpO2Recorder({ patientId, today, yesterday, count }) {
   };
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="spo2-heading">
+    <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="spo2-heading">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="flex size-9 items-center justify-center rounded-xl bg-success/10 text-success"><Droplets className="size-5" /></span>

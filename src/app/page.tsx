@@ -46,7 +46,7 @@ function HealthScoreCard({ score }) {
   if (!score) return null;
   const tone = score.color === "verde" ? "success" : score.color === "naranja" ? "warning" : "critical";
   const toneClass = tone === "success" ? "text-success bg-success/10" : tone === "warning" ? "text-warning-foreground bg-warning/15" : "text-critical bg-critical/10";
-  return <section className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"><span className={`flex size-11 items-center justify-center rounded-xl text-sm font-bold ${toneClass}`}>{score.score}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">Puntuación de salud</p><p className="mt-0.5 text-xs text-muted-foreground">Orientativa, basada en SpO₂, ánimo, nocturno y paseo.</p></div><span className={`text-xs font-semibold ${toneClass.split(" ")[0]}`}>{score.color}</span></section>;
+  return <section className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"><span className={`flex size-11 items-center justify-center rounded-xl text-sm font-bold ${toneClass}`}>{score.score}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">Puntuación de salud</p><p className="mt-0.5 text-xs text-muted-foreground">Orientativa, basada en SpO₂, ánimo, nocturno y paseo.</p></div><span className={`size-3 rounded-full ${tone === "success" ? "bg-success" : tone === "warning" ? "bg-warning" : "bg-critical"}`} title="Estado de la puntuación" aria-label="Estado de la puntuación" /></section>;
 }
 
 export default async function DashboardPage({ searchParams }) {
