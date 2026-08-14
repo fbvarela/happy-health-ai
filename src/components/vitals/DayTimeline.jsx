@@ -94,21 +94,21 @@ export default function DayTimeline({ patientId, canEdit }) {
       .join(" · ");
   };
 
-  if (days === null) return <p className="text-muted">Cargando…</p>;
+  if (days === null) return <p className="text-sm text-muted-foreground">Cargando…</p>;
 
   return (
-    <div className="card">
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex flex-row items-center justify-between">
-        <div className="card-title">Historial reciente</div>
-        <Link href={`/patients/${patientId}/history`} className="text-sm text-muted hover:text-bark">
+        <div className="text-base font-semibold">Historial reciente</div>
+        <Link href={`/patients/${patientId}/history`} className="text-sm text-muted-foreground hover:text-foreground">
           Ver tendencias →
         </Link>
       </div>
 
-      {error && <p className="text-red-600 text-sm mt2">{error}</p>}
+      {error && <p className="mt2 text-sm text-destructive">{error}</p>}
 
       {Object.keys(days).length === 0 ? (
-        <p className="dog-meta mt4">
+        <p className="mt4 text-sm text-muted-foreground">
           Todavía no hay registros. Usa <b>Registrar</b> para añadir el primero.
         </p>
       ) : (
@@ -118,43 +118,43 @@ export default function DayTimeline({ patientId, canEdit }) {
             const isToday = new Date(vitals[0].measured_at).toDateString() === new Date().toDateString();
             return (
               <div key={day}>
-                <div className="flex flex-row items-center justify-between mb-2">
-                  <p className={`text-sm font-semibold ${isToday ? "text-bark" : "text-muted"}`}>
+                <div className="mb-2 flex flex-row items-center justify-between">
+                  <p className={`text-sm font-semibold ${isToday ? "text-foreground" : "text-muted-foreground"}`}>
                     {day}
                     {isToday ? " · Hoy" : ""}
                   </p>
-                  <p className="text-xs text-muted">{minMax(vitals)}</p>
+                  <p className="text-xs text-muted-foreground">{minMax(vitals)}</p>
                 </div>
                 <ul className="space-y-1">
                   {vitals.map((v) => (
                     <li
                       key={v.id}
-                      className={`flex items-center justify-between gap-3 px-3 py-2 rounded-[10px] border ${
+                      className={`flex items-center justify-between gap-3 rounded-[10px] border px-3 py-2 ${
                         v.id === latest.id
-                          ? "border-sun bg-[var(--bg)]"
-                          : "border-line bg-[var(--surface)]"
+                          ? "border-primary bg-muted"
+                          : "border-border bg-card"
                       }`}
                     >
                       <div className="min-w-0">
-                        <p className="font-medium text-bark text-sm">
+                        <p className="text-sm font-medium text-foreground">
                           {display(v)}
-                          <span className="text-muted font-normal"> · {TYPE_LABELS[v.type]}</span>
+                          <span className="font-normal text-muted-foreground"> · {TYPE_LABELS[v.type]}</span>
                         </p>
                         {v.device || v.notes ? (
-                          <p className="text-xs text-muted truncate">
+                          <p className="truncate text-xs text-muted-foreground">
                             {v.device ? `${v.device}` : ""}
                             {v.device && v.notes ? " — " : ""}
                             {v.notes ? v.notes : ""}
                           </p>
                         ) : null}
                       </div>
-                      <div className="flex flex-row items-center gap-3 shrink-0">
-                        <span className="text-xs text-muted">{fmt(v.measured_at)}</span>
+                      <div className="flex shrink-0 flex-row items-center gap-3">
+                        <span className="text-xs text-muted-foreground">{fmt(v.measured_at)}</span>
                         {canEdit && (
                           <>
                             <button
                               type="button"
-                              className="text-red-600 hover:underline"
+                              className="flex items-center justify-center text-destructive hover:bg-muted"
                               onClick={() => setConfirmDelete(v.id)}
                               aria-label="Eliminar registro"
                             >
@@ -165,14 +165,14 @@ export default function DayTimeline({ patientId, canEdit }) {
                               onClose={() => setConfirmDelete(null)}
                               title="Eliminar registro"
                             >
-                              <p className="text-muted mb-4">
+                              <p className="mb-4 text-muted-foreground">
                                 ¿Seguro que quieres eliminar este registro? Se quitará del historial.
                               </p>
                               <div className="flex gap-3">
-                                <button type="button" className="btn btn-danger flex-1 justify-center" onClick={handleDelete}>
+                                <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 text-sm font-semibold text-destructive" onClick={handleDelete}>
                                   Eliminar
                                 </button>
-                                <button type="button" className="btn btn-ghost flex-1 justify-center" onClick={() => setConfirmDelete(null)}>
+                                <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setConfirmDelete(null)}>
                                   Cancelar
                                 </button>
                               </div>

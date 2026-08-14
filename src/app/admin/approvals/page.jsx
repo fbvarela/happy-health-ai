@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AppShell, EmptyState } from "@/components/app-shell";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/utils/api";
 
@@ -41,31 +42,28 @@ function ApprovalsList({ adminEmail }) {
       minute: "2-digit",
     });
 
-  if (loading) return <p className="text-muted">Cargando…</p>;
+  if (loading) return <p className="text-sm text-muted-foreground">Cargando…</p>;
 
   return (
     <div className="space-y-3">
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       {pending.length === 0 ? (
-        <div className="bg-surface rounded-[14px] border-[1.5px] border-line p-6 text-center">
-          <div className="text-3xl mb-2">✅</div>
-          <p className="text-muted">No hay cuentas pendientes de revisión.</p>
-        </div>
+        <EmptyState title="No hay cuentas pendientes de revisión." detail="Cuando alguien solicite acceso verás aquí su cuenta." />
       ) : (
         pending.map((u) => (
           <div
             key={u.id}
-            className="bg-surface rounded-[14px] border-[1.5px] border-line p-5 flex items-center justify-between gap-4"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm"
           >
             <div className="min-w-0">
-              <p className="font-semibold text-bark truncate">{u.name || u.email}</p>
-              <p className="text-muted text-sm truncate">{u.email}</p>
-              <p className="text-xs text-muted mt-1">Registrado el {formatDate(u.created_at)}</p>
+              <p className="truncate font-semibold">{u.name || u.email}</p>
+              <p className="truncate text-sm text-muted-foreground">{u.email}</p>
+              <p className="mt-1 text-xs text-muted-foreground">Registrado el {formatDate(u.created_at)}</p>
             </div>
-            <div className="flex flex-row gap-2 shrink-0">
+            <div className="flex shrink-0 flex-row gap-2">
               <button
                 type="button"
-                className="btn btn-primary"
+                className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50"
                 disabled={busy === u.id}
                 onClick={() => decide(u.id, "approve")}
               >
@@ -73,7 +71,7 @@ function ApprovalsList({ adminEmail }) {
               </button>
               <button
                 type="button"
-                className="btn btn-danger"
+                className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold text-destructive disabled:opacity-50"
                 disabled={busy === u.id}
                 onClick={() => decide(u.id, "deny")}
               >
@@ -100,12 +98,8 @@ export default function AdminApprovalsPage() {
   if (loading || currentUser?.role !== "admin") return null;
 
   return (
-    <div className="max-w-2xl mx-auto py-6 px-4">
-      <h1 className="font-serif text-[1.6rem] text-bark mb-1">Aprobaciones</h1>
-      <p className="text-muted text-sm mb-6">
-        Revisa las cuentas que esperan acceso a la aplicación.
-      </p>
+    <AppShell title="Aprobaciones" eyebrow="Cuentas que esperan acceso a la aplicación">
       <ApprovalsList adminEmail={currentUser?.email} />
-    </div>
+    </AppShell>
   );
 }

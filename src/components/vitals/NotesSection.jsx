@@ -89,39 +89,39 @@ export default function NotesSection({ patientId, canEdit }) {
   const fmtDate = (iso) =>
     new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
 
-  if (notes === null) return <p className="text-muted">Cargando…</p>;
+  if (notes === null) return <p className="text-sm text-muted-foreground">Cargando…</p>;
 
   return (
-    <div className="card">
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex flex-row items-center justify-between">
-        <div className="card-title">Notas de cuidado</div>
+        <div className="text-base font-semibold">Notas de cuidado</div>
         {canEdit && (
-          <button type="button" className="btn btn-sm btn-primary" onClick={openNew}>
+          <button type="button" className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground" onClick={openNew}>
             + Nota
           </button>
         )}
       </div>
 
-      {error && <p className="text-red-600 text-sm mt2">{error}</p>}
+      {error && <p className="mt2 text-sm text-destructive">{error}</p>}
 
       {notes.length === 0 ? (
-        <p className="dog-meta mt4">Aún no hay notas.</p>
+        <p className="mt4 text-sm text-muted-foreground">Aún no hay notas.</p>
       ) : (
         <ul className="mt4 space-y-3">
           {notes.map((n) => (
-            <li key={n.id} className="border border-line rounded-[12px] p-4">
-              <div className="flex flex-row items-center justify-between mb-1">
+            <li key={n.id} className="rounded-xl border border-border p-4">
+              <div className="mb-1 flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center gap-2">
-                  <span className="badge badge-sun">{CATEGORY_LABELS[n.category] ?? n.category}</span>
-                  {n.pinned && <span className="text-xs text-muted">📌 Fijada</span>}
+                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{CATEGORY_LABELS[n.category] ?? n.category}</span>
+                  {n.pinned && <span className="text-xs text-muted-foreground">📌 Fijada</span>}
                 </div>
                 <div className="flex flex-row items-center gap-3">
-                  <span className="text-xs text-muted">{fmtDate(n.created_at)}</span>
+                  <span className="text-xs text-muted-foreground">{fmtDate(n.created_at)}</span>
                   {canEdit && (
                     <>
                       <button
                         type="button"
-                        className="text-muted hover:text-bark"
+                        className="text-muted-foreground hover:text-foreground"
                         onClick={() => togglePin(n)}
                         aria-label={n.pinned ? "Quitar pin" : "Fijar"}
                       >
@@ -129,7 +129,7 @@ export default function NotesSection({ patientId, canEdit }) {
                       </button>
                       <button
                         type="button"
-                        className="text-muted hover:text-bark"
+                        className="text-muted-foreground hover:text-foreground"
                         onClick={() => openEdit(n)}
                         aria-label="Editar nota"
                       >
@@ -137,7 +137,7 @@ export default function NotesSection({ patientId, canEdit }) {
                       </button>
                       <button
                         type="button"
-                        className="text-red-600 hover:underline"
+                        className="text-destructive hover:bg-muted"
                         onClick={() => setConfirmDelete(n.id)}
                         aria-label="Eliminar nota"
                       >
@@ -147,7 +147,7 @@ export default function NotesSection({ patientId, canEdit }) {
                   )}
                 </div>
               </div>
-              <p className="text-bark text-sm whitespace-pre-wrap">{n.content}</p>
+              <p className="whitespace-pre-wrap text-sm text-foreground">{n.content}</p>
             </li>
           ))}
         </ul>
@@ -156,26 +156,26 @@ export default function NotesSection({ patientId, canEdit }) {
       <Modal open={showForm} onClose={() => setShowForm(false)} title={editing ? "Editar nota" : "Nueva nota"}>
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="input-label">Categoría</label>
-            <select className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Categoría</label>
+            <select className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
                 <option key={k} value={k}>{v}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="input-label">Nota</label>
-            <textarea className="input min-h-[100px]" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Cómo está hoy, qué le ha dicho el médico…" required />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Nota</label>
+            <textarea className="h-10 min-h-[100px] w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Cómo está hoy, qué le ha dicho el médico…" required />
           </div>
-          <label className="flex flex-row items-center gap-2 text-sm text-muted">
-            <input type="checkbox" checked={form.pinned} onChange={(e) => setForm({ ...form, pinned: e.target.checked })} className="w-5 h-5" />
+          <label className="flex flex-row items-center gap-2 text-sm text-muted-foreground">
+            <input type="checkbox" checked={form.pinned} onChange={(e) => setForm({ ...form, pinned: e.target.checked })} className="h-5 w-5" />
             Fijar en el panel principal
           </label>
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={busy}>
-              <Save size={18} className="mr-1" /> {busy ? "Guardando…" : "Guardar"}
+            <button type="submit" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={busy}>
+              <Save size={18} /> {busy ? "Guardando…" : "Guardar"}
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)}>
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setShowForm(false)}>
               Cancelar
             </button>
           </div>
@@ -183,12 +183,12 @@ export default function NotesSection({ patientId, canEdit }) {
       </Modal>
 
       <Modal open={Boolean(confirmDelete)} onClose={() => setConfirmDelete(null)} title="Eliminar nota">
-        <p className="text-muted mb-4">¿Seguro que quieres eliminar esta nota?</p>
+        <p className="mb-4 text-muted-foreground">¿Seguro que quieres eliminar esta nota?</p>
         <div className="flex gap-3">
-          <button type="button" className="btn btn-danger flex-1 justify-center" onClick={handleDelete}>
+          <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 text-sm font-semibold text-destructive" onClick={handleDelete}>
             Eliminar
           </button>
-          <button type="button" className="btn btn-ghost flex-1 justify-center" onClick={() => setConfirmDelete(null)}>
+          <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setConfirmDelete(null)}>
             Cancelar
           </button>
         </div>

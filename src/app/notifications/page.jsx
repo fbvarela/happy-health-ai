@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Bell, CheckCheck, HeartPulse, CalendarDays, UserPlus } from "lucide-react";
+import { AppShell, EmptyState } from "@/components/app-shell";
 import api from "@/utils/api";
 
 const TYPE_META = {
@@ -51,37 +52,34 @@ export default function NotificationsPage() {
   const fmt = (iso) =>
     new Date(iso).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
-  if (items === null) return <p className="text-muted">Cargando…</p>;
+  if (items === null) return <p className="text-sm text-muted-foreground">Cargando…</p>;
 
   const unread = items.filter((n) => !n.read_at).length;
 
   return (
-    <div className="page">
-      <div className="flex flex-row items-center justify-between">
-        <div>
-          <h1 className="page-title">Notificaciones</h1>
-          <p className="page-sub">
-            Alertas de salud, citas e invitaciones.
-          </p>
-        </div>
-        {unread > 0 && (
-          <button type="button" className="btn btn-sm btn-ghost" onClick={markAll}>
-            <CheckCheck size={16} className="mr-1" /> Marcar todo
+    <AppShell
+      title="Notificaciones"
+      eyebrow="Alertas de salud, citas e invitaciones"
+      action={
+        unread > 0 && (
+          <button
+            type="button"
+            className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground"
+            onClick={markAll}
+          >
+            <CheckCheck size={16} /> Marcar todo
           </button>
-        )}
-      </div>
-
-      {error && <p className="text-red-600 text-sm mt4">{error}</p>}
+        )
+      }
+    >
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {items.length === 0 ? (
-        <div className="card mt16">
-          <div className="empty-state">
-            <div className="empty-icon"><Bell size={28} /></div>
-            <p>No hay notificaciones todavía.</p>
-          </div>
+        <div className="mt-2">
+          <EmptyState title="No hay notificaciones todavía." detail="Cuando haya alertas de salud, citas o invitaciones las verás aquí." />
         </div>
       ) : (
-        <ul className="mt16 space-y-2">
+        <ul className="mt-2 space-y-2">
           {items.map((n) => {
             const meta = TYPE_META[n.type] ?? TYPE_META.system;
             const Icon = meta.icon;
@@ -89,8 +87,8 @@ export default function NotificationsPage() {
               <li key={n.id}>
                 <button
                   type="button"
-                  className={`w-full text-left bg-surface rounded-[14px] border p-4 flex items-start gap-3 ${
-                    n.read_at ? "border-line opacity-70" : "border-sun"
+                  className={`w-full rounded-2xl border bg-card p-4 text-left shadow-sm transition-colors flex items-start gap-3 ${
+                    n.read_at ? "border-border opacity-70" : "border-primary"
                   }`}
                   onClick={() => !n.read_at && markRead(n.id)}
                 >
@@ -99,13 +97,13 @@ export default function NotificationsPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-row items-center justify-between gap-2">
-                      <p className={`text-sm ${n.read_at ? "text-muted" : "text-bark font-semibold"}`}>
+                      <p className={`text-sm ${n.read_at ? "text-muted-foreground" : "font-semibold text-foreground"}`}>
                         {n.title}
                       </p>
-                      {!n.read_at && <span className="w-2 h-2 rounded-full bg-[var(--sun)] shrink-0" />}
+                      {!n.read_at && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}
                     </div>
-                    {n.body && <p className="text-sm text-muted mt-0.5">{n.body}</p>}
-                    <p className="text-xs text-muted mt-1">{fmt(n.created_at)}</p>
+                    {n.body && <p className="mt-0.5 text-sm text-muted-foreground">{n.body}</p>}
+                    <p className="mt-1 text-xs text-muted-foreground">{fmt(n.created_at)}</p>
                   </div>
                 </button>
               </li>
@@ -113,6 +111,6 @@ export default function NotificationsPage() {
           })}
         </ul>
       )}
-    </div>
+    </AppShell>
   );
 }

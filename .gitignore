@@ -45,3 +45,4 @@ next-env.d.ts
 
 # Google OAuth client secrets (never commit)
 client_secret_*.json
+docs/TOOLS.md

@@ -67,6 +67,7 @@ export const api = {
   updateSettings: (id, data) =>
     request(`/patients/${id}/settings`, { method: "PUT", body: JSON.stringify(data) }),
   getAppointments: (id) => request(`/patients/${id}/appointments`, { cache: "no-store" }),
+  getAppointment: (id, apptId) => request(`/patients/${id}/appointments/${apptId}`, { cache: "no-store" }),
   createAppointment: (id, data) =>
     request(`/patients/${id}/appointments`, { method: "POST", body: JSON.stringify(data) }),
   updateAppointment: (id, apptId, data) =>

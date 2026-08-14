@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AppShell, EmptyState } from "@/components/app-shell";
 import SettingsThresholds from "@/components/settings/SettingsThresholds";
 
 export const dynamic = "force-dynamic";
@@ -19,20 +20,16 @@ export default async function SettingsPage() {
   `;
 
   return (
-    <div className="page">
-      <h1 className="page-title">Ajustes</h1>
-      <p className="page-sub">Umbrales de alerta por paciente.</p>
-
+    <AppShell title="Ajustes" eyebrow="Umbrales de alerta por paciente">
       {patients.length === 0 ? (
-        <div className="card mt16">
-          <div className="empty-state">
-            <div className="empty-icon">⚙️</div>
-            <p>Aún no hay pacientes.</p>
-            <Link href="/patients" className="btn btn-primary mt4">Ir a pacientes</Link>
-          </div>
+        <div className="mt-2 space-y-4">
+          <EmptyState title="Aún no hay pacientes" detail="Cuando crees un perfil podrás ajustar aquí sus umbrales de alerta." />
+          <Link href="/patients" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground">
+            Ir a pacientes
+          </Link>
         </div>
       ) : (
-        <div className="mt16 space-y-4">
+        <div className="mt-2 space-y-4">
           {patients.map((p) => (
             <SettingsThresholds
               key={p.id}
@@ -43,6 +40,6 @@ export default async function SettingsPage() {
           ))}
         </div>
       )}
-    </div>
+    </AppShell>
   );
 }

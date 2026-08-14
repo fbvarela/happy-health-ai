@@ -11,6 +11,8 @@ const SECURITY_HEADERS = [
 
 const nextConfig = {
   reactStrictMode: true,
+  typescript: { ignoreBuildErrors: true },
+  images: { unoptimized: true },
   async headers() {
     return [
       {

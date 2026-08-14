@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, CalendarPlus, Pencil, Trash2 } from "lucide-react";
+import { CalendarPlus, Pencil, Plus, Trash2 } from "lucide-react";
+import { AppShell, EmptyState } from "@/components/app-shell";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
 
@@ -163,45 +164,48 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <div className="page">
-      <div className="flex flex-row items-center justify-between">
-        <div>
-          <h1 className="page-title">Citas</h1>
-          <p className="page-sub">Consultas médicas y calendario</p>
-        </div>
-        {patients.length > 0 && (
-          <button type="button" className="btn btn-primary" onClick={openNew}>
-            + Nueva
+    <AppShell
+      title="Citas"
+      eyebrow="Consultas médicas y calendario"
+      action={
+        patients.length > 0 && (
+          <button
+            type="button"
+            className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground"
+            onClick={openNew}
+            aria-label="Nueva cita"
+          >
+            <Plus className="h-5 w-5" />
           </button>
-        )}
-      </div>
-
+        )
+      }
+    >
       {calendarMsg === "connected" && (
-        <p className="text-green-700 text-sm mt3">Calendario de Google conectado ✓</p>
+        <p className="mt-3 text-sm text-success">Calendario de Google conectado ✓</p>
       )}
       {calendarMsg === "denied" && (
-        <p className="text-red-600 text-sm mt3">No conectaste el calendario. Las citas se guardarán solo en la app.</p>
+        <p className="mt-3 text-sm text-destructive">No conectaste el calendario. Las citas se guardarán solo en la app.</p>
       )}
 
       {/* Calendar connect */}
-      <div className="card mt16">
+      <div className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
         <div className="flex flex-row items-center justify-between gap-3">
           <div>
-            <div className="card-title">Google Calendar</div>
-            <p className="dog-meta">
+            <div className="text-base font-semibold">Google Calendar</div>
+            <p className="text-sm text-muted-foreground">
               {calendarConnected
                 ? "Conectado: las citas se añaden a tu calendario."
                 : "Conecta tu calendario para que las citas aparezcan en Google Calendar (solo ida)."}
             </p>
           </div>
           {calendarConnected ? (
-            <button type="button" className="btn btn-ghost" onClick={handleDisconnect} disabled={busy}>
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold text-foreground disabled:opacity-50" onClick={handleDisconnect} disabled={busy}>
               Desconectar
             </button>
           ) : (
             <button
               type="button"
-              className="btn btn-primary"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground"
               onClick={() => {
                 // eslint-disable-next-line @next/next/no-location-assign-relative-destination
                 window.location.assign("/api/calendar/connect");
@@ -213,51 +217,45 @@ export default function AppointmentsPage() {
         </div>
       </div>
 
-      {error && <p className="text-red-600 text-sm mt4">{error}</p>}
+      {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
       {loading ? (
-        <p className="text-muted mt4">Cargando…</p>
+        <p className="mt-4 text-sm text-muted-foreground">Cargando…</p>
       ) : patients.length === 0 ? (
-        <div className="card mt16">
-          <div className="empty-state">
-            <div className="empty-icon"><CalendarDays size={28} /></div>
-            <p>Primero crea un paciente para poder registrar citas.</p>
-            <Link href="/patients" className="btn btn-primary mt4">Ir a pacientes</Link>
-          </div>
+        <div className="mt-4 space-y-4">
+          <EmptyState title="Aún no hay pacientes" detail="Primero crea un paciente para poder registrar citas." />
+          <Link href="/patients" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground">Ir a pacientes</Link>
         </div>
       ) : appts.length === 0 ? (
-        <div className="card mt16">
-          <div className="empty-state">
-            <div className="empty-icon"><CalendarDays size={28} /></div>
-            <p>No hay citas todavía. Pulsa <b>+ Nueva</b> para crear la primera.</p>
-          </div>
+        <div className="mt-4">
+          <EmptyState title="No hay citas todavía." detail="Pulsa + Nueva para crear la primera." />
         </div>
       ) : (
-        <div className="mt16 space-y-6">
+        <div className="mt-4 space-y-6">
           {Object.entries(grouped).map(([day, list]) => (
             <div key={day}>
-              <p className="font-semibold text-bark mb-2 capitalize">{day}</p>
+              <p className="mb-2 font-semibold capitalize text-foreground">{day}</p>
               <div className="space-y-2">
                 {list.map((a) => (
-                  <div key={a.id} className="bg-surface rounded-[14px] border-[1.5px] border-line p-4">
+                  <div key={a.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="font-semibold text-bark">{a.title}</p>
-                        <p className="text-sm text-muted mt-0.5">
+                        <p className="font-semibold text-foreground">{a.title}</p>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                           {new Date(a.starts_at).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
                           {a.doctor_name ? ` · ${a.doctor_name}` : ""}
                         </p>
-                        {a.location && <p className="text-sm text-muted">📍 {a.location}</p>}
-                        <p className="text-xs text-muted mt-1">
+                        {a.location && <p className="text-sm text-muted-foreground">📍 {a.location}</p>}
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {a.patient_name}
                           {a.google_event_id ? " · en Google Calendar" : ""}
                         </p>
                       </div>
                       {canEditPatient(a.patient_id) && (
-                        <div className="flex gap-2 shrink-0">
+                        <div className="flex shrink-0 gap-2">
                           <button
                             type="button"
-                            className="btn btn-sm btn-ghost"
+                            className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:bg-muted"
                             onClick={() => openEdit(a)}
                             aria-label="Editar cita"
                           >
@@ -265,7 +263,7 @@ export default function AppointmentsPage() {
                           </button>
                           <button
                             type="button"
-                            className="btn btn-sm btn-danger"
+                            className="flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-destructive hover:bg-muted"
                             onClick={() => setConfirmDelete(a)}
                             aria-label="Eliminar cita"
                           >
@@ -289,10 +287,10 @@ export default function AppointmentsPage() {
         title={editing ? "Editar cita" : "Nueva cita"}
       >
         <form onSubmit={handleSave} className="space-y-4">
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <div>
             <label className="input-label">Paciente</label>
-            <select className="input" value={formPatient} onChange={(e) => setFormPatient(e.target.value)} required>
+            <select className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={formPatient} onChange={(e) => setFormPatient(e.target.value)} required>
               {patients.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
@@ -300,31 +298,31 @@ export default function AppointmentsPage() {
           </div>
           <div>
             <label className="input-label">Título</label>
-            <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ej. Revisión cardiología" required />
+            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ej. Revisión cardiología" required />
           </div>
           <div>
             <label className="input-label">Médico</label>
-            <input className="input" value={form.doctor_name} onChange={(e) => setForm({ ...form, doctor_name: e.target.value })} placeholder="Ej. Dra. López" />
+            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.doctor_name} onChange={(e) => setForm({ ...form, doctor_name: e.target.value })} placeholder="Ej. Dra. López" />
           </div>
           <div>
             <label className="input-label">Lugar</label>
-            <input className="input" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Ej. Hospital Clínico" />
+            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Ej. Hospital Clínico" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="input-label">Inicio</label>
-              <input type="datetime-local" className="input" value={form.starts_at} onChange={(e) => setForm({ ...form, starts_at: e.target.value })} required />
+              <input type="datetime-local" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.starts_at} onChange={(e) => setForm({ ...form, starts_at: e.target.value })} required />
             </div>
             <div>
               <label className="input-label">Fin</label>
-              <input type="datetime-local" className="input" value={form.ends_at} onChange={(e) => setForm({ ...form, ends_at: e.target.value })} />
+              <input type="datetime-local" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.ends_at} onChange={(e) => setForm({ ...form, ends_at: e.target.value })} />
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="btn btn-primary flex-1 justify-center" disabled={busy}>
-              <CalendarPlus size={18} className="mr-1" /> {busy ? "Guardando…" : editing ? "Guardar cambios" : "Crear cita"}
+            <button type="submit" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50" disabled={busy}>
+              <CalendarPlus size={18} /> {busy ? "Guardando…" : editing ? "Guardar cambios" : "Crear cita"}
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)}>
+            <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setShowForm(false)}>
               Cancelar
             </button>
           </div>
@@ -332,19 +330,19 @@ export default function AppointmentsPage() {
       </Modal>
 
       <Modal open={Boolean(confirmDelete)} onClose={() => setConfirmDelete(null)} title="Eliminar cita">
-        <p className="text-muted mb-4">
+        <p className="mb-4 text-muted-foreground">
           ¿Seguro que quieres eliminar &quot;{confirmDelete?.title}&quot;?
           {confirmDelete?.google_event_id ? " También se quitará de Google Calendar." : ""}
         </p>
         <div className="flex gap-3">
-          <button type="button" className="btn btn-danger flex-1 justify-center" onClick={handleDelete}>
+          <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive/10 px-4 text-sm font-semibold text-destructive" onClick={handleDelete}>
             Eliminar
           </button>
-          <button type="button" className="btn btn-ghost flex-1 justify-center" onClick={() => setConfirmDelete(null)}>
+          <button type="button" className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground hover:bg-muted" onClick={() => setConfirmDelete(null)}>
             Cancelar
           </button>
         </div>
       </Modal>
-    </div>
+    </AppShell>
   );
 }

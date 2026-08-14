@@ -2,7 +2,8 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { HeartPulse, UserPlus } from "lucide-react";
+import { AppShell, EmptyState } from "@/components/app-shell";
+import { UserPlus } from "lucide-react";
 import InvitesInbox from "@/components/InvitesInbox";
 import PatientSwitcher from "@/components/dashboard/PatientSwitcher";
 import VitalTiles from "@/components/dashboard/VitalTiles";
@@ -81,46 +82,45 @@ export default async function DashboardPage({ searchParams }) {
   }
 
   return (
-    <div className="page">
-      <div className="flex flex-row items-center gap-4">
-        {active && (avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={avatarUrl}
-            alt={active.name}
-            className="w-16 h-16 rounded-full object-cover border-2 border-line shrink-0"
-          />
-        ) : (
-          <div className="w-16 h-16 rounded-full bg-[var(--sun)] flex items-center justify-center text-white font-serif text-2xl shrink-0">
-            {(active?.name ?? "?").charAt(0).toUpperCase()}
-          </div>
-        ))}
-        <div>
-          <h1 className="font-serif text-[2.2rem] font-semibold text-bark leading-none">
-            {active ? active.name : "Dashboard"}
-          </h1>
-          {active && (
-            <Link href={`/patients/${active.id}`} className="text-sm text-muted hover:text-bark inline-flex items-center gap-1 mt-1">
-              Ver ficha completa <span aria-hidden>→</span>
-            </Link>
+    <AppShell
+      title={active ? active.name : "Dashboard"}
+      eyebrow="Resumen del turno"
+      action={
+        active && (
+          <Link href={`/patients/${active.id}`} className="flex h-11 items-center justify-center gap-1 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-muted-foreground">
+            Ver ficha completa
+          </Link>
+        )
+      }
+    >
+      {active && (
+        <div className="flex items-center gap-4">
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarUrl}
+              alt={active.name}
+              className="h-16 w-16 shrink-0 rounded-full border-2 border-border object-cover"
+            />
+          ) : (
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary font-serif text-2xl text-white">
+              {(active?.name ?? "?").charAt(0).toUpperCase()}
+            </div>
           )}
         </div>
-      </div>
+      )}
 
       {patients.length === 0 ? (
-        <div className="card mt16">
-          <div className="empty-state">
-            <div className="empty-icon"><HeartPulse size={28} /></div>
-            <p>Aún no hay pacientes. Crea el primer perfil para empezar.</p>
-            <Link href="/patients" className="btn btn-primary mt4">
-              <UserPlus size={18} className="mr-1" /> Crear paciente
-            </Link>
-          </div>
+        <div className="mt-6 space-y-4">
+          <EmptyState title="Aún no hay pacientes" detail="Crea el primer perfil para empezar a registrar constantes, notas y citas." />
+          <Link href="/patients" className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground">
+            <UserPlus size={18} /> Crear paciente
+          </Link>
         </div>
       ) : (
         <>
           {patients.length > 1 && (
-            <div className="mt16">
+            <div className="mt-6">
               <PatientSwitcher patients={patients} activeId={active.id} />
             </div>
           )}
@@ -133,32 +133,32 @@ export default async function DashboardPage({ searchParams }) {
             incidents={incidents}
           />
 
-          <div className="mt16">
+          <div className="mt-6">
             <DashboardCharts patientId={active.id} />
           </div>
 
-          <div className="mt16">
+          <div className="mt-6">
             <DashboardLinks patientId={active.id} />
           </div>
 
-          <div className="mt16">
+          <div className="mt-6">
             <InvitesInbox />
           </div>
 
           {active.allergies && (
-            <div className="card mt16">
-              <div className="card-title">Alergias</div>
-              <p className="dog-meta">{active.allergies}</p>
+            <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <div className="text-base font-semibold">Alergias</div>
+              <p className="text-sm text-muted-foreground">{active.allergies}</p>
             </div>
           )}
           {active.medications && (
-            <div className="card mt16">
-              <div className="card-title">Medicación</div>
-              <p className="dog-meta">{active.medications}</p>
+            <div className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
+              <div className="text-base font-semibold">Medicación</div>
+              <p className="text-sm text-muted-foreground">{active.medications}</p>
             </div>
           )}
         </>
       )}
-    </div>
+    </AppShell>
   );
 }
