@@ -36,7 +36,6 @@ export default function PooCounter({ patientId, today, yesterday, count }) {
           </span>
           <p className="text-sm font-semibold">Deposiciones</p>
         </div>
-        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">+1</span>
       </div>
 
       <p className="mt-3 font-mono text-3xl font-semibold tracking-tight tabular-nums">
@@ -51,10 +50,10 @@ export default function PooCounter({ patientId, today, yesterday, count }) {
         type="button"
         onClick={handleTap}
         disabled={saving}
-        className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+        className="mt-2 flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground disabled:opacity-50"
         aria-label="Añadir deposición"
       >
-        <CircleDot size={18} /> {saving ? "…" : "Añadir +1"}
+        <CircleDot size={15} /> {saving ? "…" : "+1"}
       </button>
 
       <p className="mt-2 text-[11px] text-muted-foreground">{measures} registros hoy</p>
