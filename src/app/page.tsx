@@ -2,49 +2,21 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, BarChart3, ChevronRight, Droplets, HeartPulse, Thermometer, UserPlus } from "lucide-react";
+import { Activity, BarChart3, ChevronRight, HeartPulse, Thermometer, UserPlus } from "lucide-react";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
+import { computeHealthScore } from "@/lib/health-score";
 import PooCounter from "@/components/dashboard/PooCounter";
 import MoodPicker from "@/components/dashboard/MoodPicker";
 import NightEventsPicker from "@/components/dashboard/NightEventsPicker";
 import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
 import WalkCheck from "@/components/dashboard/WalkCheck";
+import MealQualityPicker from "@/components/dashboard/MealQualityPicker";
+import SpO2Recorder from "@/components/dashboard/SpO2Recorder";
 
 export const dynamic = "force-dynamic";
 
 const WARNING_DOT = <span className="size-2 shrink-0 rounded-full bg-warning" aria-hidden="true" />;
-
-function SpO2Hero({ today, yesterday, count }) {
-  return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="spo2-heading">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-success/10 text-success">
-            <Droplets className="size-5" />
-          </span>
-          <div>
-            <h2 id="spo2-heading" className="text-sm font-semibold">Saturación de oxígeno</h2>
-            <p className="text-xs text-muted-foreground">SpO₂ · medida principal</p>
-          </div>
-        </div>
-        {today == null && <span title="Sin medición hoy">{WARNING_DOT}</span>}
-      </div>
-
-      <div className="mt-4 flex items-end gap-3">
-        <p className="font-mono text-5xl font-semibold tracking-tight tabular-nums">
-          {today ?? "–"}
-          <span className="ml-1 text-lg font-medium text-muted-foreground">%</span>
-        </p>
-        <p className="pb-1.5 text-sm text-muted-foreground">
-          Ayer <span className="font-semibold text-foreground">{yesterday != null ? `${yesterday}%` : "–"}</span>
-        </p>
-      </div>
-
-      <p className="mt-2 text-xs text-muted-foreground">{count} mediciones hoy</p>
-    </section>
-  );
-}
 
 function MeasureCard({ label, icon: Icon, today, yesterday, unit, count, accent = "text-primary" }) {
   return (
@@ -71,6 +43,13 @@ function MeasureCard({ label, icon: Icon, today, yesterday, unit, count, accent 
   );
 }
 
+function HealthScoreCard({ score }) {
+  if (!score) return null;
+  const tone = score.color === "verde" ? "success" : score.color === "naranja" ? "warning" : "critical";
+  const toneClass = tone === "success" ? "text-success bg-success/10" : tone === "warning" ? "text-warning-foreground bg-warning/15" : "text-critical bg-critical/10";
+  return <section className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"><span className={`flex size-11 items-center justify-center rounded-xl text-sm font-bold ${toneClass}`}>{score.score}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">Puntuación de salud</p><p className="mt-0.5 text-xs text-muted-foreground">Orientativa: SpO₂ 45%, ánimo 15%, comidas 15%, nocturno 10%, paseo 15%.</p></div><span className={`size-3 rounded-full ${tone === "success" ? "bg-success" : tone === "warning" ? "bg-warning" : "bg-critical"}`} title="Estado de la puntuación" aria-label="Estado de la puntuación" /></section>;
+}
+
 export default async function DashboardPage({ searchParams }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
@@ -87,6 +66,7 @@ export default async function DashboardPage({ searchParams }) {
   const active = patients.find((p) => p.id === patientParam) ?? patients[0] ?? null;
 
   const data = active ? await getDashboardData(active.id) : null;
+  const healthScore = active ? await computeHealthScore(active.id) : null;
   const today = data?.today ?? {};
   const yesterday = data?.yesterday ?? {};
   const counts = data?.todayCounts ?? {};
@@ -113,6 +93,8 @@ export default async function DashboardPage({ searchParams }) {
   const pooToday = today.poo ?? null;
   const pooYesterday = yesterday.poo ?? null;
   const pooCount = counts.poo ?? 0;
+  const mealToday = today.meal_quality?.value ?? null;
+  const mealYesterday = yesterday.meal_quality?.value ?? null;
 
   return (
     <AppShell
@@ -136,24 +118,41 @@ export default async function DashboardPage({ searchParams }) {
       ) : (
         <>
           {patients.length > 1 && (
-            <div className="mb-5 flex flex-wrap gap-2">
+            <div className="mb-5 grid grid-cols-2 gap-3">
               {patients.map((p) => (
                 <Link
                   key={p.id}
                   href={`/?patient=${p.id}`}
-                  className={`flex min-h-10 items-center rounded-full px-4 text-sm font-semibold ${p.id === active.id ? "bg-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground"}`}
+                  className={`rounded-2xl border p-3 shadow-sm transition-colors ${p.id === active.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary/40"}`}
                 >
-                  {p.name}
+                  <div className="flex items-center gap-3">
+                    <span className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${p.id === active.id ? "bg-primary-foreground/15" : "bg-accent text-primary"}`}>
+                      {(p.name ?? "?").charAt(0).toUpperCase()}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold">{p.name}</span>
+                      <span className={`block text-xs ${p.id === active.id ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{p.id === active.id ? "Paciente activo" : "Cambiar"}</span>
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>
           )}
 
-          <SpO2Hero today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
+          <HealthScoreCard score={healthScore} />
+          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-4 grid grid-cols-3 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
             <NightEventsPicker patientId={active.id} today={nightToday} yesterday={nightYesterday} />
+            <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
+          </div>
+
+          <MedicationChecklist patientId={active.id} />
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <MealQualityPicker patientId={active.id} today={mealToday} yesterday={mealYesterday} />
+            <WalkCheck patientId={active.id} className="mt-0" />
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-3">
@@ -162,17 +161,10 @@ export default async function DashboardPage({ searchParams }) {
             <MeasureCard label="Temp." icon={Thermometer} today={temp} yesterday={tempYesterday} unit="°C" count={tempCount} />
           </div>
 
-          <div className="mt-4">
-            <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
-          </div>
-
           <Link href={`/patients/${active.id}/history`} className="mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold text-primary shadow-sm">
             <BarChart3 className="size-5" /> Ver evolución
             <ChevronRight className="size-4" />
           </Link>
-
-          <MedicationChecklist patientId={active.id} />
-          <WalkCheck patientId={active.id} />
         </>
       )}
     </AppShell>

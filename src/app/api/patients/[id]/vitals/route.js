@@ -3,7 +3,7 @@ import sql from "@/lib/db";
 import { requirePatientAccess } from "@/lib/patients";
 import { checkVitalAlert } from "@/lib/vitals";
 
-const VALID_TYPES = ["spo2", "hr", "bp_systolic", "bp_diastolic", "temp", "poo", "mood", "night_events", "walk"];
+const VALID_TYPES = ["spo2", "hr", "bp_systolic", "bp_diastolic", "temp", "poo", "mood", "night_events", "walk", "meal_quality"];
 
 /**
  * GET /api/patients/[id]/vitals?from=&to= — vitals in range (caregiver+).
@@ -82,6 +82,12 @@ export async function POST(request, { params }) {
       const value = Number(body.value);
       if (!value || value < 1 || value > 3) {
         return Response.json({ error: "Elige un estado de ánimo (1–3)" }, { status: 400 });
+      }
+      inputs.push({ type, value, unit: "", count: null });
+    } else if (type === "meal_quality") {
+      const value = Number(body.value);
+      if (!value || value < 1 || value > 3) {
+        return Response.json({ error: "Elige un estado de alimentación (1–3)" }, { status: 400 });
       }
       inputs.push({ type, value, unit: "", count: null });
     } else {
