@@ -89,7 +89,7 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
   const bottom = simple ? 4 : 32;
   const width = simple
     ? Math.max(220, points.length * 30 + left + right)
-    : Math.max(640, points.length * 38 + left + right);
+    : Math.max(320, points.length * 38 + left + right);
   const values = points.map((point) => point.v);
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -107,7 +107,7 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
 
   return (
     <div className="overflow-x-auto">
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" style={{ minWidth: points.length > 16 ? `${width}px` : undefined }} role="img" aria-label={label}>
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-auto" style={{ width: `${width}px` }} role="img" aria-label={label}>
       {!simple && <>
         <line x1={left} y1={top} x2={width - right} y2={top} stroke="currentColor" className="text-border" strokeDasharray="3 4" />
         <line x1={left} y1={height - bottom} x2={width - right} y2={height - bottom} stroke="currentColor" className="text-border" />
