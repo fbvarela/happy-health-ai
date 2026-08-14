@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, ChevronRight, Droplets, HeartPulse, Thermometer, UserPlus } from "lucide-react";
+import { Activity, BarChart3, ChevronRight, Droplets, HeartPulse, Thermometer, UserPlus } from "lucide-react";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
 import PooCounter from "@/components/dashboard/PooCounter";
@@ -164,6 +164,11 @@ export default async function DashboardPage({ searchParams }) {
           <div className="mt-4">
             <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
           </div>
+
+          <Link href={`/patients/${active.id}/history`} className="mt-4 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold text-primary shadow-sm">
+            <BarChart3 className="size-5" /> Ver evolución
+            <ChevronRight className="size-4" />
+          </Link>
 
           <MedicationChecklist patientId={active.id} />
         </>

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ArrowLeft, Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, Pill, ShieldAlert, Users, X } from "lucide-react"
+import { ArrowLeft, BarChart3, Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, Pill, ShieldAlert, Users, X } from "lucide-react"
 import { useEffect, useState, type ReactNode } from "react"
 
 const navItems = [
@@ -14,6 +14,7 @@ const navItems = [
 ]
 
 const menuItems = [
+  { key: "evolucion", label: "Evolución", href: "/evolucion", icon: BarChart3 },
   { key: "medications", label: "Medicación", href: "/medications", icon: Pill },
 ]
 
