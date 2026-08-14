@@ -81,12 +81,12 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
     return <p className="py-5 text-sm text-muted-foreground">No hay datos para este periodo.</p>;
   }
 
-  const width = 640;
   const height = simple ? 100 : 220;
   const left = simple ? 4 : 42;
   const right = 12;
   const top = 12;
   const bottom = simple ? 4 : 32;
+  const width = Math.max(640, points.length * 38 + left + right);
   const values = points.map((point) => point.v);
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -100,7 +100,8 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
   const barWidth = Math.min(36, Math.max(4, chartWidth / points.length - gap));
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img" aria-label={label}>
+    <div className="overflow-x-auto">
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" style={{ minWidth: points.length > 16 ? `${width}px` : undefined }} role="img" aria-label={label}>
       {!simple && <>
         <line x1={left} y1={top} x2={width - right} y2={top} stroke="currentColor" className="text-border" strokeDasharray="3 4" />
         <line x1={left} y1={height - bottom} x2={width - right} y2={height - bottom} stroke="currentColor" className="text-border" />
@@ -114,7 +115,8 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
         const tone = valueTone(type, point.v, settings);
         return <g key={`${point.label}-${index}`}><rect x={x} y={y} width={barWidth} height={barHeight} rx="3" fill={SOFT_COLORS[tone]} opacity="0.9"><title>{`${point.label}: ${point.v.toFixed(1)}${unit} (${tone})`}</title></rect>{!simple && (points.length <= 12 || index % Math.ceil(points.length / 10) === 0) && <text x={x + barWidth / 2} y={height - 10} textAnchor="middle" fontSize="10" fill="currentColor" className="text-muted-foreground">{point.label}</text>}</g>;
       })}
-    </svg>
+      </svg>
+    </div>
   );
 }
 
