@@ -61,7 +61,6 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
       prefill.value = lastValues[key] ?? "";
     }
     prefill.measured_at = iso;
-    prefill.device = "";
     prefill.notes = "";
     setForm(prefill);
     setActive(key);
@@ -176,11 +175,6 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">Fecha y hora</label>
             <input type="datetime-local" className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.measured_at ?? ""} onChange={set("measured_at")} required />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Dispositivo (opcional)</label>
-            <input className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring" value={form.device ?? ""} onChange={set("device")} placeholder="Ej. pulsioxímetro" />
           </div>
 
           <div>
