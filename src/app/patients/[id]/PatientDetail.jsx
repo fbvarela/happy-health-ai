@@ -132,11 +132,17 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
   };
 
   const dobLabel = patient.dob
-    ? new Date(patient.dob).toLocaleDateString("es-ES", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
+    ? (() => {
+        // dob is a DATE ("YYYY-MM-DD") — parse as local date, not UTC, to avoid
+        // the previous-day shift in negative-offset timezones.
+        const [y, m, d] = String(patient.dob).split("-").map(Number);
+        if (!y || !m || !d) return null;
+        return new Date(y, m - 1, d).toLocaleDateString("es-ES", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+      })()
     : null;
 
   return (

@@ -80,13 +80,13 @@ export async function PATCH(request, { params }) {
   sets.push(`updated_at = now()`);
   values.push(id);
 
-  const rows = await sql.query(
+  const rows = await sql(
     `UPDATE patients SET ${sets.join(", ")} WHERE id = $${values.length}
      RETURNING id, name, dob, gender, allergies, medications, updated_at`,
     values
   );
 
-  return Response.json(rows.rows[0]);
+  return Response.json(rows[0]);
 }
 
 export async function DELETE(request, { params }) {
