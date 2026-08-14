@@ -6,6 +6,7 @@ import { Activity, ChevronRight, Droplets, HeartPulse, MoonStar, Smile, Thermome
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
 import { moodLabel } from "@/lib/metrics";
+import PooCounter from "@/components/dashboard/PooCounter";
 
 export const dynamic = "force-dynamic";
 
@@ -111,6 +112,10 @@ export default async function DashboardPage({ searchParams }) {
   const nightYesterday = yesterday.night_events ?? null;
   const nightCount = counts.night_events ?? 0;
 
+  const pooToday = today.poo ?? null;
+  const pooYesterday = yesterday.poo ?? null;
+  const pooCount = counts.poo ?? 0;
+
   return (
     <AppShell
       title={active ? active.name : "Resumen del turno"}
@@ -157,6 +162,10 @@ export default async function DashboardPage({ searchParams }) {
             <MeasureCard label="Frec." icon={HeartPulse} today={hr} yesterday={hrYesterday} unit="ppm" count={hrCount} />
             <MeasureCard label="Tensión" icon={Activity} today={bp} yesterday={bpYesterday} count={bpCount} />
             <MeasureCard label="Temp." icon={Thermometer} today={temp} yesterday={tempYesterday} unit="°C" count={tempCount} />
+          </div>
+
+          <div className="mt-4">
+            <PooCounter patientId={active.id} today={pooToday} yesterday={pooYesterday} count={pooCount} />
           </div>
         </>
       )}
