@@ -23,6 +23,14 @@ const SOFT_COLORS = {
   red: "#e3a0a0",
 };
 
+const CHART_DOMAINS = {
+  spo2: [0, 100],
+  hr: [0, 180],
+  temp: [30, 42],
+  bp_systolic: [0, 200],
+  bp_diastolic: [0, 130],
+};
+
 const DEFAULT_SETTINGS = {
   spo2_min: 92,
   hr_min: 50,
@@ -82,11 +90,14 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
   const values = points.map((point) => point.v);
   const min = Math.min(...values);
   const max = Math.max(...values);
-  const range = max - min || Math.max(Math.abs(max) * 0.1, 1);
+  const domain = CHART_DOMAINS[type] ?? [0, Math.max(max, 1)];
+  const scaleMin = Math.min(domain[0], min);
+  const scaleMax = Math.max(domain[1], max);
+  const range = scaleMax - scaleMin || 1;
   const chartWidth = width - left - right;
   const chartHeight = height - top - bottom;
   const gap = Math.min(8, chartWidth / Math.max(points.length, 1) * 0.2);
-  const barWidth = Math.max(3, chartWidth / points.length - gap);
+  const barWidth = Math.min(18, Math.max(3, chartWidth / points.length - gap));
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img" aria-label={label}>
@@ -97,8 +108,8 @@ function BarChart({ points, label, unit, type, settings, simple = false }) {
         <text x="4" y={height - bottom} fontSize="11" fill="currentColor" className="text-muted-foreground">{min.toFixed(1)}{unit}</text>
       </>}
       {points.map((point, index) => {
-        const barHeight = Math.max(3, ((point.v - min) / range) * chartHeight);
-        const x = left + index * (chartWidth / points.length) + gap / 2;
+        const barHeight = Math.max(3, ((point.v - scaleMin) / range) * chartHeight);
+        const x = left + index * (chartWidth / points.length) + (chartWidth / points.length - barWidth) / 2;
         const y = height - bottom - barHeight;
         const tone = valueTone(type, point.v, settings);
         return <g key={`${point.label}-${index}`}><rect x={x} y={y} width={barWidth} height={barHeight} rx="3" fill={SOFT_COLORS[tone]} opacity="0.9"><title>{`${point.label}: ${point.v.toFixed(1)}${unit} (${tone})`}</title></rect>{!simple && (points.length <= 12 || index % Math.ceil(points.length / 10) === 0) && <text x={x + barWidth / 2} y={height - 10} textAnchor="middle" fontSize="10" fill="currentColor" className="text-muted-foreground">{point.label}</text>}</g>;
