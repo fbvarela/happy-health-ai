@@ -136,8 +136,8 @@ export default async function DashboardPage({ searchParams }) {
             </div>
           )}
 
-          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
           <HealthScoreCard score={healthScore} />
+          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
