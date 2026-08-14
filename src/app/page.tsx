@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   Activity,
   Bell,
@@ -28,8 +29,14 @@ const vitals = [
   { label: 'Temperatura', value: '36.5', unit: '°C', detail: 'Temp. · Hoy 08:40', status: 'normal' as const, icon: Activity },
 ]
 
+const menuItems = [
+  { label: 'Pacientes', href: '/pacientes', icon: Users },
+  { label: 'Citas', href: '/citas', icon: CalendarDays },
+  { label: 'Incidentes', href: '/incidentes', icon: ShieldAlert },
+  { label: 'Configuración', href: '/settings', icon: SlidersHorizontal },
+]
+
 export default function Page() {
-  const [active, setActive] = useState('Inicio')
   const [showMenu, setShowMenu] = useState(false)
 
   return (
@@ -44,12 +51,14 @@ export default function Page() {
               <h1 className="text-2xl font-semibold tracking-tight">Buenos días, Laura</h1>
               <p className="mt-1 text-sm text-muted-foreground">Última actualización hace 4 min</p>
             </div>
-            <button type="button" className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground shadow-sm transition-colors active:bg-accent" aria-label="Filtrar resumen">
+            <Link href="/patients" className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground shadow-sm transition-colors active:bg-accent" aria-label="Filtrar resumen">
               <SlidersHorizontal className="size-5" />
-            </button>
+            </Link>
           </div>
 
-          <PatientSummary name="Suso Martínez" room="Habitación 204 · Seguimiento activo" initial="S" />
+          <Link href="/pacientes" aria-label="Ver paciente">
+            <PatientSummary name="Suso Martínez" room="Habitación 204 · Seguimiento activo" initial="S" />
+          </Link>
 
           <section className="mt-6" aria-labelledby="vitals-heading">
             <div className="mb-3 flex items-center justify-between">
@@ -57,9 +66,9 @@ export default function Page() {
                 <h2 id="vitals-heading" className="text-base font-semibold">Constantes vitales</h2>
                 <p className="text-xs text-muted-foreground">Valores registrados hoy</p>
               </div>
-              <button type="button" className="flex min-h-11 items-center gap-1 text-sm font-semibold text-primary" aria-label="Ver historial de constantes">
+              <Link href="/patients/09f7239c-935f-4e56-be31-927dd2ad8722/history" className="flex min-h-11 items-center gap-1 text-sm font-semibold text-primary" aria-label="Ver historial de constantes">
                 Historial <ChevronRight className="size-4" />
-              </button>
+              </Link>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {vitals.map((vital) => <VitalCard key={vital.label} {...vital} footer={vital.detail} />)}
@@ -67,36 +76,35 @@ export default function Page() {
           </section>
 
           <section className="mt-6 grid grid-cols-2 gap-3" aria-label="Actividad del paciente">
-            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <Link href="/pacientes" className="rounded-2xl border border-border bg-card p-4 shadow-sm">
               <div className="mb-4 flex items-center justify-between"><span className="flex size-9 items-center justify-center rounded-xl bg-accent text-primary"><FileText className="size-5" /></span><span className="text-xs font-medium text-success">Estable</span></div>
               <p className="font-mono text-2xl font-semibold tracking-tight">2 <span className="font-sans text-sm font-medium text-muted-foreground">hoy</span></p>
               <p className="mt-1 text-xs text-muted-foreground">Deposiciones</p>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            </Link>
+            <Link href="/incidentes" className="rounded-2xl border border-border bg-card p-4 shadow-sm">
               <div className="mb-4 flex items-center justify-between"><span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-muted-foreground"><ShieldAlert className="size-5" /></span><span className="text-xs font-medium text-success">Sin alertas</span></div>
               <p className="font-mono text-2xl font-semibold tracking-tight">0</p>
               <p className="mt-1 text-xs text-muted-foreground">Incidentes</p>
-            </div>
+            </Link>
           </section>
 
-          <section className="mt-6 rounded-2xl border border-border bg-primary p-4 text-primary-foreground shadow-sm">
+          <Link href="/citas" className="mt-6 block rounded-2xl border border-border bg-primary p-4 text-primary-foreground shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div><p className="text-sm font-semibold">Próxima cita</p><p className="mt-1 text-xs text-primary-foreground/75">Revisión de seguimiento</p></div>
               <CalendarDays className="size-5 opacity-80" />
             </div>
-            <div className="mt-5 flex items-end justify-between"><p className="font-mono text-2xl font-semibold">Hoy, 16:30</p><button type="button" className="flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold hover:bg-primary-foreground/10 active:bg-primary-foreground/15">Ver cita <ChevronRight className="size-4" /></button></div>
-          </section>
+            <div className="mt-5 flex items-end justify-between"><p className="font-mono text-2xl font-semibold">Hoy, 16:30</p><span className="flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold hover:bg-primary-foreground/10 active:bg-primary-foreground/15">Ver cita <ChevronRight className="size-4" /></span></div>
+          </Link>
         </div>
 
-        <button type="button" className="fixed bottom-24 right-5 z-20 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-transform active:scale-95" aria-label="Abrir mensajes"><MessageSquare className="size-6" /></button>
-        <BottomNav active={active} onChange={setActive} />
+        <BottomNav active="inicio" />
       </div>
 
       {showMenu && <div className="fixed inset-0 z-50 bg-foreground/30" role="presentation" onClick={() => setShowMenu(false)}>
         <aside className="absolute right-0 top-0 flex h-full w-[min(88%,360px)] flex-col bg-card p-5 shadow-2xl" role="dialog" aria-label="Menú principal" onClick={(event) => event.stopPropagation()}>
           <div className="flex items-center justify-between"><p className="text-lg font-semibold">Menú</p><button type="button" className="flex size-11 items-center justify-center rounded-xl text-muted-foreground active:bg-accent" onClick={() => setShowMenu(false)} aria-label="Cerrar menú"><X className="size-5" /></button></div>
           <div className="mt-6 flex flex-col gap-2">
-            {[['Pacientes', Users], ['Citas', CalendarDays], ['Incidentes', ShieldAlert], ['Configuración', SlidersHorizontal]].map(([label, Icon]) => <button type="button" key={label as string} className="flex min-h-14 items-center gap-3 rounded-xl px-3 text-left font-medium transition-colors active:bg-accent"><Icon className="size-5 text-primary" /><span>{label as string}</span><ChevronRight className="ml-auto size-4 text-muted-foreground" /></button>)}
+            {menuItems.map(({ label, href, icon: Icon }) => <Link key={label} href={href} onClick={() => setShowMenu(false)} className="flex min-h-14 items-center gap-3 rounded-xl px-3 text-left font-medium transition-colors active:bg-accent"><Icon className="size-5 text-primary" /><span>{label}</span><ChevronRight className="ml-auto size-4 text-muted-foreground" /></Link>)}
           </div>
         </aside>
       </div>}
