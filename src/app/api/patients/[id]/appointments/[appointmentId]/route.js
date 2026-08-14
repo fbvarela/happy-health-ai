@@ -4,9 +4,32 @@ import { requirePatientAccess } from "@/lib/patients";
 import { deleteCalendarEvent, updateCalendarEvent, getAccessToken } from "@/lib/calendar";
 
 /**
+ * GET    /api/patients/[id]/appointments/[appointmentId] — one appointment (viewer+).
  * PATCH  /api/patients/[id]/appointments/[appointmentId] — update (caregiver+).
  * DELETE /api/patients/[id]/appointments/[appointmentId] — soft delete (caregiver+).
  */
+export async function GET(request, { params }) {
+  const user = await getCurrentUser();
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id, appointmentId } = await params;
+  const access = await requirePatientAccess(user.id, id, "viewer");
+  if (!access) return Response.json({ error: "Forbidden" }, { status: 403 });
+
+  const [row] = await sql`
+    SELECT a.id, a.title, a.doctor_name, a.location, a.starts_at, a.ends_at,
+           a.google_event_id, a.created_at, a.updated_at,
+           p.name AS patient_name,
+           u.name AS created_by_name
+    FROM appointments a
+    JOIN patients p ON p.id = a.patient_id
+    LEFT JOIN users u ON u.id = a.created_by
+    WHERE a.id = ${appointmentId} AND a.patient_id = ${id} AND a.deleted_at IS NULL
+  `;
+  if (!row) return Response.json({ error: "No encontrado" }, { status: 404 });
+  return Response.json(row);
+}
+
 export async function PATCH(request, { params }) {
   const user = await getCurrentUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });

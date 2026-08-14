@@ -1,9 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, ShieldAlert, Users } from "lucide-react"
-import type { ReactNode } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { ArrowLeft, Bell, CalendarDays, ChevronRight, Home, Menu, MoreHorizontal, ShieldAlert, Users, X } from "lucide-react"
+import { useState, type ReactNode } from "react"
 
 const navItems = [
   { key: "inicio", label: "Inicio", href: "/", icon: Home },
@@ -13,31 +13,54 @@ const navItems = [
   { key: "mas", label: "Más", href: "/mas", icon: MoreHorizontal },
 ]
 
-export function AppShell({ children, title, eyebrow, action }: { children: ReactNode; title: string; eyebrow?: string; action?: ReactNode }) {
+export function AppShell({ children, title, eyebrow, action, showBack = false }: { children: ReactNode; title: string; eyebrow?: string; action?: ReactNode; showBack?: boolean }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [menuOpen, setMenuOpen] = useState(false)
   const activeKey = pathname === "/" ? "inicio" : pathname.split("/")[1]
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-xl items-center justify-between px-5">
-          <div>
+        <div className="mx-auto flex h-16 max-w-xl items-center gap-3 px-6">
+          {showBack && (
+            <button type="button" onClick={() => router.back()} aria-label="Volver" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-foreground">
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+          )}
+          <div className="min-w-0 flex-1">
             {eyebrow && <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{eyebrow}</p>}
             <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
             {action}
-            <button className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground" aria-label="Notificaciones">
+            <Link href="/notifications" className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground" aria-label="Notificaciones">
               <Bell className="h-5 w-5" />
               <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-critical px-1 text-[10px] font-bold text-critical-foreground">2</span>
-            </button>
-            <button className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-label="Abrir menú">
+            </Link>
+            <button type="button" onClick={() => setMenuOpen(true)} className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-label="Abrir menú">
               <Menu className="h-5 w-5" />
             </button>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-xl px-5 pb-28 pt-5">{children}</main>
+
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 bg-foreground/30" role="presentation" onClick={() => setMenuOpen(false)}>
+          <aside className="absolute right-0 top-0 flex h-full w-[min(88%,360px)] flex-col bg-card p-5 shadow-2xl" role="dialog" aria-label="Menú principal" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-center justify-between"><p className="text-lg font-semibold">Menú</p><button type="button" onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground active:bg-accent"><X className="h-5 w-5" /></button></div>
+            <div className="mt-6 flex flex-col gap-2">
+              {navItems.map(({ key, label, href, icon: Icon }) => (
+                <Link key={key} href={href} onClick={() => setMenuOpen(false)} className={`flex min-h-14 items-center gap-3 rounded-xl px-3 text-left font-medium transition-colors active:bg-accent ${activeKey === key ? "bg-accent" : ""}`}>
+                  <Icon className="size-5 text-primary" /><span>{label}</span><ChevronRight className="ml-auto size-4 text-muted-foreground" />
+                </Link>
+              ))}
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <main className="mx-auto max-w-xl px-6 pb-28 pt-5">{children}</main>
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card/95 backdrop-blur" aria-label="Navegación principal">
         <div className="mx-auto grid max-w-xl grid-cols-5 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2">
           {navItems.map(({ key, label, href, icon: Icon }) => {
