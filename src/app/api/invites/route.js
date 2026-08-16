@@ -13,7 +13,7 @@ export async function GET() {
            p.id AS patient_id, p.name AS patient_name
     FROM patient_invites pi
     JOIN patients p ON p.id = pi.patient_id
-    WHERE LOWER(pi.email) = ${user.email} AND pi.status = 'pending'
+    WHERE LOWER(pi.email) = LOWER(${user.email}) AND pi.status = 'pending'
     ORDER BY pi.created_at DESC
   `;
   return Response.json(rows);

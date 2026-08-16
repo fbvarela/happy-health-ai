@@ -24,7 +24,7 @@ export async function POST(request, { params }) {
     SELECT id, patient_id, email, role, status
     FROM patient_invites WHERE id = ${id} LIMIT 1
   `;
-  if (!invite || invite.email.toLowerCase() !== user.email) {
+  if (!invite || invite.email.toLowerCase() !== user.email?.toLowerCase()) {
     return Response.json({ error: "Invitación no encontrada" }, { status: 404 });
   }
   if (invite.status !== "pending") {

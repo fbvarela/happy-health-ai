@@ -104,11 +104,14 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
     try {
       const res = await api.invitePatient(patient.id, { email: inviteEmail, role: inviteRole });
       if (res.direct) {
-        setInviteMsg(`${res.email} ya está en la aplicación — añadido como miembro.`);
+        setInviteMsg(res.alreadyMember ? `${res.email} ya es miembro de este paciente.` : `${res.email} ya está en la aplicación — añadido como miembro.`);
       } else {
-        setInviteMsg(`Invitación enviada a ${res.email}. Se unirá cuando acepte.`);
+        setInviteMsg(res.alreadyPending ? `Ya hay una invitación pendiente para ${res.email}.` : `Invitación enviada a ${res.email}. Se unirá cuando acepte.`);
+        setLocalInvites((prev) => [
+          ...prev.filter((invite) => invite.email.toLowerCase() !== res.email.toLowerCase()),
+          { email: res.email, role: inviteRole, status: "pending" },
+        ]);
       }
-      setLocalInvites((prev) => [...prev, { email: inviteEmail, role: inviteRole, status: "pending" }]);
       setInviteEmail("");
       router.refresh();
     } catch (err) {
