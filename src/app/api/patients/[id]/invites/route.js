@@ -29,40 +29,52 @@ export async function POST(request, { params }) {
   }
   const role = ["viewer", "caregiver", "owner"].includes(body.role) ? body.role : "caregiver";
 
-  if (email === user.email) {
+  if (email === user.email?.toLowerCase()) {
     return Response.json({ error: "Ya eres miembro de este paciente" }, { status: 400 });
   }
 
   const [existing] = await sql`
-    SELECT id, status FROM users WHERE email = ${email} LIMIT 1
+    SELECT id, status FROM users WHERE LOWER(email) = ${email} LIMIT 1
   `;
 
   if (existing?.status === "approved") {
-    const already = await sql`
-      SELECT 1 FROM patient_members WHERE patient_id = ${id} AND user_id = ${existing.id}
+    const added = await sql`
+      INSERT INTO patient_members (patient_id, user_id, role)
+      VALUES (${id}, ${existing.id}, ${role})
+      ON CONFLICT (patient_id, user_id) DO NOTHING
+      RETURNING user_id
     `;
-    if (already[0]) {
-      return Response.json({ error: "Este usuario ya es miembro" }, { status: 400 });
+    if (added[0]) {
+      const [patient] = await sql`SELECT name FROM patients WHERE id = ${id}`;
+      await sql`
+        INSERT INTO notifications (user_id, type, title, body, data)
+        VALUES (${existing.id}, 'share_invite',
+                'Nueva invitación',
+                'Te han añadido como ${role === "viewer" ? "lector" : "cuidador"} de ${patient?.name ?? "un paciente"}.',
+                ${JSON.stringify({ patient_id: id, role })})
+      `;
     }
     await sql`
-      INSERT INTO patient_members (patient_id, user_id, role) VALUES (${id}, ${existing.id}, ${role})
+      UPDATE patient_invites
+      SET status = 'accepted'
+      WHERE patient_id = ${id} AND LOWER(email) = ${email} AND status = 'pending'
     `;
-    const [patient] = await sql`SELECT name FROM patients WHERE id = ${id}`;
-    await sql`
-      INSERT INTO notifications (user_id, type, title, body, data)
-      VALUES (${existing.id}, 'share_invite',
-              'Nueva invitación',
-              'Te han añadido como ${role === "viewer" ? "lector" : "cuidador"} de ${patient?.name ?? "un paciente"}.',
-              ${JSON.stringify({ patient_id: id, role })})
-    `;
-    return Response.json({ ok: true, direct: true, email });
+    return Response.json({ ok: true, direct: true, alreadyMember: !added[0], email });
   }
 
-  await sql`
-    INSERT INTO patient_invites (patient_id, email, role, invited_by)
-    VALUES (${id}, ${email}, ${role}, ${user.id})
-    ON CONFLICT (patient_id, email) DO UPDATE SET
-      role = EXCLUDED.role, status = 'pending', invited_by = EXCLUDED.invited_by
+  const updated = await sql`
+    UPDATE patient_invites
+    SET role = ${role}, status = 'pending', invited_by = ${user.id}
+    WHERE patient_id = ${id} AND LOWER(email) = ${email}
+    RETURNING id
   `;
-  return Response.json({ ok: true, direct: false, email });
+  if (!updated[0]) {
+    await sql`
+      INSERT INTO patient_invites (patient_id, email, role, invited_by)
+      VALUES (${id}, ${email}, ${role}, ${user.id})
+      ON CONFLICT (patient_id, email) DO UPDATE SET
+        role = EXCLUDED.role, status = 'pending', invited_by = EXCLUDED.invited_by
+    `;
+  }
+  return Response.json({ ok: true, direct: false, alreadyPending: Boolean(updated[0]), email });
 }
