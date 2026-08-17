@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Utensils } from "lucide-react";
 import api from "@/utils/api";
+import { useApp } from "@/context/AppContext";
 
 const LEVELS = [
   { value: 3, label: "Bien", tone: "green" },
@@ -17,6 +18,7 @@ const COLORS = {
 };
 
 export default function MealQualityPicker({ patientId, today, yesterday }) {
+  const { refreshPatientData } = useApp();
   const [value, setValue] = useState(today ?? null);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -30,6 +32,7 @@ export default function MealQualityPicker({ patientId, today, yesterday }) {
       await api.createVital(patientId, { type: "meal_quality", value: next });
       setValue(next);
       setOpen(false);
+      refreshPatientData();
     } finally {
       setSaving(false);
     }

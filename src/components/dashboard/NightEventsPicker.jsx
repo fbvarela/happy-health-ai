@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MoonStar, Phone, Footprints, Plus, Minus, X } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
+import { useApp } from "@/context/AppContext";
 
 /**
  * Nocturno — tap opens a modal to record a call ("llamada") or a wake-up
@@ -12,6 +13,7 @@ import Modal from "@/components/ui/Modal";
  * increments. Also allows adjusting the total number directly.
  */
 export default function NightEventsPicker({ patientId, today, yesterday }) {
+  const { refreshPatientData } = useApp();
   const [value, setValue] = useState(today ?? 0);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -29,6 +31,7 @@ export default function NightEventsPicker({ patientId, today, yesterday }) {
       await api.createVital(patientId, { type: "night_events", count, notes });
       setValue((v) => v + count);
       setTotalInput((t) => t + count);
+      refreshPatientData();
     } catch {
       // keep current count on error
     } finally {
@@ -49,6 +52,7 @@ export default function NightEventsPicker({ patientId, today, yesterday }) {
         notes: diff !== 0 ? `Total nocturno: ${n}` : "Total nocturno: 0",
       });
       setValue(n);
+      refreshPatientData();
     } catch {
       // ignore
     } finally {

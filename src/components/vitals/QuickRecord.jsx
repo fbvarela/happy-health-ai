@@ -8,6 +8,7 @@ import Modal from "@/components/ui/Modal";
 import { MOOD_LEVELS } from "@/lib/metrics";
 import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
 import WalkCheck from "@/components/dashboard/WalkCheck";
+import { useApp } from "@/context/AppContext";
 
 const METRIC_BUTTONS = [
   { key: "spo2", label: "SpO₂", hint: "%", icon: Droplets },
@@ -25,6 +26,7 @@ const METRIC_BUTTONS = [
  * ("fast last value" UX). Saves via API, then refreshes the timeline.
  */
 export default function QuickRecord({ patientId, canEdit, onSaved }) {
+  const { refreshPatientData } = useApp();
   const [active, setActive] = useState(null);
   const [lastValues, setLastValues] = useState({});
   const [form, setForm] = useState({});
@@ -78,6 +80,7 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
     try {
       await api.createVital(patientId, { type: active, ...form });
       setActive(null);
+      refreshPatientData();
       if (onSaved) onSaved();
     } catch (err) {
       setError(err.message);
