@@ -13,6 +13,7 @@ import MedicationChecklist from "@/components/dashboard/MedicationChecklist";
 import WalkCheck from "@/components/dashboard/WalkCheck";
 import MealQualityPicker from "@/components/dashboard/MealQualityPicker";
 import SpO2Recorder from "@/components/dashboard/SpO2Recorder";
+import CaregiverHandoff from "@/components/dashboard/CaregiverHandoff";
 
 export const dynamic = "force-dynamic";
 
@@ -139,8 +140,9 @@ export default async function DashboardPage({ searchParams }) {
             </div>
           )}
 
-          <HealthScoreCard score={healthScore} />
-          <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
+           <HealthScoreCard score={healthScore} />
+          <CaregiverHandoff patientId={active.id} />
+           <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <MoodPicker patientId={active.id} today={today.mood?.value ?? null} yesterday={yesterday.mood?.value ?? null} />
