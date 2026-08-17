@@ -64,7 +64,7 @@ export default function NightEventsPicker({ patientId, today, yesterday }) {
           <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-warning">
             <MoonStar className="size-4" />
           </span>
-          <p className="text-sm font-semibold">Nocturno</p>
+            <p className="text-sm font-semibold">Noche</p>
         </div>
         {today == null && <span title="Sin registro hoy" aria-hidden="true"><span className="size-2 shrink-0 rounded-full bg-warning" /></span>}
       </div>

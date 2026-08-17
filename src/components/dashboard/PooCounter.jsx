@@ -34,7 +34,7 @@ export default function PooCounter({ patientId, today, yesterday, count }) {
           <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-primary">
             <CircleDot className="size-4" />
           </span>
-          <p className="text-sm font-semibold">Deposiciones</p>
+          <p className="text-sm font-semibold">Baño</p>
         </div>
       </div>
 
