@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import api from "@/utils/api";
 import { StatusPill } from "@/components/app-shell";
+import { useApp } from "@/context/AppContext";
 
 export const CHART_PERIODS = [
   { key: 1, label: "Día" },
@@ -132,6 +133,7 @@ function BarChart({ points, label, unit, type, settings, period, aggregation, si
 }
 
 export default function VitalCharts({ patientId, initialPeriod = 7, simple = false }) {
+  const { patientDataVersion } = useApp();
   const [period, setPeriod] = useState(initialPeriod);
   const [loaded, setLoaded] = useState(null);
   const [error, setError] = useState("");
@@ -164,7 +166,7 @@ export default function VitalCharts({ patientId, initialPeriod = 7, simple = fal
       })
       .catch((err) => { if (!cancelled) setError(err.message); });
     return () => { cancelled = true; };
-  }, [patientId, period]);
+  }, [patientId, period, patientDataVersion]);
 
   return (
     <div>
