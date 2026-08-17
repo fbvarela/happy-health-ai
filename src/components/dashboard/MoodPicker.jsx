@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Smile } from "lucide-react";
 import api from "@/utils/api";
 import { MOOD_LEVELS, moodLabel, moodTone } from "@/lib/metrics";
+import { useApp } from "@/context/AppContext";
 
 const TONES = {
   green: { dot: "bg-success", selected: "border-success bg-success/10 text-success" },
@@ -16,6 +17,7 @@ const TONES = {
  * today's mood. Shows yesterday's value for reference. No modal.
  */
 export default function MoodPicker({ patientId, today, yesterday }) {
+  const { refreshPatientData } = useApp();
   const [value, setValue] = useState(today ?? null);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -27,6 +29,7 @@ export default function MoodPicker({ patientId, today, yesterday }) {
       await api.createVital(patientId, { type: "mood", value: level });
       setValue(level);
       setOpen(false);
+      refreshPatientData();
     } catch {
       // keep previous mood on error
     } finally {

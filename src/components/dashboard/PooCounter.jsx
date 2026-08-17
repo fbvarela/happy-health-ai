@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { CircleDot } from "lucide-react";
 import api from "@/utils/api";
+import { useApp } from "@/context/AppContext";
 
 /**
  * Deposiciones — one-tap counter (SPEC §4.1): tapping the card logs a poo with
  * the current time, no modal. Shows today's total (big) + yesterday (small).
  */
 export default function PooCounter({ patientId, today, yesterday, count }) {
+  const { refreshPatientData } = useApp();
   const [value, setValue] = useState(today ?? 0);
   const [measures, setMeasures] = useState(count ?? 0);
   const [saving, setSaving] = useState(false);
@@ -20,6 +22,7 @@ export default function PooCounter({ patientId, today, yesterday, count }) {
       await api.createVital(patientId, { type: "poo", count: value + 1 });
       setValue((v) => v + 1);
       setMeasures((m) => m + 1);
+      refreshPatientData();
     } catch {
       // keep current count on error
     } finally {

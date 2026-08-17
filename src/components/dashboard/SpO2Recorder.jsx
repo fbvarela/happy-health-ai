@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Droplets, Save } from "lucide-react";
 import api from "@/utils/api";
 import Modal from "@/components/ui/Modal";
+import { useApp } from "@/context/AppContext";
 
 function localDateTime() {
   const now = new Date();
@@ -11,6 +12,7 @@ function localDateTime() {
 }
 
 export default function SpO2Recorder({ patientId, today, yesterday, count }) {
+  const { refreshPatientData } = useApp();
   const [value, setValue] = useState(today ?? null);
   const [todayCount, setTodayCount] = useState(count ?? 0);
   const [open, setOpen] = useState(false);
@@ -40,6 +42,7 @@ export default function SpO2Recorder({ patientId, today, yesterday, count }) {
       setValue(next);
       setTodayCount((current) => current + 1);
       setOpen(false);
+      refreshPatientData();
     } catch (err) {
       setError(err.message);
     } finally {
