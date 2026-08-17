@@ -44,7 +44,7 @@ export default function CaregiverHandoff({ patientId }) {
     <section className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-sm" aria-labelledby="handoff-heading">
       <div className="flex items-center gap-2">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Handshake className="size-5" /></span>
-        <div className="min-w-0"><h2 id="handoff-heading" className="text-base font-semibold">Cuidador de hoy</h2><p className="truncate text-xs text-muted-foreground">{currentName}</p></div>
+        <div className="min-w-0"><h2 id="handoff-heading" className="text-base font-semibold">Cuidador de hoy</h2><p className="mt-0.5 truncate text-lg font-semibold leading-tight text-foreground sm:text-xl">{currentName}</p></div>
       </div>
       {data.canTransfer && !isCurrentUser && data.currentUserId && <button type="button" onClick={() => transfer(data.currentUserId)} disabled={saving} className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-3 text-sm font-semibold text-primary disabled:opacity-50"><Handshake className="size-4" /> Tomar el relevo</button>}
       {data.canTransfer && otherCaregivers.length > 0 && (
