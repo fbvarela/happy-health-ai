@@ -117,7 +117,7 @@ export default async function DashboardPage({ searchParams }) {
           </Link>
         </div>
       ) : (
-        <>
+        <div key={active.id}>
           {patients.length > 1 && (
             <div className="mb-5 grid grid-cols-2 gap-3">
               {patients.map((p) => (
@@ -167,7 +167,7 @@ export default async function DashboardPage({ searchParams }) {
             <BarChart3 className="size-5" /> Ver evolución
             <ChevronRight className="size-4" />
           </Link>
-        </>
+        </div>
       )}
     </AppShell>
   );
