@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Footprints } from "lucide-react";
 import api from "@/utils/api";
 import { getWalkCalendarWindow, splitWalkRows } from "@/lib/walk-check";
+import { useApp } from "@/context/AppContext";
 
 export default function WalkCheck({ patientId, className = "mt-4" }) {
+  const { refreshPatientData } = useApp();
   const [record, setRecord] = useState(null);
   const [yesterdayWalked, setYesterdayWalked] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -26,9 +28,11 @@ export default function WalkCheck({ patientId, className = "mt-4" }) {
       if (record) {
         await api.deleteVital(patientId, record.id);
         setRecord(null);
+        refreshPatientData();
       } else {
         const response = await api.createVital(patientId, { type: "walk", value: 1 });
         setRecord(response?.vitals?.[0] ?? { type: "walk", value: 1 });
+        refreshPatientData();
       }
     } finally {
       setSaving(false);
