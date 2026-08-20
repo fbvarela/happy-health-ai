@@ -154,7 +154,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
 
   return (
     <AppShell title={displayedPatient.name} eyebrow="Paciente" showBack>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex min-w-0 flex-row items-center gap-4">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -168,10 +168,10 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
           </div>
         )}
         <div className="min-w-0">
-          <h1 className="font-serif text-[2.2rem] font-semibold leading-none text-foreground break-words">
+          <h1 className="font-serif text-[1.8rem] font-semibold leading-none text-foreground break-words sm:text-[2.2rem]">
             {displayedPatient.name}
           </h1>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 break-words text-sm text-muted-foreground sm:text-base">
             {dobLabel ? (
               <>
                 <span className="inline-flex items-center gap-1"><CalendarDays size={14} /> Nacido/a el {dobLabel}</span>
@@ -179,7 +179,7 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
             ) : (
               "Fecha de nacimiento no indicada"
             )}
-            {myName && <span className="ml-2">· {myName}</span>}
+            {myName && <span className="ml-0 sm:ml-2">· {myName}</span>}
           </p>
         </div>
         {canEdit && (

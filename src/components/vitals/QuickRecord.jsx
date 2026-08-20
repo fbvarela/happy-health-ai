@@ -13,11 +13,11 @@ import { useApp } from "@/context/AppContext";
 const METRIC_BUTTONS = [
   { key: "spo2", label: "SpO₂", hint: "%", icon: Droplets },
   { key: "mood", label: "Ánimo", hint: "verde/naranja/rojo", icon: Smile },
-  { key: "night_events", label: "Nocturno", hint: "nº", icon: MoonStar },
+  { key: "night_events", label: "Noche", hint: "nº", icon: MoonStar },
   { key: "hr", label: "Frecuencia", hint: "ppm", icon: HeartPulse },
   { key: "bp", label: "Tensión", hint: "mmHg", icon: Activity },
   { key: "temp", label: "Temperatura", hint: "°C", icon: Thermometer },
-  { key: "poo", label: "Deposición", hint: "nº", icon: CircleDot },
+  { key: "poo", label: "Baño", hint: "nº", icon: CircleDot },
 ];
 
 /**
@@ -88,7 +88,7 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
     }
   };
 
-  const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Deposiciones", mood: "Estado de ánimo", night_events: "Llamadas/levantadas nocturnas" };
+  const labels = { spo2: "SpO₂ (%)", hr: "Frecuencia cardíaca (ppm)", bp: "Tensión arterial (mmHg)", temp: "Temperatura (°C)", poo: "Baño", mood: "Estado de ánimo", night_events: "Noche" };
 
   const renderMetric = (m) => {
     const Icon = m.icon;
@@ -121,7 +121,7 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
 
       <div className="mt-3 grid grid-cols-3 gap-3">{METRIC_BUTTONS.filter((m) => ["mood", "night_events", "poo"].includes(m.key)).map(renderMetric)}</div>
 
-      <div className="mt-3 grid grid-cols-2 gap-3">
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <MedicationChecklist patientId={patientId} className="mt-0" />
         <WalkCheck patientId={patientId} className="mt-0" />
       </div>

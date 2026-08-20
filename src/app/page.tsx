@@ -21,18 +21,18 @@ const WARNING_DOT = <span className="size-2 shrink-0 rounded-full bg-warning" ar
 
 function MeasureCard({ label, icon: Icon, today, yesterday, unit, count, accent = "text-primary" }) {
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-3 shadow-sm sm:p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className={`flex size-8 items-center justify-center rounded-lg bg-accent ${accent}`}>
+          <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent ${accent}`}>
             <Icon className="size-4" />
           </span>
-          <p className="text-sm font-semibold">{label}</p>
+          <p className="min-w-0 truncate text-xs font-semibold sm:text-sm">{label}</p>
         </div>
         {today == null && <span title="Sin medición hoy">{WARNING_DOT}</span>}
       </div>
 
-      <p className="mt-3 font-mono text-3xl font-semibold tracking-tight tabular-nums">
+      <p className="mt-3 font-mono text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl">
         {today ?? "–"}
         {unit && today != null && <span className="text-sm font-medium text-muted-foreground"> {unit}</span>}
       </p>

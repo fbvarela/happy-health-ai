@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import api from "@/utils/api";
-import { METRICS, moodLabel } from "@/lib/metrics";
+import { METRICS, moodLabel, moodTone } from "@/lib/metrics";
 import Modal from "@/components/ui/Modal";
 
 const TYPE_LABELS = {
@@ -13,9 +13,9 @@ const TYPE_LABELS = {
   bp_systolic: "Tensión",
   bp_diastolic: "Tensión",
   temp: "Temperatura",
-  poo: "Deposición",
+  poo: "Baño",
   mood: "Ánimo",
-  night_events: "Nocturno",
+  night_events: "Noche",
   walk: "Paseo",
   meal_quality: "Comidas",
 };
@@ -144,6 +144,7 @@ export default function DayTimeline({ patientId, canEdit }) {
                     >
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-foreground">
+                          {v.type === "mood" && <span className={`mr-1 inline-block size-2.5 rounded-full ${moodTone(v.value) === "green" ? "bg-success" : moodTone(v.value) === "orange" ? "bg-warning" : "bg-critical"}`} aria-hidden="true" />}
                           {display(v)}
                           <span className="font-normal text-muted-foreground"> · {TYPE_LABELS[v.type]}</span>
                         </p>
