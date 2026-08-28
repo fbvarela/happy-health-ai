@@ -37,6 +37,37 @@ export async function POST(request, { params }) {
   await sql`
     UPDATE users SET status = ${nextStatus} WHERE id = ${userId}
   `;
+
+  // Auto-accept pending invites for this email on approval.
+  if (action === "approve") {
+    const [approvedUser] = await sql`
+      SELECT email FROM users WHERE id = ${userId}
+    `;
+    const pendingInvites = await sql`
+      SELECT pi.id, pi.patient_id, pi.role, p.name AS patient_name
+      FROM patient_invites pi
+      JOIN patients p ON p.id = pi.patient_id
+      WHERE LOWER(pi.email) = LOWER(${approvedUser.email}) AND pi.status = 'pending'
+    `;
+    for (const invite of pendingInvites) {
+      await sql`
+        INSERT INTO patient_members (patient_id, user_id, role)
+        VALUES (${invite.patient_id}, ${userId}, ${invite.role})
+        ON CONFLICT (patient_id, user_id) DO NOTHING
+      `;
+      await sql`
+        UPDATE patient_invites SET status = 'accepted' WHERE id = ${invite.id}
+      `;
+      await sql`
+        INSERT INTO notifications (user_id, type, title, body, data)
+        VALUES (${userId}, 'share_invite',
+                'Nueva invitación',
+                'Te han añadido como ${invite.role === "viewer" ? "lector" : "cuidador"} de ${invite.patient_name}.',
+                ${JSON.stringify({ patient_id: invite.patient_id, role: invite.role })})
+      `;
+    }
+  }
+
   await sql`
     INSERT INTO approvals (user_id, actor_id, action) VALUES (${userId}, ${user.id}, ${action})
   `;
