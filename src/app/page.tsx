@@ -14,6 +14,7 @@ import WalkCheck from "@/components/dashboard/WalkCheck";
 import MealQualityPicker from "@/components/dashboard/MealQualityPicker";
 import SpO2Recorder from "@/components/dashboard/SpO2Recorder";
 import CaregiverHandoff from "@/components/dashboard/CaregiverHandoff";
+import InvitesInbox from "@/components/InvitesInbox";
 
 export const dynamic = "force-dynamic";
 
@@ -109,6 +110,7 @@ export default async function DashboardPage({ searchParams }) {
         )
       }
     >
+      <InvitesInbox />
       {patients.length === 0 ? (
         <div className="space-y-4">
           <EmptyState title="Aún no hay pacientes" detail="Crea el primer perfil para empezar a registrar constantes, notas y citas." />
