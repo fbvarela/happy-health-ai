@@ -92,7 +92,7 @@ export default function QuickRecord({ patientId, canEdit, onSaved }) {
 
   const renderMetric = (m) => {
     const Icon = m.icon;
-    return <button key={m.key} type="button" onClick={() => open(m.key)} className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"><Icon className="mb-1 text-foreground" size={24} /><span className="font-semibold text-sm">{m.label}</span><span className="text-xs text-muted-foreground">{m.hint}</span></button>;
+    return <button key={m.key} type="button" onClick={() => open(m.key)} className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-card p-3 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 active:bg-accent/40"><Icon className="mb-1 text-foreground" size={24} /><span className="font-semibold text-sm">{m.label}</span>{m.key === "mood" ? <span className="flex items-center gap-1" aria-hidden="true"><span className="size-2.5 rounded-full bg-success" /><span className="size-2.5 rounded-full bg-warning" /><span className="size-2.5 rounded-full bg-critical" /></span> : <span className="text-xs text-muted-foreground">{m.hint}</span>}</button>;
   };
 
   return (
