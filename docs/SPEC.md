@@ -96,6 +96,15 @@ The app is a **journal log**: every record (vital, note, appointment, photo) is 
 ### 4.12 Medication
 - Should have a menu option and might allow the users to include name, quantity, and group by breakfast, lunch and supper.
 - the dasboard should show an element to check if the medication has been taking by these three groups).
+
+### 4.13 Locations & emergency info
+- A patient can be at different **locations** over time (home, hospital, a relative's house, a residence…). Each location keeps its own **emergency info**:
+  - **Address**, with a one-tap link to open it in the map app.
+  - **Emergency phones** (local emergency services + a contact person at that location), each with a one-tap **call button**.
+  - **Notes**: door code, floor, access instructions, visiting hours.
+- The **current location** is set by a caregiver from the location list and shown as a glanceable badge on the dashboard and patient header ("Dónde está hoy") — the answer to "where is she now?" in one glance, same principle as the last-measure tiles (§13).
+- **Location moves are journal entries** like the rest of the app (§5): "Moved to Residencia on 14 Aug" appears in the timeline, is editable/deletable, and records who did it. The current location is derived from the latest move (same pattern as caregiver handoffs).
+- **v1 scope:** locations + contacts are owner-editable; caregivers/viewers read them. Location is per-patient, isolated like the rest of the data (§4.8).
 ---
 
 ## 5. Proposed Data Model (Neon / Postgres — draft)
@@ -190,6 +199,34 @@ patient_settings (                -- per-patient alert thresholds
   hr_min     NUMERIC DEFAULT 50,
   hr_max     NUMERIC DEFAULT 120,
   ...
+);
+
+locations (
+  id          UUID PK,
+  patient_id  UUID REFERENCES patients(id) ON DELETE CASCADE,
+  name        TEXT NOT NULL,       -- "Casa", "Hospital", "Residencia"...
+  address     TEXT,
+  notes       TEXT,                -- door code, floor, access instructions
+  created_by  UUID REFERENCES users(id),
+  created_at  TIMESTAMPTZ DEFAULT now()
+);
+
+location_contacts (
+  id          UUID PK,
+  location_id UUID REFERENCES locations(id) ON DELETE CASCADE,
+  name        TEXT NOT NULL,
+  phone       TEXT NOT NULL,
+  kind        TEXT DEFAULT 'emergency',  -- emergency | family | doctor | other
+  created_at  TIMESTAMPTZ DEFAULT now()
+);
+
+location_moves (                  -- journal: patient changed location (see §4.13)
+  id              UUID PK,
+  patient_id      UUID REFERENCES patients(id) ON DELETE CASCADE,
+  to_location_id  UUID REFERENCES locations(id) NOT NULL,
+  moved_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_by      UUID REFERENCES users(id),
+  created_at      TIMESTAMPTZ DEFAULT now()
 );
 
 chat_messages (                   -- future (per CHAT-SPEC §11)
@@ -344,3 +381,5 @@ Proposed per platform conventions: directory `happy-health-ai` ✓, domain `heal
 > - PWA icons regenerated to a red cross (`scripts/gen-icons.mjs`); manifest lang=es.
 > - Caregivers: pick from the list of approved users ("Añadir cuidador"), change role / remove at will; email invite kept as fallback; caregiver name shown instead of the "Propietario" label.
 > - Notification center + unread badges (Phase 7).
+
+> **Done — locations & emergency info (§4.13):** spec'd. Locations per patient (name/address/notes), emergency contacts with one-tap call, location moves as journal entries; current location derived from latest move, shown on dashboard + patient header.
