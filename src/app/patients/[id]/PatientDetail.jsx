@@ -13,6 +13,7 @@ import DayTimeline from "@/components/vitals/DayTimeline";
 import NotesSection from "@/components/vitals/NotesSection";
 import GallerySection from "@/components/uploads/GallerySection";
 import { useApp } from "@/context/AppContext";
+import LocationsCard from "@/components/locations/LocationsCard";
 
 const ROLE_LABELS = { owner: "Propietario", caregiver: "Cuidador", viewer: "Lector" };
 const ROLE_OPTIONS = [
@@ -317,6 +318,10 @@ export default function PatientDetail({ patient, avatarUrl, myRole, myName, memb
             </ul>
           </div>
         )}
+      </div>
+
+      <div className="mt-6">
+        <LocationsCard patientId={patient.id} isOwner={isOwner} canEdit={canEdit} />
       </div>
 
       <div className="mt-6">

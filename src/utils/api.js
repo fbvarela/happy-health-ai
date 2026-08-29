@@ -53,6 +53,14 @@ export const api = {
   getCaregivers: (patientId) => request(`/users/caregivers?patientId=${patientId}`, { cache: "no-store" }),
   getHandoffs: (patientId) => request(`/patients/${patientId}/handoffs`, { cache: "no-store" }),
   createHandoff: (patientId, data) => request(`/patients/${patientId}/handoffs`, { method: "POST", body: JSON.stringify(data) }),
+  getLocations: (patientId) => request(`/patients/${patientId}/locations`, { cache: "no-store" }),
+  createLocation: (patientId, data) => request(`/patients/${patientId}/locations`, { method: "POST", body: JSON.stringify(data) }),
+  updateLocation: (patientId, locationId, data) => request(`/patients/${patientId}/locations/${locationId}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteLocation: (patientId, locationId) => request(`/patients/${patientId}/locations/${locationId}`, { method: "DELETE" }),
+  createMove: (patientId, data) => request(`/patients/${patientId}/locations/moves`, { method: "POST", body: JSON.stringify(data) }),
+  addContact: (patientId, locationId, data) => request(`/patients/${patientId}/locations/${locationId}/contacts`, { method: "POST", body: JSON.stringify(data) }),
+  updateContact: (patientId, locationId, contactId, data) => request(`/patients/${patientId}/locations/${locationId}/contacts/${contactId}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteContact: (patientId, locationId, contactId) => request(`/patients/${patientId}/locations/${locationId}/contacts/${contactId}`, { method: "DELETE" }),
   getInvites: () => request("/invites", { cache: "no-store" }),
   respondInvite: (id, action) =>
     request(`/invites/${id}`, { method: "POST", body: JSON.stringify({ action }) }),
@@ -98,6 +106,13 @@ export const api = {
     request(`/patients/${id}/incidents/${incidentId}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteIncident: (id, incidentId) =>
     request(`/patients/${id}/incidents/${incidentId}`, { method: "DELETE" }),
+  getEmergencies: (id) => request(`/patients/${id}/emergencies`, { cache: "no-store" }),
+  getEmergency: (id, emergencyId) =>
+    request(`/patients/${id}/emergencies/${emergencyId}`, { cache: "no-store" }),
+  createEmergency: (id, data) =>
+    request(`/patients/${id}/emergencies`, { method: "POST", body: JSON.stringify(data) }),
+  deleteEmergency: (id, emergencyId) =>
+    request(`/patients/${id}/emergencies/${emergencyId}`, { method: "DELETE" }),
   confirmUpload: (id, data) =>
     request(`/patients/${id}/uploads`, { method: "POST", body: JSON.stringify(data) }),
   getUploads: (id) => request(`/patients/${id}/uploads`, { cache: "no-store" }),
