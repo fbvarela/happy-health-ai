@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import sql from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, BarChart3, ChevronRight, HeartPulse, Thermometer, UserPlus } from "lucide-react";
+import { Activity, BarChart3, ChevronRight, HeartPulse, MapPin, Thermometer, UserPlus } from "lucide-react";
 import { AppShell, EmptyState } from "@/components/app-shell";
 import { getDashboardData } from "@/lib/dashboard";
 import { computeHealthScore } from "@/lib/health-score";
@@ -66,6 +66,15 @@ export default async function DashboardPage({ searchParams }) {
   `;
 
   const active = patients.find((p) => p.id === patientParam) ?? patients[0] ?? null;
+
+  const [currentLocation] = active ? await sql`
+    SELECT l.name
+    FROM location_moves m
+    JOIN locations l ON l.id = m.to_location_id
+    WHERE m.patient_id = ${active.id}
+    ORDER BY m.moved_at DESC
+    LIMIT 1
+  ` : [];
 
   const data = active ? await getDashboardData(active.id) : null;
   const healthScore = active ? await computeHealthScore(active.id) : null;
@@ -144,6 +153,11 @@ export default async function DashboardPage({ searchParams }) {
 
            <HealthScoreCard score={healthScore} />
           <CaregiverHandoff patientId={active.id} />
+          {currentLocation && (
+            <Link href={`/patients/${active.id}`} className="mt-4 flex min-h-11 items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-semibold text-foreground shadow-sm">
+              <MapPin className="size-4 text-primary" /> Dónde está hoy: {currentLocation.name}
+            </Link>
+          )}
            <SpO2Recorder patientId={active.id} today={spo2} yesterday={spo2Yesterday} count={spo2Count} />
 
           <div className="mt-4 grid grid-cols-3 gap-3">
