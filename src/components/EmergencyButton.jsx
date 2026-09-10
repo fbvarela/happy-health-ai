@@ -12,7 +12,7 @@ export default function EmergencyButton({ patientId }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed right-5 bottom-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-red-600 bg-opacity-90 hover:bg-red-600/80 text-white shadow-2l hover:shadow-xl transition-all duration-200"
+        className="fixed right-5 bottom-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-red-600 bg-opacity-90 hover:bg-red-600/80 text-white shadow hover:shadow-xl transition-all duration-200"
         aria-label="Botón de emergencia"
         title="Emergencia"
       >
@@ -22,8 +22,8 @@ export default function EmergencyButton({ patientId }) {
         </span>
       </button>
 
-      {/* Emergency Modal */}
-      <EmergencyModal open={open} onClose={() => setOpen(false)} patientId={patientId} />
+      {/* Emergency Modal — mounted only while open so its form state resets each time */}
+      {open && <EmergencyModal open={open} onClose={() => setOpen(false)} patientId={patientId} />}
     </>
   );
 }

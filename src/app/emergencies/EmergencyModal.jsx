@@ -6,7 +6,6 @@ import { X } from "lucide-react";
 import api from "@/utils/api";
 
 export default function EmergencyModal({ open, onClose, patientId }) {
-  const [openState, setOpenState] = useState(open ?? false);
   const [emergencyType, setEmergencyType] = useState("");
   const [details, setDetails] = useState("");
   const [resolved, setResolved] = useState(false);
@@ -24,13 +23,7 @@ export default function EmergencyModal({ open, onClose, patientId }) {
     { value: "otro", label: "Otro" },
   ];
 
-  // Handle opening/closing
-  if (open !== undefined) {
-    setOpenState(open);
-  }
-
   const handleClose = () => {
-    setOpenState(false);
     setError("");
     setSuccess("");
     setSubmitting(false);
@@ -87,14 +80,14 @@ export default function EmergencyModal({ open, onClose, patientId }) {
     }
   };
 
-  if (!openState) {
+  if (!open) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 z-50 bg-foreground/30" onClick={handleClose}>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
-        <div className="w-full max-w-md bg-card rounded-2xl border border-border shadow-2l p-6">
+        <div className="w-full max-w-md bg-card rounded-2xl border border-border shadow p-6">
           <div className="flex justify-between items-start mb-4">
             <h2 className="text-xl font-semibold">Registrar Emergencia</h2>
             <button type="button" onClick={handleClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent/50" aria-label="Cerrar">

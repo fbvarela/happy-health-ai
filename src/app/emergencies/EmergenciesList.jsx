@@ -45,7 +45,7 @@ export default function EmergenciesList({ emergencies, showAll = false }) {
       eyebrow={showAll ? "Todas las emergencias" : "Emergencias"}
       showBack
       action={
-        <Link href={showAll ? "/emergencias" : "/emergencias"} className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-muted-foreground">
+        <Link href={showAll ? "/emergencies" : "/emergencies"} className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-muted-foreground">
           {showAll ? "Filtrar" : "Ver todas"}
         </Link>
       }
