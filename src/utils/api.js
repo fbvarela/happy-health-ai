@@ -106,6 +106,13 @@ export const api = {
     request(`/patients/${id}/incidents/${incidentId}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteIncident: (id, incidentId) =>
     request(`/patients/${id}/incidents/${incidentId}`, { method: "DELETE" }),
+  getEmergencies: (id) => request(`/patients/${id}/emergencies`, { cache: "no-store" }),
+  getEmergency: (id, emergencyId) =>
+    request(`/patients/${id}/emergencies/${emergencyId}`, { cache: "no-store" }),
+  createEmergency: (id, data) =>
+    request(`/patients/${id}/emergencies`, { method: "POST", body: JSON.stringify(data) }),
+  deleteEmergency: (id, emergencyId) =>
+    request(`/patients/${id}/emergencies/${emergencyId}`, { method: "DELETE" }),
   confirmUpload: (id, data) =>
     request(`/patients/${id}/uploads`, { method: "POST", body: JSON.stringify(data) }),
   getUploads: (id) => request(`/patients/${id}/uploads`, { cache: "no-store" }),

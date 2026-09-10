@@ -15,6 +15,7 @@ import MealQualityPicker from "@/components/dashboard/MealQualityPicker";
 import SpO2Recorder from "@/components/dashboard/SpO2Recorder";
 import CaregiverHandoff from "@/components/dashboard/CaregiverHandoff";
 import InvitesInbox from "@/components/InvitesInbox";
+import EmergencyButton from "@/components/EmergencyButton";
 
 export const dynamic = "force-dynamic";
 
@@ -185,6 +186,9 @@ export default async function DashboardPage({ searchParams }) {
           </Link>
         </div>
       )}
+
+      {/* Emergency Button - Fixed position */}
+      {active && <EmergencyButton patientId={active.id} />}
     </AppShell>
   );
 }
