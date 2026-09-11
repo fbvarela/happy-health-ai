@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AlertTriangle } from "lucide-react";
 import EmergencyModal from "@/app/emergencies/EmergencyModal";
 
 export default function EmergencyButton({ patientId }) {
@@ -16,7 +17,7 @@ export default function EmergencyButton({ patientId }) {
         aria-label="Botón de emergencia"
         title="Emergencia"
       >
-        <span className="text-2xl font-bold">+</span>
+        <AlertTriangle className="text-2xl font-bold" />
         <span className="absolute bottom-full mb-2 right-1/2 transform -translate-x-1/2 bg-red-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover:opacity-100 pointer-events-none">
           Emergencia
         </span>
