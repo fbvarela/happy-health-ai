@@ -22,9 +22,11 @@ export const metadata = {
     statusBarStyle: "black-translucent",
     title: "Happy Health",
   },
-  icons: {
-    apple: "/icons/apple-touch-icon.png",
-  },
+  icons: [
+    { rel: "icon", type: "image/png", url: "/icons/icon-192.png" },
+    { rel: "icon", type: "image/png", url: "/icons/icon-512.png" },
+    { rel: "apple-touch-icon", url: "/icons/apple-touch-icon.png" },
+  ],
 };
 
 export const viewport = {
