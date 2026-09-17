@@ -24,6 +24,7 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const [unread, setUnread] = useState(0)
+  const [upcoming, setUpcoming] = useState(0)
   const activeKey = pathname === "/" ? "inicio" : pathname.split("/")[1]
 
   useEffect(() => {
@@ -32,21 +33,25 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => { if (!cancelled) setUnread(Number(data?.count) || 0) })
       .catch(() => {})
+    fetch("/api/appointments/upcoming-count", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => { if (!cancelled) setUpcoming(Number(data?.count) || 0) })
+      .catch(() => {})
     return () => { cancelled = true }
   }, [pathname])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-xl items-center gap-3 px-6">
+        <div className="mx-auto flex min-h-16 max-w-xl items-center gap-3 px-6 py-2">
           {showBack && (
             <button type="button" onClick={() => router.back()} aria-label="Volver" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-foreground">
               <ArrowLeft className="h-5 w-5" />
             </button>
           )}
           <div className="min-w-0 flex-1">
-            {eyebrow && <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{eyebrow}</p>}
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
+            {eyebrow && <p className="text-[11px] font-semibold uppercase leading-snug tracking-[0.12em] text-muted-foreground">{eyebrow}</p>}
+            <h1 className="text-xl font-semibold leading-tight tracking-tight text-foreground">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
             {action}
@@ -70,7 +75,7 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
               <div className="flex flex-col gap-2">
                 {navItems.map(({ key, label, href, icon: Icon }) => (
                   <Link key={key} href={href} onClick={() => setMenuOpen(false)} className={`flex min-h-14 items-center gap-3 rounded-xl px-3 text-left font-medium transition-colors active:bg-accent ${activeKey === key ? "bg-accent" : ""}`}>
-                    <Icon className="size-5 text-primary" /><span>{label}</span><ChevronRight className="ml-auto size-4 text-muted-foreground" />
+                    <Icon className="size-5 text-primary" /><span>{label}</span>{key === "citas" && upcoming > 0 && <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-critical px-1.5 text-[11px] font-bold text-critical-foreground" aria-label={`${upcoming} próximas citas`}>{upcoming > 9 ? "9+" : upcoming}</span>}{key !== "citas" && <ChevronRight className="ml-auto size-4 text-muted-foreground" />}
                   </Link>
                 ))}
               </div>
@@ -92,8 +97,12 @@ export function AppShell({ children, title, eyebrow, action, showBack = false }:
         <div className="mx-auto grid max-w-xl grid-cols-5 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2">
           {navItems.map(({ key, label, href, icon: Icon }) => {
             const active = activeKey === key
-            return <Link key={key} href={href} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-semibold transition-colors ${active ? "bg-accent text-primary" : "text-muted-foreground"}`} aria-current={active ? "page" : undefined}>
-              <Icon className="h-5 w-5" />
+            const showBadge = key === "citas" && upcoming > 0
+            return <Link key={key} href={href} className={`relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-semibold transition-colors ${active ? "bg-accent text-primary" : "text-muted-foreground"}`} aria-current={active ? "page" : undefined}>
+              <span className="relative inline-flex">
+                <Icon className="h-5 w-5" />
+                {showBadge && <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-critical px-1 text-[9px] font-bold text-critical-foreground">{upcoming > 9 ? "9+" : upcoming}</span>}
+              </span>
               <span>{label}</span>
             </Link>
           })}
